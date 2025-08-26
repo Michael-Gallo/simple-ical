@@ -1,4 +1,4 @@
-module calparse
+module simple-ical
 
 go 1.24.6
 
