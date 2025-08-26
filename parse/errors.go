@@ -9,5 +9,5 @@ var (
 	ErrMissingDTEND      = errors.New("missing DTEND in VEVENT")
 	ErrInvalidTimeFormat = errors.New("invalid time format in iCal data")
 
-	ErrLineShouldStartWithOrganizerError = errors.New("line should start with ORGANIZER")
+	ErrLineShouldStartWithOrganizer = errors.New("line should start with ORGANIZER")
 )

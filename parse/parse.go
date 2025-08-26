@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"net/url"
 	"simple-ical/model"
 	"strings"
 	"time"
@@ -90,7 +91,7 @@ func parseOrganizer(line string) (*model.Organizer, error) {
 	value, isOrganizerLine := strings.CutPrefix(line, "ORGANIZER")
 
 	if !isOrganizerLine {
-		return nil, ErrLineShouldStartWithOrganizerError
+		return nil, ErrLineShouldStartWithOrganizer
 	}
 
 	organizer := &model.Organizer{}
@@ -100,17 +101,12 @@ func parseOrganizer(line string) (*model.Organizer, error) {
 		organizer.CommonName = commonName
 	}
 
-	hasMailto := sections[1] == "MAILTO"
-	if !hasMailto {
-		organizer.CalAddress.IsMailTo = false
-		organizer.CalAddress.URI = strings.Join(sections[1:], ":")
-
-		return organizer, nil
+	uri := strings.Join(sections[1:], ":")
+	parsedURI, err := url.Parse(uri)
+	if err != nil {
+		return nil, err
 	}
-
-	// Join remaining sections, // we can not just use sections[2] because the mailing address may contain a port
-	organizer.CalAddress.URI = strings.Join(sections[2:], ":")
-	organizer.CalAddress.IsMailTo = true
+	organizer.CalAddress = parsedURI
 
 	return organizer, nil
 }

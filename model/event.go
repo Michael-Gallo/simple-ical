@@ -1,6 +1,9 @@
 package model
 
-import "time"
+import (
+	"net/url"
+	"time"
+)
 
 // An Event in the iCalendar format
 // for more information see https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.1
@@ -21,7 +24,7 @@ type Organizer struct {
 	CommonName string
 	// Note: Any Valid URI
 	// See: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.3
-	CalAddress CalendarAddress
+	CalAddress *url.URL
 	// denoted by DIR= in the spec
 	Directory string
 }
