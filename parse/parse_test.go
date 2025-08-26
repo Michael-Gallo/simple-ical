@@ -11,10 +11,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//go:embed test_event.ical
+//go:embed test_data/test_event.ical
 var testIcalInput string
 
-//go:embed test_event_invalid_organizer.ical
+//go:embed test_data/test_event_invalid_organizer.ical
 var testIcalInvalidOrganizerInput string
 
 func TestParse(t *testing.T) {
