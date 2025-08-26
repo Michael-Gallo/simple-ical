@@ -11,8 +11,11 @@ import (
 type Event struct {
 	Summary     string
 	Description string
-	// dtstart
-	Start     time.Time
+	// dtstart in the ICAL format
+	// See the datetime specification for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.5
+	Start time.Time
+	// dtend in the ICAL format
+	// See the datetime specification for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.5
 	End       time.Time
 	Location  string
 	Organizer *Organizer
@@ -28,9 +31,4 @@ type Organizer struct {
 	CalAddress *url.URL
 	// denoted by DIR= in the spec
 	Directory string
-}
-
-type CalendarAddress struct {
-	URI      string
-	IsMailTo bool
 }
