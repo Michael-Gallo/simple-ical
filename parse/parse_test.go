@@ -2,6 +2,9 @@ package parse
 
 import (
 	_ "embed"
+	"errors"
+	"net/url"
+	"simple-ical/model"
 	"testing"
 	"time"
 
@@ -11,24 +14,78 @@ import (
 //go:embed test_event.ical
 var testIcalInput string
 
+//go:embed test_event_invalid_organizer.ical
+var testIcalInvalidOrganizerInput string
+
 func TestParse(t *testing.T) {
-	event, err := ParseIcalString(testIcalInput)
-	assert.NoError(t, err)
-	assert.NotNil(t, event)
+	testCases := []struct {
+		name          string
+		input         string
+		expectedEvent *model.Event
+		expectedError error
+	}{
+		{
+			name:  "Valid iCal event",
+			input: testIcalInput,
+			expectedEvent: &model.Event{
+				Start:       time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
+				End:         time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
+				Summary:     "Event Summary",
+				Description: "Event Description",
+				Location:    "555 Fake Street",
+				Organizer: &model.Organizer{
+					CommonName: "Org",
+					CalAddress: &url.URL{Scheme: "mailto", Opaque: "hello@world"},
+				},
+			},
+			expectedError: nil,
+		},
+		{
+			name:          "Empty input",
+			input:         "",
+			expectedEvent: &model.Event{},
+			expectedError: nil,
+		},
+		{
+			name:          "No VEVENT block",
+			input:         "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR",
+			expectedEvent: &model.Event{},
+			expectedError: nil,
+		},
+		{
+			name:          "Invalid organizer",
+			input:         testIcalInvalidOrganizerInput,
+			expectedEvent: nil,
+			expectedError: errors.New("parse \"://invalid\": missing protocol scheme"),
+		},
+	}
 
-	// Expected start time: September 28, 2025 at 18:30:00 UTC
-	expectedStart := time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC)
-	assert.Equal(t, expectedStart, event.Start)
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			event, err := ParseIcalString(tc.input)
 
-	// Expected end time: September 28, 2025 at 20:30:00 UTC
-	expectedEnd := time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC)
-	assert.Equal(t, expectedEnd, event.End)
+			if tc.expectedError != nil {
+				assert.ErrorContains(t, err, tc.expectedError.Error())
+				return
+			}
 
-	assert.Equal(t, "Event Summary", event.Summary)
-	assert.Equal(t, "Event Description", event.Description)
-	assert.Equal(t, "555 Fake Street", event.Location)
-	assert.Equal(t, "Org", event.Organizer.CommonName)
-	assert.Equal(t, "mailto:hello@world", event.Organizer.CalAddress.String())
+			assert.NoError(t, err)
+			assert.NotNil(t, event)
+
+			if tc.expectedEvent != nil {
+				assert.Equal(t, tc.expectedEvent.Start, event.Start)
+				assert.Equal(t, tc.expectedEvent.End, event.End)
+				assert.Equal(t, tc.expectedEvent.Summary, event.Summary)
+				assert.Equal(t, tc.expectedEvent.Description, event.Description)
+				assert.Equal(t, tc.expectedEvent.Location, event.Location)
+
+				if tc.expectedEvent.Organizer != nil {
+					assert.Equal(t, tc.expectedEvent.Organizer.CommonName, event.Organizer.CommonName)
+					assert.Equal(t, tc.expectedEvent.Organizer.CalAddress.String(), event.Organizer.CalAddress.String())
+				}
+			}
+		})
+	}
 }
 
 func TestParseOrganizer(t *testing.T) {
