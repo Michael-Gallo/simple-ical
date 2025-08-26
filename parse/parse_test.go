@@ -4,10 +4,10 @@ import (
 	_ "embed"
 	"errors"
 	"net/url"
-	"simple-ical/model"
 	"testing"
 	"time"
 
+	"github.com/michael-gallo/simple-ical/model"
 	"github.com/stretchr/testify/assert"
 )
 

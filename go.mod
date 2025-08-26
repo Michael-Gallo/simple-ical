@@ -1,4 +1,4 @@
-module simple-ical
+module github.com/michael-gallo/simple-ical
 
 go 1.24.6
 

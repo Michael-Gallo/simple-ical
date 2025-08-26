@@ -3,9 +3,10 @@ package parse
 
 import (
 	"net/url"
-	"simple-ical/model"
 	"strings"
 	"time"
+
+	"github.com/michael-gallo/simple-ical/model"
 )
 
 // iCalDateTimeFormat represents the standard iCal datetime format
