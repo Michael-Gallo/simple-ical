@@ -1,3 +1,4 @@
+// Package parse contains the logic for parsing iCalendar files and strings into Go structs
 package parse
 
 import (
