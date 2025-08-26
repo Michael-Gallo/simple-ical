@@ -29,7 +29,7 @@ func TestParse(t *testing.T) {
 	assert.Equal(t, "Event Description", event.Description)
 	assert.Equal(t, "555 Fake Street", event.Location)
 	assert.Equal(t, "Org", event.Organizer.CommonName)
-	assert.Equal(t, "hello@world", event.Organizer.Mailto)
+	assert.Equal(t, "hello@world", event.Organizer.CalAddress.URI)
 }
 
 func TestParseOrganizer(t *testing.T) {
@@ -44,7 +44,10 @@ func TestParseOrganizer(t *testing.T) {
 			line: "ORGANIZER;CN=My Org:MAILTO:dc@example.com",
 			expectedOrganizer: &model.Organizer{
 				CommonName: "My Org",
-				Mailto:     "dc@example.com",
+				CalAddress: model.CalendarAddress{
+					URI:      "dc@example.com",
+					IsMailTo: true,
+				},
 			},
 			expectedError: nil,
 		},
@@ -53,7 +56,10 @@ func TestParseOrganizer(t *testing.T) {
 			line: "ORGANIZER:MAILTO:dc@example.com",
 			expectedOrganizer: &model.Organizer{
 				CommonName: "",
-				Mailto:     "dc@example.com",
+				CalAddress: model.CalendarAddress{
+					URI:      "dc@example.com",
+					IsMailTo: true,
+				},
 			},
 			expectedError: nil,
 		},
@@ -68,7 +74,22 @@ func TestParseOrganizer(t *testing.T) {
 			line: "ORGANIZER;CN=My Org:MAILTO:dc@example.com:8080",
 			expectedOrganizer: &model.Organizer{
 				CommonName: "My Org",
-				Mailto:     "dc@example.com:8080",
+				CalAddress: model.CalendarAddress{
+					URI:      "dc@example.com:8080",
+					IsMailTo: true,
+				},
+			},
+			expectedError: nil,
+		},
+		{
+			name: "Valid organizer line with non MAILTO URI",
+			line: "ORGANIZER;CN=My Org:http://www.ietf.org/rfc/rfc2396.txt",
+			expectedOrganizer: &model.Organizer{
+				CommonName: "My Org",
+				CalAddress: model.CalendarAddress{
+					URI:      "http://www.ietf.org/rfc/rfc2396.txt",
+					IsMailTo: false,
+				},
 			},
 			expectedError: nil,
 		},

@@ -98,10 +98,16 @@ func parseOrganizer(line string) (*model.Organizer, error) {
 	}
 
 	hasMailto := sections[1] == "MAILTO"
-	if hasMailto {
-		// Join remaining sections, // we can not just use sections[2] because the mailing address may contain a port
-		organizer.Mailto = strings.Join(sections[2:], ":")
+	if !hasMailto {
+		organizer.CalAddress.IsMailTo = false
+		organizer.CalAddress.URI = strings.Join(sections[1:], ":")
+
+		return organizer, nil
 	}
+
+	// Join remaining sections, // we can not just use sections[2] because the mailing address may contain a port
+	organizer.CalAddress.URI = strings.Join(sections[2:], ":")
+	organizer.CalAddress.IsMailTo = true
 
 	return organizer, nil
 }
