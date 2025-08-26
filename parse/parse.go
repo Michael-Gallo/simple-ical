@@ -15,6 +15,7 @@ const iCalDateTimeFormat = "20060102T150405Z"
 // ParseIcalString takes the string representation of an ICAL and parses it into an event
 // It returns an error if the input is not a valid ICAL string
 func ParseIcalString(input string) (*model.Event, error) {
+	// TODO: add more checks for invalid calendar data
 	event := &model.Event{}
 
 	// Use a state machine approach for efficiency
