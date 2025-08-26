@@ -99,7 +99,8 @@ func parseOrganizer(line string) (*model.Organizer, error) {
 
 	hasMailto := sections[1] == "MAILTO"
 	if hasMailto {
-		organizer.Mailto = sections[2]
+		// Join remaining sections, // we can not just use sections[2] because the mailing address may contain a port
+		organizer.Mailto = strings.Join(sections[2:], ":")
 	}
 
 	return organizer, nil

@@ -63,6 +63,15 @@ func TestParseOrganizer(t *testing.T) {
 			expectedOrganizer: nil,
 			expectedError:     ErrLineShouldStartWithOrganizerError,
 		},
+		{
+			name: "Mailto has a port",
+			line: "ORGANIZER;CN=My Org:MAILTO:dc@example.com:8080",
+			expectedOrganizer: &model.Organizer{
+				CommonName: "My Org",
+				Mailto:     "dc@example.com:8080",
+			},
+			expectedError: nil,
+		},
 	}
 
 	for _, testCase := range testCases {
