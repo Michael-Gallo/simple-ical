@@ -71,7 +71,11 @@ func ParseIcalString(input string) (*model.Event, error) {
 					case "LOCATION":
 						event.Location = value
 					case "ORGANIZER":
-						event.Organizer, _ = parseOrganizer(line)
+						organizer, err := parseOrganizer(line)
+						if err != nil {
+							return nil, err
+						}
+						event.Organizer = organizer
 					}
 				}
 			}
@@ -81,8 +85,7 @@ func ParseIcalString(input string) (*model.Event, error) {
 	return event, nil
 }
 
-// parseOrganizer parses an organizer line and extracts the common name and email
-// line = ORGANIZER;CN=My Org:MAILTO:dc@example.com
+// parseOrganizer takes a calendar line starting with ORGANIZER
 func parseOrganizer(line string) (*model.Organizer, error) {
 	value, isOrganizerLine := strings.CutPrefix(line, "ORGANIZER")
 
