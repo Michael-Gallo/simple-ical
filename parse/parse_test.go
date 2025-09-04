@@ -2,7 +2,6 @@ package parse
 
 import (
 	_ "embed"
-	"errors"
 	"net/url"
 	"testing"
 	"time"
@@ -57,13 +56,13 @@ func TestParse(t *testing.T) {
 			name:          "Invalid organizer",
 			input:         testIcalInvalidOrganizerInput,
 			expectedEvent: nil,
-			expectedError: errors.New("parse \"://invalid\": missing protocol scheme"),
+			expectedError: ErrInvalidProtocol,
 		},
 	}
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			event, err := ParseIcalString(tc.input)
+			event, err := IcalString(tc.input)
 
 			if tc.expectedError != nil {
 				assert.ErrorContains(t, err, tc.expectedError.Error())
@@ -142,9 +141,9 @@ func TestParseOrganizer(t *testing.T) {
 				assert.ErrorIs(t, err, testCase.expectedError)
 				assert.Nil(t, organizer)
 				return
-			} else {
-				assert.NoError(t, err)
 			}
+			assert.NoError(t, err)
+
 			assert.Equal(t, testCase.expectedURIScheme, organizer.CalAddress.Scheme)
 			assert.Equal(t, testCase.expectedCommonName, organizer.CommonName)
 		})

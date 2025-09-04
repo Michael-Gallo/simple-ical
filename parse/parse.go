@@ -10,12 +10,12 @@ import (
 )
 
 // iCalDateTimeFormat represents the standard iCal datetime format
-// Format: YYYYMMDDTHHMMSSZ (e.g., 20250928T183000Z)
+// Format: YYYYMMDDTHHMMSSZ (e.g., 20250928T183000Z).
 const iCalDateTimeFormat = "20060102T150405Z"
 
-// ParseIcalString takes the string representation of an ICAL and parses it into an event
-// It returns an error if the input is not a valid ICAL string
-func ParseIcalString(input string) (*model.Event, error) {
+// IcalString takes the string representation of an ICAL and parses it into an event
+// It returns an error if the input is not a valid ICAL string.
+func IcalString(input string) (*model.Event, error) {
 	// TODO: add more checks for invalid calendar data
 	event := &model.Event{}
 
@@ -33,7 +33,7 @@ func ParseIcalString(input string) (*model.Event, error) {
 		// Handle BEGIN blocks
 		beginValue, isBeginLine := strings.CutPrefix(line, "BEGIN:")
 		if isBeginLine {
-			if beginValue == "VEVENT" {
+			if beginValue == string(model.SectionTokenVEvent) {
 				inEvent = true
 			}
 			continue
@@ -41,7 +41,7 @@ func ParseIcalString(input string) (*model.Event, error) {
 
 		// Handle END blocks
 		endLineValue, _ := strings.CutPrefix(line, "END:")
-		if endLineValue == "VEVENT" {
+		if endLineValue == string(model.SectionTokenVEvent) {
 			inEvent = false
 
 			continue
@@ -66,7 +66,7 @@ func ParseIcalString(input string) (*model.Event, error) {
 	return event, nil
 }
 
-// parseEventProperty parses a singel property line and adds it to the provided vevent
+// parseEventProperty parses a singel property line and adds it to the provided vevent.
 func parseEventProperty(line string, event *model.Event) error {
 	if !strings.Contains(line, ":") {
 		return ErrInvalidPropertyLine
@@ -111,7 +111,7 @@ func parseEventProperty(line string, event *model.Event) error {
 	return nil
 }
 
-// parseOrganizer parses a calendar line starting with ORGANIZER
+// parseOrganizer parses a calendar line starting with ORGANIZER.
 func parseOrganizer(line string) (*model.Organizer, error) {
 	value, isOrganizerLine := strings.CutPrefix(line, "ORGANIZER")
 

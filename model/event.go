@@ -4,14 +4,14 @@ import (
 	"time"
 )
 
-// The possible values for a VEVENT's STATUS field, note VTODO's STATUS field accepts different values
+// EventStatus represents the possible values for a VEVENT's STATUS field, note VTODO's STATUS field accepts different values
 // See: https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.11
 type EventStatus string
 
 const (
 	EventStatusConfirmed EventStatus = "CONFIRMED"
 	EventStatusTentative EventStatus = "TENTATIVE"
-	EventStatusCancelled EventStatus = "CANCELLED"
+	EventStatusCancelled EventStatus = "CANCELED"
 )
 
 // Event represents a VEVENT component in the iCalendar format.

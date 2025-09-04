@@ -14,7 +14,7 @@ type Calendar struct {
 	// This property specifies the identifier for the product that
 	// created the iCalendar object.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.7.3
-	ProdId string
+	ProdID string
 	// CalScale specifies the calendar scale used by the calendar component.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.7.1
 	CalScale string

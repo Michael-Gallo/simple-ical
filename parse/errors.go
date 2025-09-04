@@ -10,4 +10,7 @@ var (
 	ErrInvalidTimeFormat            = errors.New("invalid time format in iCal data")
 	ErrInvalidPropertyLine          = errors.New("invalid property line in iCal data")
 	ErrLineShouldStartWithOrganizer = errors.New("line should start with ORGANIZER")
+
+	// ErrInvalidProtocol is one of the errors that could be returned when parsing a URI with the standard library.
+	ErrInvalidProtocol = errors.New("parse \"://invalid\": missing protocol scheme")
 )
