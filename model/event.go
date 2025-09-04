@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-// The possible values for an event's status field
+// The possible values for a VEVENT's STATUS field, note VTODO's STATUS field accepts different values
 // See: https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.11
 type EventStatus string
 
@@ -19,7 +19,11 @@ const (
 // An Event in the iCalendar format
 // for more information see https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.1
 type Event struct {
-	Summary     string
+	// a short, one-line summary about the activity or journal entry.
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.12
+	Summary string
+	// Used tocapture lengthy textual descriptions associated with the activity.
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.5
 	Description string
 	// dtstart in the ICAL format
 	// See the datetime specification for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.5
