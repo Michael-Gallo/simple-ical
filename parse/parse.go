@@ -82,6 +82,12 @@ func ParseIcalString(input string) (*model.Event, error) {
 							return nil, err
 						}
 						event.Organizer = organizer
+					case "TZID":
+						event.TimeZoneId = value
+					case "TZOFFSETFROM":
+						event.TimeZoneOffsetFrom = value
+					case "TZOFFSETTO":
+						event.TimeZoneOffsetTo = value
 					}
 				}
 			}

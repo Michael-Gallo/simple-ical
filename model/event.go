@@ -34,6 +34,17 @@ type Event struct {
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.7
 	Location string
 
+	// Represented by TZID in the spec
+	// The time zone identifier for the time zone used by the calendar component.
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.3.1
+	TimeZoneId string
+
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.3.3
+	TimeZoneOffsetFrom string
+
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.3.4
+	TimeZoneOffsetTo string
+
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.11
 	// defines the overall status or confirmation for the calendar component.
 	Status    EventStatus
