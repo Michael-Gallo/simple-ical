@@ -22,7 +22,7 @@ go get github.com/michael-gallo/simple-ical
 ```go
 package main
 import (
-    ical "github.com/michael-gallo/simple-ical"
+    ical "github.com/michael-gallo/simple-ical/parse"
     "fmt"
     )
 
