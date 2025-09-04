@@ -1,3 +1,4 @@
+// Package model contains structs used throughout the project
 package model
 
 // Calendar represents a VCALENDAR component in the iCalendar format.
@@ -19,7 +20,8 @@ type Calendar struct {
 	CalScale string
 	// Method specifies the method used by the calendar component.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.7.2
-	Method    string
+	Method string
+
 	TimeZones []TimeZone
 
 	// A grouping of component properties that describe an event.

@@ -1,4 +1,3 @@
-// Package model contains structs used throughout the project
 package model
 
 import (
