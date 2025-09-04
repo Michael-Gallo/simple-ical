@@ -1,0 +1,45 @@
+linters-settings:
+  gocyclo:
+    min-complexity: 15
+  goconst:
+    min-len: 2
+    min-occurrences: 2
+  misspell:
+    locale: US
+  lll:
+    line-length: 120
+
+linters:
+  enable:
+    - gofmt
+    - goimports
+    - govet
+    - ineffassign
+    - misspell
+    - gosec
+    - goconst
+    - gocyclo
+    - gocritic
+    - gocognit
+    - godot
+    - err113
+    - nakedret
+    - noctx
+    - nolintlint
+    - revive
+    - staticcheck
+    - typecheck
+    - unconvert
+    - unparam
+    - unused
+    - whitespace
+
+issues:
+  exclude-dirs:
+    - vendor
+  exclude-files:
+    - ".*\\.pb\\.go$"
+
+run:
+  timeout: 5m
+  tests: true
