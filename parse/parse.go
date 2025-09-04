@@ -49,55 +49,69 @@ func ParseIcalString(input string) (*model.Event, error) {
 
 		// Only process lines when we're inside a VEVENT
 		if inEvent {
-			// Parse event properties (DTSTART, DTEND, SUMMARY, etc.)
-			if strings.Contains(line, ":") {
-				parts := strings.SplitN(line, ":", 2)
-				if len(parts) == 2 {
-					property := parts[0]
-					value := parts[1]
-
-					// Handle properties that might have parameters (like ORGANIZER;CN=...)
-					baseProperty := strings.Split(property, ";")[0]
-
-					switch baseProperty {
-					case "DTSTART":
-						if parsedTime, err := time.Parse(iCalDateTimeFormat, value); err == nil {
-							event.Start = parsedTime
-						}
-					case "DTEND":
-						if parsedTime, err := time.Parse(iCalDateTimeFormat, value); err == nil {
-							event.End = parsedTime
-						}
-					case "SUMMARY":
-						event.Summary = value
-					case "DESCRIPTION":
-						event.Description = value
-					case "LOCATION":
-						event.Location = value
-					case "STATUS":
-						event.Status = model.EventStatus(value)
-					case "ORGANIZER":
-						organizer, err := parseOrganizer(line)
-						if err != nil {
-							return nil, err
-						}
-						event.Organizer = organizer
-					case "TZID":
-						event.TimeZoneId = value
-					case "TZOFFSETFROM":
-						event.TimeZoneOffsetFrom = value
-					case "TZOFFSETTO":
-						event.TimeZoneOffsetTo = value
-					}
-				}
+			err := parseEventProperty(line, event)
+			if err != nil {
+				return nil, err
 			}
+			// TODO: add these to a parser for timezones
+			// case "TZID":
+			// 	event.TimeZoneId = value
+			// case "TZOFFSETFROM":
+			// 	event.TimeZoneOffsetFrom = value
+			// case "TZOFFSETTO":
+			// 	event.TimeZoneOffsetTo = value
 		}
 	}
 
 	return event, nil
 }
 
-// parseOrganizer takes a calendar line starting with ORGANIZER
+// parseEventProperty parses a singel property line and adds it to the provided vevent
+func parseEventProperty(line string, event *model.Event) error {
+	if !strings.Contains(line, ":") {
+		return ErrInvalidPropertyLine
+	}
+
+	parts := strings.SplitN(line, ":", 2)
+	if len(parts) != 2 {
+		return ErrInvalidPropertyLine
+	}
+
+	property := parts[0]
+	value := parts[1]
+
+	// Handle properties that might have parameters (like ORGANIZER;CN=...)
+	baseProperty := strings.Split(property, ";")[0]
+
+	switch baseProperty {
+	case "DTSTART":
+		if parsedTime, err := time.Parse(iCalDateTimeFormat, value); err == nil {
+			event.Start = parsedTime
+		}
+	case "DTEND":
+		if parsedTime, err := time.Parse(iCalDateTimeFormat, value); err == nil {
+			event.End = parsedTime
+		}
+	case "SUMMARY":
+		event.Summary = value
+	case "DESCRIPTION":
+		event.Description = value
+	case "LOCATION":
+		event.Location = value
+	case "STATUS":
+		event.Status = model.EventStatus(value)
+	case "ORGANIZER":
+		organizer, err := parseOrganizer(line)
+		if err != nil {
+			return err
+		}
+		event.Organizer = organizer
+	}
+
+	return nil
+}
+
+// parseOrganizer parses a calendar line starting with ORGANIZER
 func parseOrganizer(line string) (*model.Organizer, error) {
 	value, isOrganizerLine := strings.CutPrefix(line, "ORGANIZER")
 
