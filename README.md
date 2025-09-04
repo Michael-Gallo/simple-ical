@@ -4,6 +4,10 @@ A very much not ready ICAL parser for Golang intended to follow the official [IC
 
 Focused on ease of use and good documentation, with frequent links to the spec.
 
+## License
+
+This project is licensed under the Mozilla Public License 2.0. See the [LICENSE](LICENSE) file for details.
+
 
 ## Installation
 
