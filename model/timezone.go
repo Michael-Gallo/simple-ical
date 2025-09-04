@@ -1,6 +1,7 @@
 package model
 
-// a grouping of component properties that defines a time zone.
+// TimeZone represents a VTIMEZONE component in the iCalendar format.
+// A grouping of component properties that defines a time zone.
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.5
 type TimeZone struct {
 	// Represented by TZID
@@ -8,9 +9,11 @@ type TimeZone struct {
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.3.1
 	TimeZoneId string
 
+	// The time zone offset from UTC when daylight saving time is in effect.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.3.3
 	TimeZoneOffsetFrom string
 
+	// The time zone offset from UTC when standard time is in effect.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.3.4
 	TimeZoneOffsetTo string
 }

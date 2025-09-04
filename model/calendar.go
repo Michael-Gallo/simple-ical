@@ -1,5 +1,6 @@
 package model
 
+// Calendar represents a VCALENDAR component in the iCalendar format.
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.4
 type Calendar struct {
 	// Specifies the identifier corresponding to the
@@ -21,7 +22,7 @@ type Calendar struct {
 	Method    string
 	TimeZones []TimeZone
 
-	// a grouping of component properties that describe an event.
+	// A grouping of component properties that describe an event.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.1
 	Events []Event
 
