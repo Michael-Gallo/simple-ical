@@ -1,7 +1,7 @@
 .PHONY: test pre-commit lint fmt vet
 
 test:
-	go test ./... --race
+	go test ./... --race --count 1
 
 lint:
 	golangci-lint run
