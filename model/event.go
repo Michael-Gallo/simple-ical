@@ -6,6 +6,16 @@ import (
 	"time"
 )
 
+// The possible values for an event's status field
+// See: https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.11
+type EventStatus string
+
+const (
+	EventStatusConfirmed EventStatus = "CONFIRMED"
+	EventStatusTentative EventStatus = "TENTATIVE"
+	EventStatusCancelled EventStatus = "CANCELLED"
+)
+
 // An Event in the iCalendar format
 // for more information see https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.1
 type Event struct {
@@ -16,8 +26,13 @@ type Event struct {
 	Start time.Time
 	// dtend in the ICAL format
 	// See the datetime specification for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.5
-	End       time.Time
-	Location  string
+	End time.Time
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.7
+	Location string
+
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.11
+	// defines the overall status or confirmation for the calendar component.
+	Status    EventStatus
 	Organizer *Organizer
 }
 

@@ -37,6 +37,7 @@ func TestParse(t *testing.T) {
 					CommonName: "Org",
 					CalAddress: &url.URL{Scheme: "mailto", Opaque: "hello@world"},
 				},
+				Status: model.EventStatusConfirmed,
 			},
 			expectedError: nil,
 		},
@@ -78,6 +79,7 @@ func TestParse(t *testing.T) {
 				assert.Equal(t, tc.expectedEvent.Summary, event.Summary)
 				assert.Equal(t, tc.expectedEvent.Description, event.Description)
 				assert.Equal(t, tc.expectedEvent.Location, event.Location)
+				assert.Equal(t, tc.expectedEvent.Status, event.Status)
 
 				if tc.expectedEvent.Organizer != nil {
 					assert.Equal(t, tc.expectedEvent.Organizer.CommonName, event.Organizer.CommonName)

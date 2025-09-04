@@ -74,6 +74,8 @@ func ParseIcalString(input string) (*model.Event, error) {
 						event.Description = value
 					case "LOCATION":
 						event.Location = value
+					case "STATUS":
+						event.Status = model.EventStatus(value)
 					case "ORGANIZER":
 						organizer, err := parseOrganizer(line)
 						if err != nil {
