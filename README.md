@@ -16,14 +16,14 @@ go get github.com/michael-gallo/simple-ical
 ## Usage
 
 ```go
-package test
+package main
 import (
     ical "github.com/michael-gallo/simple-ical"
     "fmt"
     )
 
 
-const testIcalString string =  """BEGIN:VCALENDAR
+const testIcalString string =  `BEGIN:VCALENDAR
 VERSION:2.0
 PRODID:-//Event//Event Calendar//EN
 CALSCALE:GREGORIAN
@@ -49,7 +49,7 @@ SEQUENCE:0
 TRANSP:OPAQUE
 END:VEVENT
 END:VCALENDAR
-"""
+`
 
 func main(){
     calendar,err := ical.ParseIcalString(testIcalString)
