@@ -133,7 +133,7 @@ func IcalString(input string) (*model.Event, error) {
 	return event, nil
 }
 
-// parseEventProperty parses a singel property line and adds it to the provided vevent.
+// parseEventProperty parses a single property line and adds it to the provided vevent.
 func parseEventProperty(line string, event *model.Event) error {
 	if !strings.Contains(line, ":") {
 		return errInvalidPropertyLine
