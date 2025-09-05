@@ -22,6 +22,8 @@ const iCalDateTimeFormat = "20060102T150405Z"
 // It returns an error if the input is not a valid ICAL string.
 func IcalString(input string) (*model.Event, error) {
 	// TODO: add more checks for invalid calendar data
+	// TODO: rewrite to return a calendar object
+	// TODO: refactor state machine to have a struct to track the state
 	event := &model.Event{}
 
 	lines := strings.Split(input, "\n")
