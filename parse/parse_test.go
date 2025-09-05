@@ -44,7 +44,7 @@ func TestParse(t *testing.T) {
 			name:          "Empty input",
 			input:         "",
 			expectedEvent: nil,
-			expectedError: ErrNoCalendarFound,
+			expectedError: errNoCalendarFound,
 		},
 		{
 			name:          "No VEVENT block",
@@ -56,19 +56,19 @@ func TestParse(t *testing.T) {
 			name:          "Invalid organizer",
 			input:         testIcalInvalidOrganizerInput,
 			expectedEvent: nil,
-			expectedError: ErrInvalidProtocol,
+			expectedError: errInvalidProtocol,
 		},
 		{
 			name:          "Calendar with no BEGIN:VCALENDAR",
 			input:         "VERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\nMETHOD:REQUEST",
 			expectedEvent: nil,
-			expectedError: ErrInvalidCalendarFormatMissingBegin,
+			expectedError: errInvalidCalendarFormatMissingBegin,
 		},
 		{
 			name:          "Calendar with no END:VCALENDAR",
 			input:         "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\n",
 			expectedEvent: nil,
-			expectedError: ErrInvalidCalendarFormatMissingEnd,
+			expectedError: errInvalidCalendarFormatMissingEnd,
 		},
 	}
 
@@ -128,7 +128,7 @@ func TestParseOrganizer(t *testing.T) {
 			line:               "Not a valid line",
 			expectedCommonName: "",
 			expectedURIScheme:  "",
-			expectedError:      ErrLineShouldStartWithOrganizer,
+			expectedError:      errLineShouldStartWithOrganizer,
 		},
 		{
 			name:               "Mailto has a port",

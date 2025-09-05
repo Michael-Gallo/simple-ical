@@ -14,4 +14,5 @@ const (
 	SectionTokenVTimezone SectionToken = "VTIMEZONE"
 	SectionTokenVFreebusy SectionToken = "VFREEBUSY"
 	SectionTokenVAlarm    SectionToken = "VALARM"
+	SectionTokenVStandard SectionToken = "STANDARD"
 )

@@ -6,6 +6,7 @@
 package parse
 
 import (
+	"fmt"
 	"net/url"
 	"strings"
 	"time"
@@ -27,7 +28,7 @@ func IcalString(input string) (*model.Event, error) {
 
 	// Handle empty input - return empty event
 	if len(lines) == 0 || input == "" {
-		return nil, ErrNoCalendarFound
+		return nil, errNoCalendarFound
 	}
 
 	// Use a state machine approach for efficiency
@@ -41,28 +42,68 @@ func IcalString(input string) (*model.Event, error) {
 		// Handle BEGIN blocks
 		beginValue, isBeginLine := strings.CutPrefix(line, "BEGIN:")
 		if isBeginLine {
-			if beginValue == string(model.SectionTokenVEvent) {
+			switch beginValue {
+			case string(model.SectionTokenVEvent):
 				inEvent = true
-				continue
-			}
-			if beginValue == string(model.SectionTokenVCalendar) {
+			case string(model.SectionTokenVCalendar):
 				inCalendar = true
+			case string(model.SectionTokenVTimezone):
+				// TODO: add timezone parsing
 				continue
+			case string(model.SectionTokenVFreebusy):
+				// TODO: add freebusy parsing
+				continue
+			case string(model.SectionTokenVAlarm):
+				// TODO: add alarm parsing
+				continue
+			case string(model.SectionTokenVJournal):
+				// TODO: add journal parsing
+				continue
+			case string(model.SectionTokenVTodo):
+				// TODO: add todo parsing
+				continue
+			case string(model.SectionTokenVStandard):
+				// TODO: add standard parsing
+				continue
+			default:
+				return nil, fmt.Errorf("%w: %s", errTemplateInvalidStartBlock, beginValue)
 			}
+			continue
 		}
 
 		// Verify that the first line was a BEGIN:VCALENDAR
 		if !inCalendar {
-			return nil, ErrInvalidCalendarFormatMissingBegin
+			return nil, errInvalidCalendarFormatMissingBegin
 		}
 		// Handle END blocks
-		endLineValue, _ := strings.CutPrefix(line, "END:")
-		if endLineValue == string(model.SectionTokenVEvent) {
-			inEvent = false
-			continue
-		}
-		if endLineValue == string(model.SectionTokenVCalendar) {
-			inCalendar = false
+		endLineValue, isEndLine := strings.CutPrefix(line, "END:")
+		if isEndLine {
+			switch endLineValue {
+			case string(model.SectionTokenVEvent):
+				inEvent = false
+			case string(model.SectionTokenVCalendar):
+				inCalendar = false
+			case string(model.SectionTokenVTimezone):
+				// TODO: add timezone parsing
+				continue
+			case string(model.SectionTokenVFreebusy):
+				// TODO: add freebusy parsing
+				continue
+			case string(model.SectionTokenVAlarm):
+				// TODO: add alarm parsing
+				continue
+			case string(model.SectionTokenVJournal):
+				// TODO: add journal parsing
+				continue
+			case string(model.SectionTokenVTodo):
+				// TODO: add todo parsing
+				continue
+			case string(model.SectionTokenVStandard):
+				// TODO: add standard parsing
+				continue
+			default:
+				return nil, fmt.Errorf("%w: %s", errTemplateInvalidEndBlock, endLineValue)
+			}
 			continue
 		}
 
@@ -84,7 +125,7 @@ func IcalString(input string) (*model.Event, error) {
 
 	// Verify that the last line was a END:VCALENDAR
 	if inCalendar {
-		return nil, ErrInvalidCalendarFormatMissingEnd
+		return nil, errInvalidCalendarFormatMissingEnd
 	}
 
 	return event, nil
@@ -93,12 +134,12 @@ func IcalString(input string) (*model.Event, error) {
 // parseEventProperty parses a singel property line and adds it to the provided vevent.
 func parseEventProperty(line string, event *model.Event) error {
 	if !strings.Contains(line, ":") {
-		return ErrInvalidPropertyLine
+		return errInvalidPropertyLine
 	}
 
 	parts := strings.SplitN(line, ":", 2)
 	if len(parts) != 2 {
-		return ErrInvalidPropertyLine
+		return errInvalidPropertyLine
 	}
 
 	property := parts[0]
@@ -140,7 +181,7 @@ func parseOrganizer(line string) (*model.Organizer, error) {
 	value, isOrganizerLine := strings.CutPrefix(line, "ORGANIZER")
 
 	if !isOrganizerLine {
-		return nil, ErrLineShouldStartWithOrganizer
+		return nil, errLineShouldStartWithOrganizer
 	}
 
 	organizer := &model.Organizer{}
