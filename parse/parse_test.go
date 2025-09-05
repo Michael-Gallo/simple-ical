@@ -82,20 +82,22 @@ func TestParse(t *testing.T) {
 			}
 
 			assert.NoError(t, err)
+
+			if tc.expectedEvent == nil {
+				assert.Nil(t, event)
+				return
+			}
 			assert.NotNil(t, event)
+			assert.Equal(t, tc.expectedEvent.Start, event.Start)
+			assert.Equal(t, tc.expectedEvent.End, event.End)
+			assert.Equal(t, tc.expectedEvent.Summary, event.Summary)
+			assert.Equal(t, tc.expectedEvent.Description, event.Description)
+			assert.Equal(t, tc.expectedEvent.Location, event.Location)
+			assert.Equal(t, tc.expectedEvent.Status, event.Status)
 
-			if tc.expectedEvent != nil {
-				assert.Equal(t, tc.expectedEvent.Start, event.Start)
-				assert.Equal(t, tc.expectedEvent.End, event.End)
-				assert.Equal(t, tc.expectedEvent.Summary, event.Summary)
-				assert.Equal(t, tc.expectedEvent.Description, event.Description)
-				assert.Equal(t, tc.expectedEvent.Location, event.Location)
-				assert.Equal(t, tc.expectedEvent.Status, event.Status)
-
-				if tc.expectedEvent.Organizer != nil {
-					assert.Equal(t, tc.expectedEvent.Organizer.CommonName, event.Organizer.CommonName)
-					assert.Equal(t, tc.expectedEvent.Organizer.CalAddress.String(), event.Organizer.CalAddress.String())
-				}
+			if tc.expectedEvent.Organizer != nil {
+				assert.Equal(t, tc.expectedEvent.Organizer.CommonName, event.Organizer.CommonName)
+				assert.Equal(t, tc.expectedEvent.Organizer.CalAddress.String(), event.Organizer.CalAddress.String())
 			}
 		})
 	}
