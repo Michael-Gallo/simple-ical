@@ -23,14 +23,18 @@ func IcalString(input string) (*model.Event, error) {
 	// TODO: add more checks for invalid calendar data
 	event := &model.Event{}
 
+	lines := strings.Split(input, "\n")
+
+	// Handle empty input - return empty event
+	if len(lines) == 0 || input == "" {
+		return nil, ErrNoCalendarFound
+	}
+
 	// Use a state machine approach for efficiency
-	var inEvent bool
-
-	lines := strings.SplitSeq(input, "\n")
-
-	for s := range lines {
+	var inEvent, inCalendar bool
+	for _, s := range lines {
 		line := strings.TrimSpace(s)
-		if line == "" {
+		if line == "" || line == "\n" {
 			continue
 		}
 
@@ -39,15 +43,26 @@ func IcalString(input string) (*model.Event, error) {
 		if isBeginLine {
 			if beginValue == string(model.SectionTokenVEvent) {
 				inEvent = true
+				continue
 			}
-			continue
+			if beginValue == string(model.SectionTokenVCalendar) {
+				inCalendar = true
+				continue
+			}
 		}
 
+		// Verify that the first line was a BEGIN:VCALENDAR
+		if !inCalendar {
+			return nil, ErrInvalidCalendarFormatMissingBegin
+		}
 		// Handle END blocks
 		endLineValue, _ := strings.CutPrefix(line, "END:")
 		if endLineValue == string(model.SectionTokenVEvent) {
 			inEvent = false
-
+			continue
+		}
+		if endLineValue == string(model.SectionTokenVCalendar) {
+			inCalendar = false
 			continue
 		}
 
@@ -65,6 +80,11 @@ func IcalString(input string) (*model.Event, error) {
 			// case "TZOFFSETTO":
 			// 	event.TimeZoneOffsetTo = value
 		}
+	}
+
+	// Verify that the last line was a END:VCALENDAR
+	if inCalendar {
+		return nil, ErrInvalidCalendarFormatMissingEnd
 	}
 
 	return event, nil

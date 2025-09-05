@@ -43,8 +43,8 @@ func TestParse(t *testing.T) {
 		{
 			name:          "Empty input",
 			input:         "",
-			expectedEvent: &model.Event{},
-			expectedError: nil,
+			expectedEvent: nil,
+			expectedError: ErrNoCalendarFound,
 		},
 		{
 			name:          "No VEVENT block",
@@ -57,6 +57,18 @@ func TestParse(t *testing.T) {
 			input:         testIcalInvalidOrganizerInput,
 			expectedEvent: nil,
 			expectedError: ErrInvalidProtocol,
+		},
+		{
+			name:          "Calendar with no BEGIN:VCALENDAR",
+			input:         "VERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\nMETHOD:REQUEST",
+			expectedEvent: nil,
+			expectedError: ErrInvalidCalendarFormatMissingBegin,
+		},
+		{
+			name:          "Calendar with no END:VCALENDAR",
+			input:         "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\n",
+			expectedEvent: nil,
+			expectedError: ErrInvalidCalendarFormatMissingEnd,
 		},
 	}
 
