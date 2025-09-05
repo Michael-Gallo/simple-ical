@@ -18,7 +18,6 @@ linters:
     - misspell
     - gosec
     - goconst
-    - gocyclo
     - gocritic
     - gocognit
     - godot
