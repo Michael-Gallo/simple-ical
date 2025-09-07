@@ -165,14 +165,14 @@ func TestParseOrganizer(t *testing.T) {
 }
 
 func BenchmarkIcalString(b *testing.B) {
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_, _ = IcalString(testIcalInput)
 	}
 }
 
 func BenchmarkParseOrganizer(b *testing.B) {
 	line := "ORGANIZER;CN=My Org:MAILTO:dc@example.com"
-	for i := 0; i < b.N; i++ {
+	for b.Loop() {
 		_, _ = parseOrganizer(line)
 	}
 }
