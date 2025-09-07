@@ -74,7 +74,7 @@ func TestParse(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			event, err := IcalString(tc.input)
+			calendar, err := IcalString(tc.input)
 
 			if tc.expectedError != nil {
 				assert.ErrorContains(t, err, tc.expectedError.Error())
@@ -84,20 +84,20 @@ func TestParse(t *testing.T) {
 			assert.NoError(t, err)
 
 			if tc.expectedEvent == nil {
-				assert.Nil(t, event)
+				assert.Nil(t, calendar)
 				return
 			}
-			assert.NotNil(t, event)
-			assert.Equal(t, tc.expectedEvent.Start, event.Start)
-			assert.Equal(t, tc.expectedEvent.End, event.End)
-			assert.Equal(t, tc.expectedEvent.Summary, event.Summary)
-			assert.Equal(t, tc.expectedEvent.Description, event.Description)
-			assert.Equal(t, tc.expectedEvent.Location, event.Location)
-			assert.Equal(t, tc.expectedEvent.Status, event.Status)
+			assert.NotNil(t, calendar)
+			assert.Equal(t, tc.expectedEvent.Start, calendar.Events[0].Start)
+			assert.Equal(t, tc.expectedEvent.End, calendar.Events[0].End)
+			assert.Equal(t, tc.expectedEvent.Summary, calendar.Events[0].Summary)
+			assert.Equal(t, tc.expectedEvent.Description, calendar.Events[0].Description)
+			assert.Equal(t, tc.expectedEvent.Location, calendar.Events[0].Location)
+			assert.Equal(t, tc.expectedEvent.Status, calendar.Events[0].Status)
 
 			if tc.expectedEvent.Organizer != nil {
-				assert.Equal(t, tc.expectedEvent.Organizer.CommonName, event.Organizer.CommonName)
-				assert.Equal(t, tc.expectedEvent.Organizer.CalAddress.String(), event.Organizer.CalAddress.String())
+				assert.Equal(t, tc.expectedEvent.Organizer.CommonName, calendar.Events[0].Organizer.CommonName)
+				assert.Equal(t, tc.expectedEvent.Organizer.CalAddress.String(), calendar.Events[0].Organizer.CalAddress.String())
 			}
 		})
 	}

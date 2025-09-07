@@ -20,11 +20,10 @@ const iCalDateTimeFormat = "20060102T150405Z"
 
 // IcalString takes the string representation of an ICAL and parses it into an event
 // It returns an error if the input is not a valid ICAL string.
-func IcalString(input string) (*model.Event, error) {
+func IcalString(input string) (*model.Calendar, error) {
 	// TODO: add more checks for invalid calendar data
-	// TODO: rewrite to return a calendar object
 	// TODO: refactor state machine to have a struct to track the state
-	event := &model.Event{}
+	calendar := &model.Calendar{}
 
 	lines := strings.Split(input, "\n")
 
@@ -35,6 +34,7 @@ func IcalString(input string) (*model.Event, error) {
 
 	// Use a state machine approach for efficiency
 	var inEvent, inCalendar bool
+	var currentEvent model.Event
 	for _, s := range lines {
 		line := strings.TrimSpace(s)
 		if line == "" || line == "\n" {
@@ -47,6 +47,7 @@ func IcalString(input string) (*model.Event, error) {
 			switch beginValue {
 			case string(model.SectionTokenVEvent):
 				inEvent = true
+				currentEvent = model.Event{}
 			case string(model.SectionTokenVCalendar):
 				inCalendar = true
 			case string(model.SectionTokenVTimezone):
@@ -85,6 +86,7 @@ func IcalString(input string) (*model.Event, error) {
 				inEvent = false
 			case string(model.SectionTokenVCalendar):
 				inCalendar = false
+				calendar.Events = append(calendar.Events, currentEvent)
 			case string(model.SectionTokenVTimezone):
 				// TODO: add timezone parsing
 				continue
@@ -111,7 +113,7 @@ func IcalString(input string) (*model.Event, error) {
 
 		// Only process lines when we're inside a VEVENT
 		if inEvent {
-			err := parseEventProperty(line, event)
+			err := parseEventProperty(line, &currentEvent)
 			if err != nil {
 				return nil, err
 			}
@@ -130,7 +132,7 @@ func IcalString(input string) (*model.Event, error) {
 		return nil, errInvalidCalendarFormatMissingEnd
 	}
 
-	return event, nil
+	return calendar, nil
 }
 
 // parseEventProperty parses a single property line and adds it to the provided vevent.

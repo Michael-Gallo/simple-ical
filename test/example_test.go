@@ -41,5 +41,5 @@ func TestReadmeExample(t *testing.T) {
 		t.Fatalf("Failed to parse iCal string: %v", err)
 	}
 
-	fmt.Println(calendar.Description)
+	fmt.Println(calendar.Events[0].Summary)
 }
