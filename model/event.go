@@ -18,6 +18,15 @@ const (
 	EventStatusCancelled EventStatus = "CANCELED"
 )
 
+// EventTransp represents the possible values for a VEVENT's TRANSP field, note VTODO's TRANSP field accepts different values
+// See: https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.2.7
+type EventTransp string
+
+const (
+	EventTranspTransparent EventTransp = "TRANSPARENT"
+	EventTranspOpaque      EventTransp = "OPAQUE"
+)
+
 // Event represents a VEVENT component in the iCalendar format.
 // For more information see https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.1
 type Event struct {
@@ -43,4 +52,17 @@ type Event struct {
 	// The organizer of the event.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.3
 	Organizer *Organizer
+	// The unique identifier for the event.
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.7
+	UID string
+
+	// The sequence number of the event.
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.4
+	Sequence int
+
+	// The Time Transparency of the event.
+	// This refers to whether the event is considered to consume time on the calendar
+	// ie: if an event is TRANSPARENT, that means that participants are not to be considered busy during the event
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.2.7
+	Transp EventTransp
 }

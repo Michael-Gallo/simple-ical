@@ -33,4 +33,5 @@ const (
 	EventTokenTransp      EventToken = "TRANSP"
 	EventTokenDtstart     EventToken = "DTSTART"
 	EventTokenDtend       EventToken = "DTEND"
+	EventTokenUID         EventToken = "UID"
 )

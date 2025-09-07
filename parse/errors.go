@@ -15,6 +15,7 @@ var (
 	// errInvalidTimeFormat                 = errors.New("invalid time format in iCal data")
 	errInvalidDatePropertyDtstart        = errors.New("invalid date property in iCal Event: DTSTART")
 	errInvalidDatePropertyDtend          = errors.New("invalid date property in iCal Event: DTEND")
+	errInvalidEventProperty              = errors.New("invalid event property")
 	errInvalidPropertyLine               = errors.New("invalid property line in iCal data")
 	errLineShouldStartWithOrganizer      = errors.New("line should start with ORGANIZER")
 	errNoCalendarFound                   = errors.New("empty calendar sent")
@@ -22,7 +23,7 @@ var (
 	errInvalidCalendarFormatMissingEnd   = errors.New("invalid calendar format: must end with END:VCALENDAR")
 	errTemplateInvalidEndBlock           = errors.New("invalid end block")
 	errTemplateInvalidStartBlock         = errors.New("invalid start block")
-
+	errInvalidEventPropertySequence      = errors.New("invalid event property in iCal Event: SEQUENCE must be an integer")
 	// errInvalidProtocol is one of the errors that could be returned when parsing a URI with the standard library.
 	errInvalidProtocol = errors.New("parse \"://invalid\": missing protocol scheme")
 )

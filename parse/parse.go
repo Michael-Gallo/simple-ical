@@ -8,6 +8,7 @@ package parse
 import (
 	"fmt"
 	"net/url"
+	"strconv"
 	"strings"
 	"time"
 
@@ -163,8 +164,19 @@ func parseEventProperty(line string, event *model.Event) error {
 			return err
 		}
 		event.Organizer = organizer
+	case model.EventTokenUID:
+		event.UID = value
+	case model.EventTokenSequence:
+		sequence, err := strconv.Atoi(value)
+		if err != nil {
+			return errInvalidEventPropertySequence
+		}
+		event.Sequence = sequence
+	case model.EventTokenTransp:
+		event.Transp = model.EventTransp(value)
+	default:
+		return fmt.Errorf("%w: %s", errInvalidEventProperty, baseProperty)
 	}
-
 	return nil
 }
 
