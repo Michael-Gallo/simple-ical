@@ -1,8 +1,13 @@
 # Simple-ical
 
-A very much not ready ICAL parser for Golang intended to follow the official [ICAL 2.0 spec](https://datatracker.ietf.org/doc/html/rfc5545).
+A very much not ready ICAL parser for Golang intended to follow the official [ICAL 2.0 spec](https://datatracker.ietf.org/doc/html/rfc5545) as closely as is reasonable.
 
 Focused on ease of use and good documentation, with frequent links to the spec.
+
+## Deviations from spec
+
+1. The VCALENDAR spec does not address whitespace. We assume in this parser that whitepsace is to be ignored and trim all whitespace from every line.
+2. The `DTSTAMP` property is [mandatory](https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.1), however, I have seen real life examples where it is not filled out. Ergo I will not be enforcing it here. If I do enforce it in the future, it will be in an opt-in strict mode.
 
 ## License
 
