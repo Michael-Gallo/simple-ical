@@ -133,15 +133,15 @@ func parseEventProperty(line string, event *model.Event) error {
 	// Handle properties that might have parameters (like ORGANIZER;CN=...)
 	baseProperty, _, _ := strings.Cut(property, ";")
 
-	switch baseProperty {
-	case "DTSTART":
+	switch model.EventToken(baseProperty) {
+	case model.EventTokenDtstart:
 		parsedTime, err := time.Parse(iCalDateTimeFormat, value)
 		if err != nil {
 			return errInvalidDatePropertyDtstart
 		}
 
 		event.Start = parsedTime
-	case "DTEND":
+	case model.EventTokenDtend:
 		parsedTime, err := time.Parse(iCalDateTimeFormat, value)
 		if err != nil {
 			return errInvalidDatePropertyDtend
@@ -149,15 +149,15 @@ func parseEventProperty(line string, event *model.Event) error {
 
 		event.End = parsedTime
 
-	case "SUMMARY":
+	case model.EventTokenSummary:
 		event.Summary = value
-	case "DESCRIPTION":
+	case model.EventTokenDescription:
 		event.Description = value
-	case "LOCATION":
+	case model.EventTokenLocation:
 		event.Location = value
-	case "STATUS":
+	case model.EventTokenStatus:
 		event.Status = model.EventStatus(value)
-	case "ORGANIZER":
+	case model.EventTokenOrganizer:
 		organizer, err := parseOrganizer(line)
 		if err != nil {
 			return err

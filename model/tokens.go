@@ -4,6 +4,8 @@
 
 package model
 
+// SectionToken represents the names of the top level components in a VCALENDAR
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.6
 type SectionToken string
 
 const (
@@ -15,4 +17,20 @@ const (
 	SectionTokenVFreebusy SectionToken = "VFREEBUSY"
 	SectionTokenVAlarm    SectionToken = "VALARM"
 	SectionTokenVStandard SectionToken = "STANDARD"
+)
+
+// EventToken represents the names of the properties in a VEVENT
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.1
+type EventToken string
+
+const (
+	EventTokenSummary     EventToken = "SUMMARY"
+	EventTokenDescription EventToken = "DESCRIPTION"
+	EventTokenLocation    EventToken = "LOCATION"
+	EventTokenOrganizer   EventToken = "ORGANIZER"
+	EventTokenStatus      EventToken = "STATUS"
+	EventTokenSequence    EventToken = "SEQUENCE"
+	EventTokenTransp      EventToken = "TRANSP"
+	EventTokenDtstart     EventToken = "DTSTART"
+	EventTokenDtend       EventToken = "DTEND"
 )
