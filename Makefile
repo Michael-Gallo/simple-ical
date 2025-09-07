@@ -1,9 +1,7 @@
 .PHONY: test pre-commit lint fmt vet
 
 test:
-	@git stash --keep-index
 	go test ./... --race --count 1
-	@git stash pop
 
 lint:
 	golangci-lint run
