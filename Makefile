@@ -12,4 +12,7 @@ fmt:
 vet:
 	go vet ./...
 
+bench:
+	go test -bench=. ./...
+
 pre-commit: fmt vet test
