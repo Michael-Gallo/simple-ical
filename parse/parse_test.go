@@ -27,78 +27,90 @@ var testIcalContentAfterEndBlockInput string
 
 func TestParse(t *testing.T) {
 	testCases := []struct {
-		name          string
-		input         string
-		expectedEvent *model.Event
-		expectedError error
+		name             string
+		input            string
+		expectedCalendar *model.Calendar
+		expectedError    error
 	}{
 		{
 			name:  "Valid iCal event",
 			input: testIcalInput,
-			expectedEvent: &model.Event{
-				Start:       time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
-				End:         time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
-				Summary:     "Event Summary",
-				Description: "Event Description",
-				Location:    "555 Fake Street",
-				Organizer: &model.Organizer{
-					CommonName: "Org",
-					CalAddress: &url.URL{Scheme: "mailto", Opaque: "hello@world"},
+			expectedCalendar: &model.Calendar{
+				Events: []model.Event{
+					{
+						Start:       time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
+						End:         time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
+						Summary:     "Event Summary",
+						Description: "Event Description",
+						Location:    "555 Fake Street",
+						DTStamp:     time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+						Organizer: &model.Organizer{
+							CommonName: "Org",
+							CalAddress: &url.URL{Scheme: "mailto", Opaque: "hello@world"},
+						},
+						Status:   model.EventStatusConfirmed,
+						UID:      "13235@example.com",
+						Sequence: 0,
+						Transp:   model.EventTranspOpaque,
+					},
 				},
-				Status:   model.EventStatusConfirmed,
-				UID:      "13235@example.com",
-				Sequence: 0,
-				Transp:   model.EventTranspOpaque,
+				TimeZones: []model.TimeZone{
+					{
+						TimeZoneID: "America/Detroit",
+					},
+				},
 			},
 			expectedError: nil,
 		},
 		{
-			name:          "Empty input",
-			input:         "",
-			expectedEvent: nil,
-			expectedError: errNoCalendarFound,
+			name:             "Empty input",
+			input:            "",
+			expectedCalendar: nil,
+			expectedError:    errNoCalendarFound,
 		},
 		{
-			name:          "No VEVENT block",
-			input:         "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR",
-			expectedEvent: nil,
+			name:  "No VEVENT block",
+			input: "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR",
+			expectedCalendar: &model.Calendar{
+				Events: []model.Event{},
+			},
 			expectedError: nil,
 		},
 		{
-			name:          "Invalid organizer",
-			input:         testIcalInvalidOrganizerInput,
-			expectedEvent: nil,
-			expectedError: errInvalidProtocol,
+			name:             "Invalid organizer",
+			input:            testIcalInvalidOrganizerInput,
+			expectedCalendar: nil,
+			expectedError:    errInvalidProtocol,
 		},
 		{
-			name:          "Calendar with no BEGIN:VCALENDAR",
-			input:         "VERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\nMETHOD:REQUEST",
-			expectedEvent: nil,
-			expectedError: errInvalidCalendarFormatMissingBegin,
+			name:             "Calendar with no BEGIN:VCALENDAR",
+			input:            "VERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\nMETHOD:REQUEST",
+			expectedCalendar: nil,
+			expectedError:    errInvalidCalendarFormatMissingBegin,
 		},
 		{
-			name:          "Calendar with no END:VCALENDAR",
-			input:         "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\n",
-			expectedEvent: nil,
-			expectedError: errInvalidCalendarFormatMissingEnd,
+			name:             "Calendar with no END:VCALENDAR",
+			input:            "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\n",
+			expectedCalendar: nil,
+			expectedError:    errInvalidCalendarFormatMissingEnd,
 		},
 		{
-			name:          "Invalid start date",
-			input:         testIcalInvalidStartInput,
-			expectedEvent: nil,
-			expectedError: errInvalidDatePropertyDtstart,
+			name:             "Invalid start date",
+			input:            testIcalInvalidStartInput,
+			expectedCalendar: nil,
+			expectedError:    errInvalidDatePropertyDtstart,
 		},
 		{
-			name:          "Invalid end date",
-			input:         testIcalInvalidEndInput,
-			expectedEvent: nil,
-			expectedError: errInvalidDatePropertyDtend,
+			name:             "Invalid end date",
+			input:            testIcalInvalidEndInput,
+			expectedCalendar: nil,
+			expectedError:    errInvalidDatePropertyDtend,
 		},
 		{
-			name:          "Content after END:VCALENDAR",
-			input:         testIcalContentAfterEndBlockInput,
-			expectedEvent: nil,
-			expectedError: errContentAfterEndBlock,
+			name:             "Content after END:VCALENDAR",
+			input:            testIcalContentAfterEndBlockInput,
+			expectedCalendar: nil,
+			expectedError:    errContentAfterEndBlock,
 		},
 	}
 
@@ -113,23 +125,19 @@ func TestParse(t *testing.T) {
 
 			assert.NoError(t, err)
 
-			if tc.expectedEvent == nil {
-				assert.Len(t, calendar.Events, 0)
+			if tc.expectedCalendar == nil {
+				assert.Nil(t, calendar)
 				return
 			}
-			assert.NotNil(t, calendar.Events[0])
-			assert.Equal(t, tc.expectedEvent.Start, calendar.Events[0].Start)
-			assert.Equal(t, tc.expectedEvent.End, calendar.Events[0].End)
-			assert.Equal(t, tc.expectedEvent.Summary, calendar.Events[0].Summary)
-			assert.Equal(t, tc.expectedEvent.Description, calendar.Events[0].Description)
-			assert.Equal(t, tc.expectedEvent.Location, calendar.Events[0].Location)
-			assert.Equal(t, tc.expectedEvent.Status, calendar.Events[0].Status)
-			assert.Equal(t, tc.expectedEvent.UID, calendar.Events[0].UID)
-			assert.Equal(t, tc.expectedEvent.Sequence, calendar.Events[0].Sequence)
-			assert.Equal(t, tc.expectedEvent.Transp, calendar.Events[0].Transp)
-			if tc.expectedEvent.Organizer != nil {
-				assert.Equal(t, tc.expectedEvent.Organizer.CommonName, calendar.Events[0].Organizer.CommonName)
-				assert.Equal(t, tc.expectedEvent.Organizer.CalAddress.String(), calendar.Events[0].Organizer.CalAddress.String())
+
+			assert.NotNil(t, calendar)
+			assert.Equal(t, len(tc.expectedCalendar.Events), len(calendar.Events))
+			assert.Equal(t, len(tc.expectedCalendar.Todos), len(calendar.Todos))
+			assert.Equal(t, len(tc.expectedCalendar.TimeZones), len(calendar.TimeZones))
+
+			// Compare events if they exist
+			if len(tc.expectedCalendar.Events) > 0 {
+				assert.Equal(t, tc.expectedCalendar.Events, calendar.Events)
 			}
 		})
 	}
