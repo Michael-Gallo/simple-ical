@@ -49,7 +49,7 @@ func TestParse(t *testing.T) {
 		{
 			name:          "No VEVENT block",
 			input:         "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR",
-			expectedEvent: &model.Event{},
+			expectedEvent: nil,
 			expectedError: nil,
 		},
 		{
@@ -84,10 +84,10 @@ func TestParse(t *testing.T) {
 			assert.NoError(t, err)
 
 			if tc.expectedEvent == nil {
-				assert.Nil(t, calendar)
+				assert.Len(t, calendar.Events, 0)
 				return
 			}
-			assert.NotNil(t, calendar)
+			assert.NotNil(t, calendar.Events[0])
 			assert.Equal(t, tc.expectedEvent.Start, calendar.Events[0].Start)
 			assert.Equal(t, tc.expectedEvent.End, calendar.Events[0].End)
 			assert.Equal(t, tc.expectedEvent.Summary, calendar.Events[0].Summary)

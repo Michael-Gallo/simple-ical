@@ -22,14 +22,33 @@ const iCalDateTimeFormat = "20060102T150405Z"
 type stateMachine struct {
 	inEvent    bool
 	inCalendar bool
+	inTimezone bool
+	inTodo     bool
+	inAlarm    bool
+	inJournal  bool
+	inFreebusy bool
+	inStandard bool
+}
+
+// parseContext holds all the current parsing state for different components.
+type parseContext struct {
+	state           *stateMachine
+	currentEvent    *model.Event
+	currentTimezone *model.TimeZone
+	currentTodo     *model.Todo
+	// Add more current* fields as needed for other components
 }
 
 // IcalString takes the string representation of an ICAL and parses it into an event
 // It returns an error if the input is not a valid ICAL string.
 func IcalString(input string) (*model.Calendar, error) {
+	// Create parse context with all current parsing state
+	ctx := &parseContext{
+		state: &stateMachine{},
+	}
+
 	// TODO: add more checks for invalid calendar data
 	calendar := &model.Calendar{}
-	var state stateMachine
 
 	lines := strings.Split(input, "\n")
 
@@ -39,7 +58,6 @@ func IcalString(input string) (*model.Calendar, error) {
 	}
 
 	// Use a state machine approach for efficiency
-	var currentEvent model.Event
 	for _, s := range lines {
 		line := strings.TrimSpace(s)
 		if line == "" || line == "\n" {
@@ -47,97 +65,58 @@ func IcalString(input string) (*model.Calendar, error) {
 		}
 
 		// Handle BEGIN blocks
-		beginValue, isBeginLine := strings.CutPrefix(line, "BEGIN:")
-		if isBeginLine {
-			switch beginValue {
-			case string(model.SectionTokenVEvent):
-				state.inEvent = true
-				currentEvent = model.Event{}
-			case string(model.SectionTokenVCalendar):
-				state.inCalendar = true
-			case string(model.SectionTokenVTimezone):
-				// TODO: add timezone parsing
-				continue
-			case string(model.SectionTokenVFreebusy):
-				// TODO: add freebusy parsing
-				continue
-			case string(model.SectionTokenVAlarm):
-				// TODO: add alarm parsing
-				continue
-			case string(model.SectionTokenVJournal):
-				// TODO: add journal parsing
-				continue
-			case string(model.SectionTokenVTodo):
-				// TODO: add todo parsing
-				continue
-			case string(model.SectionTokenVStandard):
-				// TODO: add standard parsing
-				continue
-			default:
-				return nil, fmt.Errorf("%w: %s", errTemplateInvalidStartBlock, beginValue)
+		if beginValue, isBeginLine := strings.CutPrefix(line, "BEGIN:"); isBeginLine {
+			if err := handleBeginBlock(beginValue, ctx); err != nil {
+				return nil, err
 			}
 			continue
 		}
 
 		// Verify that the first line was a BEGIN:VCALENDAR
-		if !state.inCalendar {
+		if !ctx.state.inCalendar {
 			return nil, errInvalidCalendarFormatMissingBegin
 		}
 		// Handle END blocks
-		endLineValue, isEndLine := strings.CutPrefix(line, "END:")
-		if isEndLine {
-			switch endLineValue {
-			case string(model.SectionTokenVEvent):
-				state.inEvent = false
-			case string(model.SectionTokenVCalendar):
-				state.inCalendar = false
-				calendar.Events = append(calendar.Events, currentEvent)
-			case string(model.SectionTokenVTimezone):
-				// TODO: add timezone parsing
-				continue
-			case string(model.SectionTokenVFreebusy):
-				// TODO: add freebusy parsing
-				continue
-			case string(model.SectionTokenVAlarm):
-				// TODO: add alarm parsing
-				continue
-			case string(model.SectionTokenVJournal):
-				// TODO: add journal parsing
-				continue
-			case string(model.SectionTokenVTodo):
-				// TODO: add todo parsing
-				continue
-			case string(model.SectionTokenVStandard):
-				// TODO: add standard parsing
-				continue
-			default:
-				return nil, fmt.Errorf("%w: %s", errTemplateInvalidEndBlock, endLineValue)
+		if endLineValue, isEndLine := strings.CutPrefix(line, "END:"); isEndLine {
+			if err := handleEndBlock(endLineValue, ctx, calendar); err != nil {
+				return nil, err
 			}
 			continue
 		}
 
-		// Only process lines when we're inside a VEVENT
-		if state.inEvent {
-			err := parseEventProperty(line, &currentEvent)
-			if err != nil {
-				return nil, err
-			}
-			// TODO: add these to a parser for timezones
-			// case "TZID":
-			// 	event.TimeZoneId = value
-			// case "TZOFFSETFROM":
-			// 	event.TimeZoneOffsetFrom = value
-			// case "TZOFFSETTO":
-			// 	event.TimeZoneOffsetTo = value
+		// Process property lines based on current state
+		if err := parsePropertyLine(line, ctx); err != nil {
+			return nil, err
 		}
 	}
 
 	// Verify that the last line was a END:VCALENDAR
-	if state.inCalendar {
+	if ctx.state.inCalendar {
 		return nil, errInvalidCalendarFormatMissingEnd
 	}
 
 	return calendar, nil
+}
+
+// parsePropertyLine parses a single property line and adds it to the appropriate component based on current state.
+func parsePropertyLine(line string, ctx *parseContext) error {
+	if !strings.Contains(line, ":") {
+		return errInvalidPropertyLine
+	}
+
+	// Route to appropriate parser based on current state
+	if ctx.state.inEvent {
+		return parseEventProperty(line, ctx.currentEvent)
+	}
+	if ctx.state.inTimezone {
+		return parseTimezoneProperty(line, ctx.currentTimezone)
+	}
+	if ctx.state.inTodo {
+		return parseTodoProperty(line, ctx.currentTodo)
+	}
+	// Add more state checks as needed
+
+	return nil
 }
 
 // parseEventProperty parses a single property line and adds it to the provided vevent.
@@ -208,4 +187,104 @@ func parseOrganizer(line string) (*model.Organizer, error) {
 	organizer.CalAddress = parsedURI
 
 	return organizer, nil
+}
+
+// parseTimezoneProperty parses a single property line and adds it to the provided timezone.
+func parseTimezoneProperty(line string, timezone *model.TimeZone) error {
+	if !strings.Contains(line, ":") {
+		return errInvalidPropertyLine
+	}
+
+	parts := strings.SplitN(line, ":", 2)
+	if len(parts) != 2 {
+		return errInvalidPropertyLine
+	}
+
+	property := parts[0]
+	value := parts[1]
+
+	// Handle properties that might have parameters
+	baseProperty := strings.Split(property, ";")[0]
+
+	switch baseProperty {
+	case "TZID":
+		timezone.TimeZoneID = value
+	case "TZOFFSETFROM":
+		timezone.TimeZoneOffsetFrom = value
+	case "TZOFFSETTO":
+		timezone.TimeZoneOffsetTo = value
+	}
+
+	return nil
+}
+
+// parseTodoProperty parses a single property line and adds it to the provided todo.
+func parseTodoProperty(line string, todo *model.Todo) error {
+	// TODO: Implement todo property parsing
+	// This is a placeholder for future implementation
+	return nil
+}
+
+// handleBeginBlock processes BEGIN blocks and updates the parser state.
+func handleBeginBlock(beginValue string, ctx *parseContext) error {
+	switch beginValue {
+	case string(model.SectionTokenVEvent):
+		ctx.state.inEvent = true
+		ctx.currentEvent = &model.Event{}
+	case string(model.SectionTokenVCalendar):
+		ctx.state.inCalendar = true
+	case string(model.SectionTokenVTimezone):
+		ctx.state.inTimezone = true
+		ctx.currentTimezone = &model.TimeZone{}
+	case string(model.SectionTokenVFreebusy):
+		ctx.state.inFreebusy = true
+		// TODO: add freebusy parsing
+	case string(model.SectionTokenVAlarm):
+		ctx.state.inAlarm = true
+		// TODO: add alarm parsing
+	case string(model.SectionTokenVJournal):
+		ctx.state.inJournal = true
+		// TODO: add journal parsing
+	case string(model.SectionTokenVTodo):
+		ctx.state.inTodo = true
+		*ctx.currentTodo = model.Todo{}
+	case string(model.SectionTokenVStandard):
+		ctx.state.inStandard = true
+		// TODO: add standard parsing
+	default:
+		return fmt.Errorf("%w: %s", errTemplateInvalidStartBlock, beginValue)
+	}
+	return nil
+}
+
+// handleEndBlock processes END blocks and updates the parser state.
+func handleEndBlock(endLineValue string, ctx *parseContext, calendar *model.Calendar) error {
+	switch endLineValue {
+	case string(model.SectionTokenVEvent):
+		ctx.state.inEvent = false
+		calendar.Events = append(calendar.Events, *ctx.currentEvent)
+	case string(model.SectionTokenVCalendar):
+		ctx.state.inCalendar = false
+	case string(model.SectionTokenVTimezone):
+		ctx.state.inTimezone = false
+		calendar.TimeZones = append(calendar.TimeZones, *ctx.currentTimezone)
+	case string(model.SectionTokenVFreebusy):
+		ctx.state.inFreebusy = false
+		// TODO: add freebusy parsing
+	case string(model.SectionTokenVAlarm):
+		ctx.state.inAlarm = false
+		// TODO: add alarm parsing
+	case string(model.SectionTokenVJournal):
+		ctx.state.inJournal = false
+		// TODO: add journal parsing
+	case string(model.SectionTokenVTodo):
+		ctx.state.inTodo = false
+		calendar.Todos = append(calendar.Todos, *ctx.currentTodo)
+	case string(model.SectionTokenVStandard):
+		ctx.state.inStandard = false
+		// TODO: add standard parsing
+	default:
+		return fmt.Errorf("%w: %s", errTemplateInvalidEndBlock, endLineValue)
+	}
+	return nil
 }
