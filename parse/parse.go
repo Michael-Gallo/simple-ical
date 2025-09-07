@@ -18,12 +18,18 @@ import (
 // Format: YYYYMMDDTHHMMSSZ (e.g., 20250928T183000Z).
 const iCalDateTimeFormat = "20060102T150405Z"
 
+// stateMachine tracks where the parser is in a vcalendar file.
+type stateMachine struct {
+	inEvent    bool
+	inCalendar bool
+}
+
 // IcalString takes the string representation of an ICAL and parses it into an event
 // It returns an error if the input is not a valid ICAL string.
 func IcalString(input string) (*model.Calendar, error) {
 	// TODO: add more checks for invalid calendar data
-	// TODO: refactor state machine to have a struct to track the state
 	calendar := &model.Calendar{}
+	var state stateMachine
 
 	lines := strings.Split(input, "\n")
 
@@ -33,7 +39,6 @@ func IcalString(input string) (*model.Calendar, error) {
 	}
 
 	// Use a state machine approach for efficiency
-	var inEvent, inCalendar bool
 	var currentEvent model.Event
 	for _, s := range lines {
 		line := strings.TrimSpace(s)
@@ -46,10 +51,10 @@ func IcalString(input string) (*model.Calendar, error) {
 		if isBeginLine {
 			switch beginValue {
 			case string(model.SectionTokenVEvent):
-				inEvent = true
+				state.inEvent = true
 				currentEvent = model.Event{}
 			case string(model.SectionTokenVCalendar):
-				inCalendar = true
+				state.inCalendar = true
 			case string(model.SectionTokenVTimezone):
 				// TODO: add timezone parsing
 				continue
@@ -75,7 +80,7 @@ func IcalString(input string) (*model.Calendar, error) {
 		}
 
 		// Verify that the first line was a BEGIN:VCALENDAR
-		if !inCalendar {
+		if !state.inCalendar {
 			return nil, errInvalidCalendarFormatMissingBegin
 		}
 		// Handle END blocks
@@ -83,9 +88,9 @@ func IcalString(input string) (*model.Calendar, error) {
 		if isEndLine {
 			switch endLineValue {
 			case string(model.SectionTokenVEvent):
-				inEvent = false
+				state.inEvent = false
 			case string(model.SectionTokenVCalendar):
-				inCalendar = false
+				state.inCalendar = false
 				calendar.Events = append(calendar.Events, currentEvent)
 			case string(model.SectionTokenVTimezone):
 				// TODO: add timezone parsing
@@ -112,7 +117,7 @@ func IcalString(input string) (*model.Calendar, error) {
 		}
 
 		// Only process lines when we're inside a VEVENT
-		if inEvent {
+		if state.inEvent {
 			err := parseEventProperty(line, &currentEvent)
 			if err != nil {
 				return nil, err
@@ -128,7 +133,7 @@ func IcalString(input string) (*model.Calendar, error) {
 	}
 
 	// Verify that the last line was a END:VCALENDAR
-	if inCalendar {
+	if state.inCalendar {
 		return nil, errInvalidCalendarFormatMissingEnd
 	}
 

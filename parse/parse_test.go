@@ -163,3 +163,16 @@ func TestParseOrganizer(t *testing.T) {
 		})
 	}
 }
+
+func BenchmarkIcalString(b *testing.B) {
+	for i := 0; i < b.N; i++ {
+		_, _ = IcalString(testIcalInput)
+	}
+}
+
+func BenchmarkParseOrganizer(b *testing.B) {
+	line := "ORGANIZER;CN=My Org:MAILTO:dc@example.com"
+	for i := 0; i < b.N; i++ {
+		_, _ = parseOrganizer(line)
+	}
+}
