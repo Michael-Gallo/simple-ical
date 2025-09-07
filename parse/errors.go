@@ -13,6 +13,8 @@ var (
 	// errMissingDTSTART                    = errors.New("missing DTSTART in VEVENT")
 	// errMissingDTEND                      = errors.New("missing DTEND in VEVENT")
 	// errInvalidTimeFormat                 = errors.New("invalid time format in iCal data")
+	errInvalidDatePropertyDtstart        = errors.New("invalid date property in iCal Event: DTSTART")
+	errInvalidDatePropertyDtend          = errors.New("invalid date property in iCal Event: DTEND")
 	errInvalidPropertyLine               = errors.New("invalid property line in iCal data")
 	errLineShouldStartWithOrganizer      = errors.New("line should start with ORGANIZER")
 	errNoCalendarFound                   = errors.New("empty calendar sent")

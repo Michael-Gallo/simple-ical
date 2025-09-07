@@ -135,13 +135,20 @@ func parseEventProperty(line string, event *model.Event) error {
 
 	switch baseProperty {
 	case "DTSTART":
-		if parsedTime, err := time.Parse(iCalDateTimeFormat, value); err == nil {
-			event.Start = parsedTime
+		parsedTime, err := time.Parse(iCalDateTimeFormat, value)
+		if err != nil {
+			return errInvalidDatePropertyDtstart
 		}
+
+		event.Start = parsedTime
 	case "DTEND":
-		if parsedTime, err := time.Parse(iCalDateTimeFormat, value); err == nil {
-			event.End = parsedTime
+		parsedTime, err := time.Parse(iCalDateTimeFormat, value)
+		if err != nil {
+			return errInvalidDatePropertyDtend
 		}
+
+		event.End = parsedTime
+
 	case "SUMMARY":
 		event.Summary = value
 	case "DESCRIPTION":
