@@ -131,7 +131,7 @@ func parseEventProperty(line string, event *model.Event) error {
 	}
 
 	// Handle properties that might have parameters (like ORGANIZER;CN=...)
-	baseProperty := strings.Split(property, ";")[0]
+	baseProperty, _, _ := strings.Cut(property, ";")
 
 	switch baseProperty {
 	case "DTSTART":
