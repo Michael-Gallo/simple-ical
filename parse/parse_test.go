@@ -16,6 +16,12 @@ var testIcalInput string
 //go:embed test_data/test_event_invalid_organizer.ical
 var testIcalInvalidOrganizerInput string
 
+//go:embed test_data/test_event_invalid_start.ical
+var testIcalInvalidStartInput string
+
+//go:embed test_data/test_event_invalid_end.ical
+var testIcalInvalidEndInput string
+
 func TestParse(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -69,6 +75,18 @@ func TestParse(t *testing.T) {
 			input:         "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\n",
 			expectedEvent: nil,
 			expectedError: errInvalidCalendarFormatMissingEnd,
+		},
+		{
+			name:          "Invalid start date",
+			input:         testIcalInvalidStartInput,
+			expectedEvent: nil,
+			expectedError: errInvalidDatePropertyDtstart,
+		},
+		{
+			name:          "Invalid end date",
+			input:         testIcalInvalidEndInput,
+			expectedEvent: nil,
+			expectedError: errInvalidDatePropertyDtend,
 		},
 	}
 
