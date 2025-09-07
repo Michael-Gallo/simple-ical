@@ -6,7 +6,9 @@
 package parse
 
 import (
+	"bufio"
 	"fmt"
+	"io"
 	"net/url"
 	"strconv"
 	"strings"
@@ -40,28 +42,46 @@ type parseContext struct {
 	// Add more current* fields as needed for other components
 }
 
-// IcalString takes the string representation of an ICAL and parses it into an event
+// IcalString takes the string representation of an ICAL and parses it into a Calendar.
 // It returns an error if the input is not a valid ICAL string.
 func IcalString(input string) (*model.Calendar, error) {
-	// Create parse context with all current parsing state
-	ctx := &parseContext{
-		state: &stateMachine{},
-	}
-
-	// TODO: add more checks for invalid calendar data
-	calendar := &model.Calendar{}
-
-	lines := strings.Split(input, "\n")
-
-	// Handle empty input - return empty event
-	if len(lines) == 0 || input == "" {
+	// Handle empty input
+	if input == "" {
 		return nil, errNoCalendarFound
 	}
 
-	// Use a state machine approach for efficiency
-	for _, s := range lines {
-		line := strings.TrimSpace(s)
-		if line == "" || line == "\n" {
+	// Use the reader-based parser for consistency
+	reader := strings.NewReader(input)
+	return IcalReader(reader)
+}
+
+// IcalReader takes an io.Reader containing iCalendar data and parses it into a Calendar.
+// This is more memory-efficient for large files as it processes data line by line.
+func IcalReader(reader io.Reader) (*model.Calendar, error) {
+	// Create parse context with all current parsing state
+	ctx := &parseContext{
+		state: &stateMachine{
+			// We can save an Allocation by assuming the first line is a BEGIN:VCALENDAR
+			// because we will immediately be checking for it
+			inCalendar: true,
+		},
+	}
+
+	calendar := &model.Calendar{}
+	scanner := bufio.NewScanner(reader)
+
+	if !scanner.Scan() {
+		return nil, errNoCalendarFound
+	}
+
+	line := strings.TrimSpace(scanner.Text())
+	if line != "BEGIN:VCALENDAR" {
+		return nil, errInvalidCalendarFormatMissingBegin
+	}
+
+	for scanner.Scan() {
+		line := strings.TrimSpace(scanner.Text())
+		if line == "" {
 			continue
 		}
 
@@ -73,10 +93,11 @@ func IcalString(input string) (*model.Calendar, error) {
 			continue
 		}
 
-		// Verify that the first line was a BEGIN:VCALENDAR
+		// Verify that this line is within a VCALENDAR
 		if !ctx.state.inCalendar {
-			return nil, errInvalidCalendarFormatMissingBegin
+			return nil, errContentAfterEndBlock
 		}
+
 		// Handle END blocks
 		if endLineValue, isEndLine := strings.CutPrefix(line, "END:"); isEndLine {
 			if err := handleEndBlock(endLineValue, ctx, calendar); err != nil {
@@ -89,6 +110,11 @@ func IcalString(input string) (*model.Calendar, error) {
 		if err := parsePropertyLine(line, ctx); err != nil {
 			return nil, err
 		}
+	}
+
+	// Check for scanner errors
+	if err := scanner.Err(); err != nil {
+		return nil, fmt.Errorf("error reading iCalendar data: %w", err)
 	}
 
 	// Verify that the last line was a END:VCALENDAR
@@ -140,8 +166,13 @@ func parseEventProperty(line string, event *model.Event) error {
 		if err != nil {
 			return errInvalidDatePropertyDtstart
 		}
-
 		event.Start = parsedTime
+	case model.EventTokenDTStamp:
+		parsedTime, err := time.Parse(iCalDateTimeFormat, value)
+		if err != nil {
+			return errInvalidDatePropertyDTStamp
+		}
+		event.DTStamp = parsedTime
 	case model.EventTokenDtend:
 		parsedTime, err := time.Parse(iCalDateTimeFormat, value)
 		if err != nil {

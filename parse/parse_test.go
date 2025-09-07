@@ -22,6 +22,9 @@ var testIcalInvalidStartInput string
 //go:embed test_data/test_event_invalid_end.ical
 var testIcalInvalidEndInput string
 
+//go:embed test_data/test_event_content_after_end_block.ical
+var testIcalContentAfterEndBlockInput string
+
 func TestParse(t *testing.T) {
 	testCases := []struct {
 		name          string
@@ -90,6 +93,12 @@ func TestParse(t *testing.T) {
 			input:         testIcalInvalidEndInput,
 			expectedEvent: nil,
 			expectedError: errInvalidDatePropertyDtend,
+		},
+		{
+			name:          "Content after END:VCALENDAR",
+			input:         testIcalContentAfterEndBlockInput,
+			expectedEvent: nil,
+			expectedError: errContentAfterEndBlock,
 		},
 	}
 

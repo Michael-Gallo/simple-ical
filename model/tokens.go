@@ -34,4 +34,5 @@ const (
 	EventTokenDtstart     EventToken = "DTSTART"
 	EventTokenDtend       EventToken = "DTEND"
 	EventTokenUID         EventToken = "UID"
+	EventTokenDTStamp     EventToken = "DTSTAMP"
 )
