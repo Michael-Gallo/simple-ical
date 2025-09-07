@@ -125,13 +125,14 @@ func parseEventProperty(line string, event *model.Event) error {
 		return errInvalidPropertyLine
 	}
 
-	parts := strings.SplitN(line, ":", 2)
-	if len(parts) != 2 {
+	// parts := strings.SplitN(line, ":", 2)
+	property, value, ok := strings.Cut(line, ":")
+	if !ok {
 		return errInvalidPropertyLine
 	}
 
-	property := parts[0]
-	value := parts[1]
+	// property := parts[0]
+	// value := parts[1]
 
 	// Handle properties that might have parameters (like ORGANIZER;CN=...)
 	baseProperty := strings.Split(property, ";")[0]
