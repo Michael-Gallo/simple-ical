@@ -59,6 +59,12 @@ func TestParse(t *testing.T) {
 				TimeZones: []model.TimeZone{
 					{
 						TimeZoneID: "America/Detroit",
+						Standard: []model.TimeZoneProperty{
+							{
+								TimeZoneOffsetFrom: "+0000",
+								TimeZoneOffsetTo:   "+0000",
+							},
+						},
 					},
 				},
 			},
@@ -140,6 +146,9 @@ func TestParse(t *testing.T) {
 			// Compare events if they exist
 			if len(tc.expectedCalendar.Events) > 0 {
 				assert.Equal(t, tc.expectedCalendar.Events, calendar.Events)
+			}
+			if len(tc.expectedCalendar.TimeZones) > 0 {
+				assert.Equal(t, tc.expectedCalendar.TimeZones, calendar.TimeZones)
 			}
 		})
 	}

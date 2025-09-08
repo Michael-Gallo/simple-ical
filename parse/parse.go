@@ -35,10 +35,11 @@ type stateMachine struct {
 
 // parseContext holds all the current parsing state for different components.
 type parseContext struct {
-	state           *stateMachine
-	currentEvent    *model.Event
-	currentTimezone *model.TimeZone
-	currentTodo     *model.Todo
+	state                   *stateMachine
+	currentEvent            *model.Event
+	currentTimezone         *model.TimeZone
+	currentTimeZoneProperty *model.TimeZoneProperty
+	currentTodo             *model.Todo
 	// Add more current* fields as needed for other components
 }
 
@@ -136,7 +137,7 @@ func parsePropertyLine(line string, ctx *parseContext) error {
 		return parseEventProperty(line, ctx.currentEvent)
 	}
 	if ctx.state.inTimezone {
-		return parseTimezoneProperty(line, ctx.currentTimezone)
+		return parseTimezoneProperty(line, ctx)
 	}
 	if ctx.state.inTodo {
 		return parseTodoProperty(line, ctx.currentTodo)
@@ -237,9 +238,12 @@ func parseOrganizer(line string) (*model.Organizer, error) {
 }
 
 // parseTimezoneProperty parses a single property line and adds it to the provided timezone.
-func parseTimezoneProperty(line string, timezone *model.TimeZone) error {
+func parseTimezoneProperty(line string, ctx *parseContext) error {
 	if !strings.Contains(line, ":") {
 		return errInvalidPropertyLine
+	}
+	if ctx.state.inStandard {
+		return parseStandardTimeZoneProperty(line, ctx.currentTimeZoneProperty)
 	}
 
 	parts := strings.SplitN(line, ":", 2)
@@ -255,11 +259,32 @@ func parseTimezoneProperty(line string, timezone *model.TimeZone) error {
 
 	switch baseProperty {
 	case "TZID":
-		timezone.TimeZoneID = value
+		ctx.currentTimezone.TimeZoneID = value
+	default:
+		return fmt.Errorf("%w: %s", errInvalidPropertyLine, baseProperty)
+	}
+
+	return nil
+}
+
+// parseStandardTimeZoneProperty parses a single property line and adds it to the provided standard timezone property.
+func parseStandardTimeZoneProperty(line string, standard *model.TimeZoneProperty) error {
+	parts := strings.SplitN(line, ":", 2)
+	if len(parts) != 2 {
+		return errInvalidPropertyLine
+	}
+
+	property := parts[0]
+	value := parts[1]
+
+	// Handle properties that might have parameters
+	baseProperty := strings.Split(property, ";")[0]
+
+	switch baseProperty {
 	case "TZOFFSETFROM":
-		timezone.TimeZoneOffsetFrom = value
+		standard.TimeZoneOffsetFrom = value
 	case "TZOFFSETTO":
-		timezone.TimeZoneOffsetTo = value
+		standard.TimeZoneOffsetTo = value
 	}
 
 	return nil
@@ -297,6 +322,7 @@ func handleBeginBlock(beginValue string, ctx *parseContext) error {
 		*ctx.currentTodo = model.Todo{}
 	case string(model.SectionTokenVStandard):
 		ctx.state.inStandard = true
+		ctx.currentTimeZoneProperty = &model.TimeZoneProperty{}
 		// TODO: add standard parsing
 	default:
 		return fmt.Errorf("%w: %s", errTemplateInvalidStartBlock, beginValue)
@@ -329,7 +355,7 @@ func handleEndBlock(endLineValue string, ctx *parseContext, calendar *model.Cale
 		calendar.Todos = append(calendar.Todos, *ctx.currentTodo)
 	case string(model.SectionTokenVStandard):
 		ctx.state.inStandard = false
-		// TODO: add standard parsing
+		ctx.currentTimezone.Standard = append(ctx.currentTimezone.Standard, *ctx.currentTimeZoneProperty)
 	default:
 		return fmt.Errorf("%w: %s", errTemplateInvalidEndBlock, endLineValue)
 	}
