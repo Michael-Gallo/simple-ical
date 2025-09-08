@@ -38,18 +38,20 @@ func TestParse(t *testing.T) {
 			expectedCalendar: &model.Calendar{
 				Events: []model.Event{
 					{
+						BaseComponent: model.BaseComponent{
+							DTStamp: time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+							UID:     "13235@example.com",
+						},
 						Start:       time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
 						End:         time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
 						Summary:     "Event Summary",
 						Description: "Event Description",
 						Location:    "555 Fake Street",
-						DTStamp:     time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
 						Organizer: &model.Organizer{
 							CommonName: "Org",
 							CalAddress: &url.URL{Scheme: "mailto", Opaque: "hello@world"},
 						},
 						Status:   model.EventStatusConfirmed,
-						UID:      "13235@example.com",
 						Sequence: 0,
 						Transp:   model.EventTranspOpaque,
 					},

@@ -30,6 +30,7 @@ const (
 // Event represents a VEVENT component in the iCalendar format.
 // For more information see https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.1
 type Event struct {
+	BaseComponent
 	// A short, one-line summary about the activity or journal entry.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.12
 	Summary string
@@ -46,20 +47,12 @@ type Event struct {
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.7
 	Location string
 
-	// a DTSTAMP property defines the date and time that the instance of the calendar component was created.
-	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.2
-	// Note: This is technically mandatory in the spec, however I have seen examples in the wild where it is not present.
-	// I will not be enforcing this requirement in the parser. I may at some point in the future add a strict mode.
-	DTStamp time.Time
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.11
 	// defines the overall status or confirmation for the calendar component.
 	Status EventStatus
 	// The organizer of the event.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.3
 	Organizer *Organizer
-	// The unique identifier for the event.
-	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.7
-	UID string
 
 	// The sequence number of the event.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.4
