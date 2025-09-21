@@ -8,6 +8,7 @@ import (
 	"testing"
 
 	"github.com/apognu/gocal"
+	golangical "github.com/arran4/golang-ical"
 	"github.com/michael-gallo/simple-ical/parse"
 )
 
@@ -43,6 +44,29 @@ func BenchmarkAll(b *testing.B) {
 			}
 			if cal.Events[0].Organizer.CommonName != commonName {
 				panic("Invalid Organizer")
+			}
+		}
+	})
+
+	b.Run("GolangIcal", func(b *testing.B) {
+		for b.Loop() {
+			reader := strings.NewReader(string(fileContent))
+			cal, err := golangical.ParseCalendar(reader)
+			if err != nil {
+				panic(err)
+			}
+			events := cal.Events()
+			if len(events) == 0 {
+				panic("No events found")
+			}
+			organizerProp := events[0].GetProperty(golangical.ComponentPropertyOrganizer)
+			if organizerProp == nil {
+				panic("No organizer found")
+			}
+			// Access organizer value
+			organizerValue := organizerProp.BaseProperty.ICalParameters["CN"][0]
+			if organizerValue != commonName {
+				panic("Invalid organizer value")
 			}
 		}
 	})
