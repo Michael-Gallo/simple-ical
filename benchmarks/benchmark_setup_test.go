@@ -55,16 +55,8 @@ func BenchmarkAll(b *testing.B) {
 			if err != nil {
 				panic(err)
 			}
-			events := cal.Events()
-			if len(events) == 0 {
-				panic("No events found")
-			}
-			organizerProp := events[0].GetProperty(golangical.ComponentPropertyOrganizer)
-			if organizerProp == nil {
-				panic("No organizer found")
-			}
-			// Access organizer value
-			organizerValue := organizerProp.BaseProperty.ICalParameters["CN"][0]
+			organizerProp := cal.Events()[0].GetProperty(golangical.ComponentPropertyOrganizer)
+			organizerValue := organizerProp.ICalParameters["CN"][0]
 			if organizerValue != commonName {
 				panic("Invalid organizer value")
 			}
