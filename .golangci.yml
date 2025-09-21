@@ -19,7 +19,6 @@ linters:
     - gosec
     - goconst
     - gocritic
-    - gocognit
     - godot
     - err113
     - nakedret
