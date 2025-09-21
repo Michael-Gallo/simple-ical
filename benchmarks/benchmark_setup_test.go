@@ -2,9 +2,9 @@
 package benchmarks
 
 import (
+	"bytes"
 	_ "embed"
 	"os"
-	"strings"
 	"testing"
 
 	"github.com/apognu/gocal"
@@ -20,11 +20,12 @@ func BenchmarkAll(b *testing.B) {
 	if err != nil {
 		panic("Invalid File")
 	}
+	var reader bytes.Reader
 
 	b.Run("Gocal", func(b *testing.B) {
 		for b.Loop() {
-			reader := strings.NewReader(string(fileContent))
-			c := gocal.NewParser(reader)
+			reader.Reset(fileContent)
+			c := gocal.NewParser(&reader)
 			err := c.Parse()
 			if err != nil {
 				panic(err)
@@ -37,8 +38,8 @@ func BenchmarkAll(b *testing.B) {
 
 	b.Run("SimpleIcal", func(b *testing.B) {
 		for b.Loop() {
-			reader := strings.NewReader(string(fileContent))
-			cal, err := parse.IcalReader(reader)
+			reader.Reset(fileContent)
+			cal, err := parse.IcalReader(&reader)
 			if err != nil {
 				panic(err)
 			}
@@ -50,8 +51,8 @@ func BenchmarkAll(b *testing.B) {
 
 	b.Run("GolangIcal", func(b *testing.B) {
 		for b.Loop() {
-			reader := strings.NewReader(string(fileContent))
-			cal, err := golangical.ParseCalendar(reader)
+			reader.Reset(fileContent)
+			cal, err := golangical.ParseCalendar(&reader)
 			if err != nil {
 				panic(err)
 			}
