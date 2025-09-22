@@ -34,3 +34,8 @@ type BaseComponent struct {
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.7
 	UID string
 }
+
+// Contact is used to represent contact information
+// Can be specified in Events, Todos, Journals, and FreeBusy Components
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.2
+type Contact = string

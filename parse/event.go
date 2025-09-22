@@ -69,6 +69,8 @@ func parseEventProperty(line string, event *model.Event) error {
 		event.Sequence = sequence
 	case model.EventTokenTransp:
 		event.Transp = model.EventTransp(value)
+	case model.EventTokenContact:
+		event.Contact = value
 	default:
 		return fmt.Errorf("%w: %s", errInvalidEventProperty, baseProperty)
 	}

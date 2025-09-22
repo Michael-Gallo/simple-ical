@@ -63,4 +63,6 @@ type Event struct {
 	// ie: if an event is TRANSPARENT, that means that participants are not to be considered busy during the event
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.2.7
 	Transp EventTransp
+
+	Contact
 }

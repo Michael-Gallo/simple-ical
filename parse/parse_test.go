@@ -54,6 +54,7 @@ func TestParse(t *testing.T) {
 						Status:   model.EventStatusConfirmed,
 						Sequence: 0,
 						Transp:   model.EventTranspOpaque,
+						Contact:  "Jim Dolittle, ABC Industries, +1-919-555-1234",
 					},
 				},
 				TimeZones: []model.TimeZone{
