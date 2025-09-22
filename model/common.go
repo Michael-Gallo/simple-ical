@@ -39,3 +39,8 @@ type BaseComponent struct {
 // Can be specified in Events, Todos, Journals, and FreeBusy Components
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.2
 type Contact = string
+
+// Sequence is used to define the revision sequence number of the component
+// Can be specified in Events, Todos, and Journals
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.4
+type Sequence = int

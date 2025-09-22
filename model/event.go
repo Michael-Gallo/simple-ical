@@ -54,10 +54,6 @@ type Event struct {
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.3
 	Organizer *Organizer
 
-	// The sequence number of the event.
-	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.4
-	Sequence int
-
 	// The Time Transparency of the event.
 	// This refers to whether the event is considered to consume time on the calendar
 	// ie: if an event is TRANSPARENT, that means that participants are not to be considered busy during the event
@@ -65,4 +61,5 @@ type Event struct {
 	Transp EventTransp
 
 	Contact
+	Sequence
 }
