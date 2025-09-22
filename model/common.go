@@ -44,3 +44,8 @@ type Contact = string
 // Can be specified in Events, Todos, and Journals
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.4
 type Sequence = int
+
+// LastModified specifies the date and time tthat the information associated with the calendar information was last revised
+// Can be specified in Events, Todos, Journals, and TimeZones
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.3
+type LastModified = time.Time

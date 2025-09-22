@@ -71,6 +71,12 @@ func parseEventProperty(line string, event *model.Event) error {
 		event.Transp = model.EventTransp(value)
 	case model.EventTokenContact:
 		event.Contact = value
+	case model.EventTokenLastModified:
+		lastModified, err := time.Parse(iCalDateTimeFormat, value)
+		if err != nil {
+			return errInvalidDatePropertyLastModified
+		}
+		event.LastModified = lastModified
 	default:
 		return fmt.Errorf("%w: %s", errInvalidEventProperty, baseProperty)
 	}
