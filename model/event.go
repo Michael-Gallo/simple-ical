@@ -63,4 +63,5 @@ type Event struct {
 	Contact
 	Sequence
 	LastModified
+	Categories
 }

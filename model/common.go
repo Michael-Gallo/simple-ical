@@ -57,3 +57,8 @@ type LastModified = time.Time
 // Attendee is used to represent an ATTENDEE component in the iCalendar format
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.1
 type Attendee = url.URL
+
+// Categories specifies the categories that the calendar component belongs to
+// Can be specified in Events, Todos, and Journals
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.2
+type Categories = []string

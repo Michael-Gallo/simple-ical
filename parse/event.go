@@ -59,6 +59,8 @@ func parseEventProperty(line string, event *model.Event) error {
 		event.Organizer = organizer
 	case model.EventTokenComment:
 		event.Comment = append(event.Comment, value)
+	case model.EventTokenCategories:
+		event.Categories = append(event.Categories, strings.Split(value, ",")...)
 	default:
 		return fmt.Errorf("%w: %s", errInvalidEventProperty, baseProperty)
 	}

@@ -38,4 +38,5 @@ const (
 	EventTokenContact      EventToken = "CONTACT"
 	EventTokenLastModified EventToken = "LAST-MODIFIED"
 	EventTokenComment      EventToken = "COMMENT"
+	EventTokenCategories   EventToken = "CATEGORIES"
 )

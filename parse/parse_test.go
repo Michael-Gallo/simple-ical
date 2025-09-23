@@ -63,6 +63,7 @@ func TestParse(t *testing.T) {
 						Transp:       model.EventTranspOpaque,
 						Contact:      "Jim Dolittle, ABC Industries, +1-919-555-1234",
 						LastModified: time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
+						Categories:   []string{"first", "second", "third"},
 					},
 				},
 				TimeZones: []model.TimeZone{
