@@ -26,7 +26,7 @@ var testIcalInvalidEndInput string
 var testIcalContentAfterEndBlockInput string
 
 //go:embed test_data/test_event_duplicate_uid.ical
-var testIcalDuplicateUidInput string
+var testIcalDuplicateUIDInput string
 
 func TestParse(t *testing.T) {
 	testCases := []struct {
@@ -127,7 +127,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name:             "Duplicate UID",
-			input:            testIcalDuplicateUidInput,
+			input:            testIcalDuplicateUIDInput,
 			expectedCalendar: nil,
 			expectedError:    errDuplicateProperty,
 		},
