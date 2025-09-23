@@ -60,9 +60,14 @@ type Event struct {
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.2.7
 	Transp EventTransp
 
+	// Geo specifies the latitude and longitude of the activity specified by a calendar component
+	// Can be specified in Events and Todos
+	// Must be precise up to 6 decimal places
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.6
+	Geo []float64
+
 	Contact
 	Sequence
 	LastModified
 	Categories
-	Geo []float64
 }
