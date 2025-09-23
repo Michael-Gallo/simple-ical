@@ -28,6 +28,9 @@ var testIcalContentAfterEndBlockInput string
 //go:embed test_data/test_event_duplicate_uid.ical
 var testIcalDuplicateUIDInput string
 
+//go:embed test_data/test_event_duplicate_sequence.ical
+var testIcalDuplicateSequenceInput string
+
 func TestParse(t *testing.T) {
 	testCases := []struct {
 		name             string
@@ -55,7 +58,7 @@ func TestParse(t *testing.T) {
 							CalAddress: &url.URL{Scheme: "mailto", Opaque: "hello@world"},
 						},
 						Status:       model.EventStatusConfirmed,
-						Sequence:     0,
+						Sequence:     1,
 						Transp:       model.EventTranspOpaque,
 						Contact:      "Jim Dolittle, ABC Industries, +1-919-555-1234",
 						LastModified: time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
@@ -128,6 +131,12 @@ func TestParse(t *testing.T) {
 		{
 			name:             "Duplicate UID",
 			input:            testIcalDuplicateUIDInput,
+			expectedCalendar: nil,
+			expectedError:    errDuplicateProperty,
+		},
+		{
+			name:             "Duplicate sequence",
+			input:            testIcalDuplicateSequenceInput,
 			expectedCalendar: nil,
 			expectedError:    errDuplicateProperty,
 		},

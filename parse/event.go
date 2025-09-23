@@ -50,11 +50,7 @@ func parseEventProperty(line string, event *model.Event) error {
 	case model.EventTokenTransp:
 		event.Transp = model.EventTransp(value)
 	case model.EventTokenSequence:
-		sequence, err := strconv.Atoi(value)
-		if err != nil {
-			return errInvalidEventPropertySequence
-		}
-		event.Sequence = sequence
+		return setOnceIntProperty(&event.Sequence, value, baseProperty, errInvalidEventPropertySequence)
 	case model.EventTokenOrganizer:
 		organizer, err := parseOrganizer(line)
 		if err != nil {
@@ -64,6 +60,18 @@ func parseEventProperty(line string, event *model.Event) error {
 	default:
 		return fmt.Errorf("%w: %s", errInvalidEventProperty, baseProperty)
 	}
+	return nil
+}
+
+func setOnceIntProperty(field *int, value, propertyName string, parseError error) error {
+	if *field != 0 {
+		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
+	}
+	parsedValue, err := strconv.Atoi(value)
+	if err != nil {
+		return parseError
+	}
+	*field = parsedValue
 	return nil
 }
 
