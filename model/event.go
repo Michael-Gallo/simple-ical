@@ -64,4 +64,5 @@ type Event struct {
 	Sequence
 	LastModified
 	Categories
+	Geo []float64
 }

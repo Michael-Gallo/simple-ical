@@ -62,3 +62,9 @@ type Attendee = url.URL
 // Can be specified in Events, Todos, and Journals
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.2
 type Categories = []string
+
+// Geo specifies the latitude and longitude of the activity specified by a calendar component
+// Can be specified in Events and Todos
+// Must be precise up to 6 decimal places
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.6
+type Geo = []float64

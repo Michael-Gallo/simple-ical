@@ -64,6 +64,7 @@ func TestParse(t *testing.T) {
 						Contact:      "Jim Dolittle, ABC Industries, +1-919-555-1234",
 						LastModified: time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
 						Categories:   []string{"first", "second", "third"},
+						Geo:          []float64{37.386013, -122.082932},
 					},
 				},
 				TimeZones: []model.TimeZone{

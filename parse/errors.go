@@ -28,6 +28,11 @@ var (
 	errInvalidDatePropertyDTStamp        = errors.New("invalid date property in iCal Event: DTSTAMP")
 	errInvalidDatePropertyLastModified   = errors.New("invalid date property in iCal Event: LAST-MODIFIED")
 	errDuplicateProperty                 = errors.New("duplicate property")
+
 	// errInvalidProtocol is one of the errors that could be returned when parsing a URI with the standard library.
 	errInvalidProtocol = errors.New("parse \"://invalid\": missing protocol scheme")
+
+	errInvalidGeoProperty          = errors.New("invalid event property in iCal Event: GEO must be two floats separated by a semicolon")
+	errInvalidGeoPropertyLatitude  = errors.New("invalid latitude in iCal Event: GEO must be a float")
+	errInvalidGeoPropertyLongitude = errors.New("invalid longitude in iCal Event: GEO must be a float")
 )

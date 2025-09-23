@@ -61,6 +61,24 @@ func parseEventProperty(line string, event *model.Event) error {
 		event.Comment = append(event.Comment, value)
 	case model.EventTokenCategories:
 		event.Categories = append(event.Categories, strings.Split(value, ",")...)
+	case model.EventTokenGeo:
+		if event.Geo != nil {
+			return fmt.Errorf("%w: %s", errDuplicateProperty, baseProperty)
+		}
+		// Geo must be two floats separted by a colon
+		geo := strings.Split(value, ";")
+		if len(geo) != 2 {
+			return errInvalidGeoProperty
+		}
+		latitude, err := strconv.ParseFloat(geo[0], 64)
+		if err != nil {
+			return errInvalidGeoPropertyLatitude
+		}
+		longitude, err := strconv.ParseFloat(geo[1], 64)
+		if err != nil {
+			return errInvalidGeoPropertyLongitude
+		}
+		event.Geo = append(event.Geo, latitude, longitude)
 	default:
 		return fmt.Errorf("%w: %s", errInvalidEventProperty, baseProperty)
 	}
