@@ -26,60 +26,66 @@ func parseEventProperty(line string, event *model.Event) error {
 
 	switch model.EventToken(baseProperty) {
 	case model.EventTokenDtstart:
-		parsedTime, err := time.Parse(iCalDateTimeFormat, value)
-		if err != nil {
-			return errInvalidDatePropertyDtstart
-		}
-		event.Start = parsedTime
+		return setOnceTimeProperty(&event.Start, value, baseProperty, errInvalidDatePropertyDtstart)
 	case model.EventTokenDTStamp:
-		parsedTime, err := time.Parse(iCalDateTimeFormat, value)
-		if err != nil {
-			return errInvalidDatePropertyDTStamp
-		}
-		event.DTStamp = parsedTime
+		return setOnceTimeProperty(&event.DTStamp, value, baseProperty, errInvalidDatePropertyDTStamp)
 	case model.EventTokenDtend:
-		parsedTime, err := time.Parse(iCalDateTimeFormat, value)
-		if err != nil {
-			return errInvalidDatePropertyDtend
-		}
-
-		event.End = parsedTime
+		return setOnceTimeProperty(&event.End, value, baseProperty, errInvalidDatePropertyDtend)
+	case model.EventTokenLastModified:
+		return setOnceTimeProperty(&event.LastModified, value, baseProperty, errInvalidDatePropertyLastModified)
 
 	case model.EventTokenSummary:
-		event.Summary = value
+		return setOnceStringProperty(&event.Summary, value, baseProperty)
 	case model.EventTokenDescription:
-		event.Description = value
+		return setOnceStringProperty(&event.Description, value, baseProperty)
 	case model.EventTokenLocation:
-		event.Location = value
+		return setOnceStringProperty(&event.Location, value, baseProperty)
+	case model.EventTokenUID:
+		return setOnceStringProperty(&event.UID, value, baseProperty)
+	case model.EventTokenContact:
+		return setOnceStringProperty(&event.Contact, value, baseProperty)
+
 	case model.EventTokenStatus:
 		event.Status = model.EventStatus(value)
-	case model.EventTokenOrganizer:
-		organizer, err := parseOrganizer(line)
-		if err != nil {
-			return err
-		}
-		event.Organizer = organizer
-	case model.EventTokenUID:
-		event.UID = value
+	case model.EventTokenTransp:
+		event.Transp = model.EventTransp(value)
 	case model.EventTokenSequence:
 		sequence, err := strconv.Atoi(value)
 		if err != nil {
 			return errInvalidEventPropertySequence
 		}
 		event.Sequence = sequence
-	case model.EventTokenTransp:
-		event.Transp = model.EventTransp(value)
-	case model.EventTokenContact:
-		event.Contact = value
-	case model.EventTokenLastModified:
-		lastModified, err := time.Parse(iCalDateTimeFormat, value)
+	case model.EventTokenOrganizer:
+		organizer, err := parseOrganizer(line)
 		if err != nil {
-			return errInvalidDatePropertyLastModified
+			return err
 		}
-		event.LastModified = lastModified
+		event.Organizer = organizer
 	default:
 		return fmt.Errorf("%w: %s", errInvalidEventProperty, baseProperty)
 	}
+	return nil
+}
+
+// setOnceTimeProperty sets a time.Time field only if it hasn't been set before.
+func setOnceTimeProperty(field *time.Time, value, propertyName string, parseError error) error {
+	if *field != (time.Time{}) {
+		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
+	}
+	parsedTime, err := time.Parse(iCalDateTimeFormat, value)
+	if err != nil {
+		return parseError
+	}
+	*field = parsedTime
+	return nil
+}
+
+// setOnceStringProperty sets a string field only if it hasn't been set before.
+func setOnceStringProperty(field *string, value, propertyName string) error {
+	if *field != "" {
+		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
+	}
+	*field = value
 	return nil
 }
 
