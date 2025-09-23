@@ -37,4 +37,5 @@ const (
 	EventTokenDTStamp      EventToken = "DTSTAMP"
 	EventTokenContact      EventToken = "CONTACT"
 	EventTokenLastModified EventToken = "LAST-MODIFIED"
+	EventTokenComment      EventToken = "COMMENT"
 )
