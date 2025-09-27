@@ -12,10 +12,12 @@ import (
 var errDuplicatePropertyInComponent = errors.New("duplicate property error")
 var errParseErrorInComponent = errors.New("parse error in component")
 
+const errDuplicatePropertyInComponentFormat = "%w: %s set twice in component %s"
+
 func setOnceProperty[T comparable](field *T, value T, propertyName string, componentType string) error {
 	var zero T
 	if *field != zero {
-		return fmt.Errorf("%w: %s set twice in component %s", errDuplicatePropertyInComponent, propertyName, componentType)
+		return fmt.Errorf(errDuplicatePropertyInComponentFormat, errDuplicatePropertyInComponent, propertyName, componentType)
 	}
 	*field = value
 	return nil

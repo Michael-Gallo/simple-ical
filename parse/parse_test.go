@@ -2,6 +2,7 @@ package parse
 
 import (
 	_ "embed"
+	"fmt"
 	"net/url"
 	"testing"
 	"time"
@@ -150,7 +151,7 @@ func TestParse(t *testing.T) {
 			name:             "Duplicate sequence",
 			input:            testIcalDuplicateSequenceInput,
 			expectedCalendar: nil,
-			expectedError:    errDuplicateProperty,
+			expectedError:    fmt.Errorf(errDuplicatePropertyInComponentFormat, errDuplicatePropertyInComponent, model.EventTokenSequence, eventLocation),
 		},
 		{
 			name:             "Both duration and end date are specified, DTEND first",
@@ -168,7 +169,7 @@ func TestParse(t *testing.T) {
 			name:             "Missing colon in event property line",
 			input:            testIcalMissingColonInput,
 			expectedCalendar: nil,
-			expectedError:    errInvalidPropertyLine,
+			expectedError:    fmt.Errorf("%w: %s", errInvalidPropertyLine, "STATUSCONFIRMED"),
 		},
 	}
 
