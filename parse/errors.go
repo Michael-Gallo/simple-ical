@@ -38,3 +38,11 @@ var (
 	errInvalidGeoPropertyLatitude  = errors.New("invalid latitude in iCal Event: GEO must be a float")
 	errInvalidGeoPropertyLongitude = errors.New("invalid longitude in iCal Event: GEO must be a float")
 )
+
+// Property Setter errors.
+const errDuplicatePropertyInComponentFormat = "%w: %s set twice in component %s"
+
+var (
+	errDuplicatePropertyInComponent = errors.New("duplicate property error")
+	errParseErrorInComponent        = errors.New("parse error in component")
+)

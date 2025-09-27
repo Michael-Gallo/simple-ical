@@ -1,18 +1,12 @@
 package parse
 
 import (
-	"errors"
 	"fmt"
 	"strconv"
 	"time"
 
 	"github.com/michael-gallo/simple-ical/icaldur"
 )
-
-var errDuplicatePropertyInComponent = errors.New("duplicate property error")
-var errParseErrorInComponent = errors.New("parse error in component")
-
-const errDuplicatePropertyInComponentFormat = "%w: %s set twice in component %s"
 
 func setOnceProperty[T comparable](field *T, value T, propertyName string, componentType string) error {
 	var zero T
