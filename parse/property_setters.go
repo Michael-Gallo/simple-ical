@@ -8,6 +8,8 @@ import (
 	"github.com/michael-gallo/simple-ical/icaldur"
 )
 
+// setOnceIntProperty sets an int field only if it hasn't been set before.
+// this is intended for properties that according to the spec must only be set once
 func setOnceIntProperty(field *int, value, propertyName string, parseError error) error {
 	if *field != 0 {
 		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
@@ -21,6 +23,7 @@ func setOnceIntProperty(field *int, value, propertyName string, parseError error
 }
 
 // setOnceTimeProperty sets a time.Time field only if it hasn't been set before.
+// this is intended for properties that according to the spec must only be set once
 func setOnceTimeProperty(field *time.Time, value, propertyName string, parseError error) error {
 	if *field != (time.Time{}) {
 		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
@@ -34,6 +37,7 @@ func setOnceTimeProperty(field *time.Time, value, propertyName string, parseErro
 }
 
 // setOnceStringProperty sets a string field only if it hasn't been set before.
+// this is intended for properties that according to the spec must only be set once
 func setOnceStringProperty(field *string, value, propertyName string) error {
 	if *field != "" {
 		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
@@ -43,6 +47,7 @@ func setOnceStringProperty(field *string, value, propertyName string) error {
 }
 
 // setOnceDurationProperty sets a duration field only if it hasn't been set before.
+// this is intended for properties that according to the spec must only be set once
 func setOnceDurationProperty(field *time.Duration, value, propertyName string, parseError error) error {
 	if *field != 0 {
 		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
