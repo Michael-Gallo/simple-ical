@@ -38,3 +38,12 @@ func TestParseICalDuration(t *testing.T) {
 		assert.Equal(t, test.want, got)
 	}
 }
+
+func BenchmarkParseICalDuration(b *testing.B) {
+	for b.Loop() {
+		_, err := ParseICalDuration("P15DT5H0M20S")
+		if err != nil {
+			b.Fatal(err)
+		}
+	}
+}

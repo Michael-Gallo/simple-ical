@@ -45,9 +45,10 @@ func ParseICalDuration(s string) (time.Duration, error) {
 	i := 0
 
 	// Optional sign
-	if s[i] == '+' {
+	switch s[i] {
+	case '+':
 		i++
-	} else if s[i] == '-' {
+	case '-':
 		sign = -1
 		i++
 	}
