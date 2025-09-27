@@ -31,6 +31,12 @@ var testIcalDuplicateUIDInput string
 //go:embed test_data/test_event_duplicate_sequence.ical
 var testIcalDuplicateSequenceInput string
 
+//go:embed test_data/test_event_both_duration_and_end.ical
+var testIcalBothDurationAndEndInput string
+
+//go:embed test_data/test_event_both_duration_and_end_duration_first.ical
+var testIcalBothDurationAndEndDurationFirstInput string
+
 func TestParse(t *testing.T) {
 	testCases := []struct {
 		name             string
@@ -142,6 +148,18 @@ func TestParse(t *testing.T) {
 			input:            testIcalDuplicateSequenceInput,
 			expectedCalendar: nil,
 			expectedError:    errDuplicateProperty,
+		},
+		{
+			name:             "Both duration and end date are specified, DTEND first",
+			input:            testIcalBothDurationAndEndInput,
+			expectedCalendar: nil,
+			expectedError:    errInvalidDurationPropertyDtend,
+		},
+		{
+			name:             "Both duration and end date are specified, DURATION first",
+			input:            testIcalBothDurationAndEndDurationFirstInput,
+			expectedCalendar: nil,
+			expectedError:    errInvalidDurationPropertyDtend,
 		},
 	}
 

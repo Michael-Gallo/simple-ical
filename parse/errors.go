@@ -28,6 +28,8 @@ var (
 	errInvalidDatePropertyDTStamp        = errors.New("invalid date property in iCal Event: DTSTAMP")
 	errInvalidDatePropertyLastModified   = errors.New("invalid date property in iCal Event: LAST-MODIFIED")
 	errDuplicateProperty                 = errors.New("duplicate property")
+	errInvalidDurationProperty           = errors.New("invalid duration property in iCal Event: DURATION")
+	errInvalidDurationPropertyDtend      = errors.New("invalid duration property in iCal Event: DTEND and DURATION are mutually exclusive")
 
 	// errInvalidProtocol is one of the errors that could be returned when parsing a URI with the standard library.
 	errInvalidProtocol = errors.New("parse \"://invalid\": missing protocol scheme")

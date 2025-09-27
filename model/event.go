@@ -40,9 +40,16 @@ type Event struct {
 	// dtstart in the ICAL format
 	// See the datetime specification for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.5
 	Start time.Time
+
 	// dtend in the ICAL format
+	// Can not be specified if a Duration is specified
 	// See the datetime specification for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.5
 	End time.Time
+
+	// The event's duration
+	// Can not be specified if an End time is specified
+	// See the Duration specficiation for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.6
+	Duration time.Duration
 	// The location where the event takes place.
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.7
 	Location string

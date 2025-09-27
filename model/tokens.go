@@ -39,5 +39,6 @@ const (
 	EventTokenLastModified EventToken = "LAST-MODIFIED"
 	EventTokenComment      EventToken = "COMMENT"
 	EventTokenCategories   EventToken = "CATEGORIES"
+	EventTokenDuration     EventToken = "DURATION"
 	EventTokenGeo          EventToken = "GEO"
 )

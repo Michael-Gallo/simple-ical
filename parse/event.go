@@ -7,6 +7,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/michael-gallo/simple-ical/icaldur"
 	"github.com/michael-gallo/simple-ical/model"
 )
 
@@ -29,8 +30,18 @@ func parseEventProperty(line string, event *model.Event) error {
 		return setOnceTimeProperty(&event.Start, value, baseProperty, errInvalidDatePropertyDtstart)
 	case model.EventTokenDTStamp:
 		return setOnceTimeProperty(&event.DTStamp, value, baseProperty, errInvalidDatePropertyDTStamp)
+
+	// End and Duration are mutually exclusive
 	case model.EventTokenDtend:
+		if event.Duration != 0 {
+			return errInvalidDurationPropertyDtend
+		}
 		return setOnceTimeProperty(&event.End, value, baseProperty, errInvalidDatePropertyDtend)
+	case model.EventTokenDuration:
+		if event.End != (time.Time{}) {
+			return errInvalidDurationPropertyDtend
+		}
+		return setOnceDurationProperty(&event.Duration, value, baseProperty, errInvalidDurationProperty)
 	case model.EventTokenLastModified:
 		return setOnceTimeProperty(&event.LastModified, value, baseProperty, errInvalidDatePropertyLastModified)
 
@@ -116,6 +127,19 @@ func setOnceStringProperty(field *string, value, propertyName string) error {
 		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
 	}
 	*field = value
+	return nil
+}
+
+// setOnceDurationProperty sets a duration field only if it hasn't been set before.
+func setOnceDurationProperty(field *time.Duration, value, propertyName string, parseError error) error {
+	if *field != 0 {
+		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
+	}
+	parsedDuration, err := icaldur.ParseICalDuration(value)
+	if err != nil {
+		return parseError
+	}
+	*field = parsedDuration
 	return nil
 }
 
