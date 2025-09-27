@@ -1,6 +1,7 @@
 package parse
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -8,54 +9,44 @@ import (
 	"github.com/michael-gallo/simple-ical/icaldur"
 )
 
-// setOnceIntProperty sets an int field only if it hasn't been set before.
-// this is intended for properties that according to the spec must only be set once
-func setOnceIntProperty(field *int, value, propertyName string, parseError error) error {
-	if *field != 0 {
-		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
-	}
-	parsedValue, err := strconv.Atoi(value)
-	if err != nil {
-		return parseError
-	}
-	*field = parsedValue
-	return nil
-}
+var errDuplicatePropertyInComponent = errors.New("duplicate property error")
+var errParseErrorInComponent = errors.New("parse error in component")
 
-// setOnceTimeProperty sets a time.Time field only if it hasn't been set before.
-// this is intended for properties that according to the spec must only be set once
-func setOnceTimeProperty(field *time.Time, value, propertyName string, parseError error) error {
-	if *field != (time.Time{}) {
-		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
-	}
-	parsedTime, err := time.Parse(iCalDateTimeFormat, value)
-	if err != nil {
-		return parseError
-	}
-	*field = parsedTime
-	return nil
-}
-
-// setOnceStringProperty sets a string field only if it hasn't been set before.
-// this is intended for properties that according to the spec must only be set once
-func setOnceStringProperty(field *string, value, propertyName string) error {
-	if *field != "" {
-		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
+func setOnceProperty[T comparable](field *T, value T, propertyName string, componentType string) error {
+	var zero T
+	if *field != zero {
+		return fmt.Errorf("%w: %s set twice in component %s", errDuplicatePropertyInComponent, propertyName, componentType)
 	}
 	*field = value
 	return nil
 }
 
+// setOnceIntProperty sets an int field only if it hasn't been set before.
+// this is intended for properties that according to the spec must only be set once
+func setOnceIntProperty(field *int, value, propertyName string, componentType string) error {
+	parsedValue, err := strconv.Atoi(value)
+	if err != nil {
+		return fmt.Errorf("%w: %s property %s in iCal", errParseErrorInComponent, componentType, propertyName)
+	}
+	return setOnceProperty(field, parsedValue, propertyName, componentType)
+}
+
+// setOnceTimeProperty sets a time.Time field only if it hasn't been set before.
+// this is intended for properties that according to the spec must only be set once
+func setOnceTimeProperty(field *time.Time, value, propertyName string, componentType string) error {
+	parsedTime, err := time.Parse(iCalDateTimeFormat, value)
+	if err != nil {
+		return fmt.Errorf("%w: %s property %s in iCal", errParseErrorInComponent, componentType, propertyName)
+	}
+	return setOnceProperty(field, parsedTime, propertyName, componentType)
+}
+
 // setOnceDurationProperty sets a duration field only if it hasn't been set before.
 // this is intended for properties that according to the spec must only be set once
-func setOnceDurationProperty(field *time.Duration, value, propertyName string, parseError error) error {
-	if *field != 0 {
-		return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
-	}
+func setOnceDurationProperty(field *time.Duration, value, propertyName string, componentType string) error {
 	parsedDuration, err := icaldur.ParseICalDuration(value)
 	if err != nil {
-		return parseError
+		return fmt.Errorf("%w: %s property %s in iCal", errParseErrorInComponent, componentType, propertyName)
 	}
-	*field = parsedDuration
-	return nil
+	return setOnceProperty(field, parsedDuration, propertyName, componentType)
 }

@@ -28,17 +28,9 @@ var (
 var (
 	errInvalidEventPropertyLineMissingColon = errors.New("invalid event property line missing colon in line")
 	errInvalidEventProperty                 = errors.New("invalid event property")
-	errInvalidEventPropertySequence         = errors.New("invalid event property in iCal Event: SEQUENCE must be an integer")
 	errLineShouldStartWithOrganizer         = errors.New("line should start with ORGANIZER")
 
-	// Event date/time property errors.
-	errInvalidDatePropertyDtstart      = errors.New("invalid date property in iCal Event: DTSTART")
-	errInvalidDatePropertyDtend        = errors.New("invalid date property in iCal Event: DTEND")
-	errInvalidDatePropertyDTStamp      = errors.New("invalid date property in iCal Event: DTSTAMP")
-	errInvalidDatePropertyLastModified = errors.New("invalid date property in iCal Event: LAST-MODIFIED")
-
 	// Event duration property errors.
-	errInvalidDurationProperty      = errors.New("invalid duration property in iCal Event: DURATION")
 	errInvalidDurationPropertyDtend = errors.New("invalid duration property in iCal Event: DTEND and DURATION are mutually exclusive")
 
 	// Event geographic property errors.

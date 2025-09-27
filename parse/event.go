@@ -10,6 +10,8 @@ import (
 	"github.com/michael-gallo/simple-ical/model"
 )
 
+const eventLocation = "Event"
+
 // parseEventProperty parses a single property line and adds it to the provided vevent.
 func parseEventProperty(line string, event *model.Event) error {
 	property, value, ok := strings.Cut(line, ":")
@@ -22,41 +24,41 @@ func parseEventProperty(line string, event *model.Event) error {
 
 	switch model.EventToken(baseProperty) {
 	case model.EventTokenDtstart:
-		return setOnceTimeProperty(&event.Start, value, baseProperty, errInvalidDatePropertyDtstart)
+		return setOnceTimeProperty(&event.Start, value, baseProperty, eventLocation)
 	case model.EventTokenDTStamp:
-		return setOnceTimeProperty(&event.DTStamp, value, baseProperty, errInvalidDatePropertyDTStamp)
+		return setOnceTimeProperty(&event.DTStamp, value, baseProperty, eventLocation)
 
 	// End and Duration are mutually exclusive
 	case model.EventTokenDtend:
 		if event.Duration != 0 {
 			return errInvalidDurationPropertyDtend
 		}
-		return setOnceTimeProperty(&event.End, value, baseProperty, errInvalidDatePropertyDtend)
+		return setOnceTimeProperty(&event.End, value, baseProperty, eventLocation)
 	case model.EventTokenDuration:
 		if event.End != (time.Time{}) {
 			return errInvalidDurationPropertyDtend
 		}
-		return setOnceDurationProperty(&event.Duration, value, baseProperty, errInvalidDurationProperty)
+		return setOnceDurationProperty(&event.Duration, value, baseProperty, eventLocation)
 	case model.EventTokenLastModified:
-		return setOnceTimeProperty(&event.LastModified, value, baseProperty, errInvalidDatePropertyLastModified)
+		return setOnceTimeProperty(&event.LastModified, value, baseProperty, eventLocation)
 
 	case model.EventTokenSummary:
-		return setOnceStringProperty(&event.Summary, value, baseProperty)
+		return setOnceProperty(&event.Summary, value, baseProperty, eventLocation)
 	case model.EventTokenDescription:
-		return setOnceStringProperty(&event.Description, value, baseProperty)
+		return setOnceProperty(&event.Description, value, baseProperty, eventLocation)
 	case model.EventTokenLocation:
-		return setOnceStringProperty(&event.Location, value, baseProperty)
+		return setOnceProperty(&event.Location, value, baseProperty, eventLocation)
 	case model.EventTokenUID:
-		return setOnceStringProperty(&event.UID, value, baseProperty)
+		return setOnceProperty(&event.UID, value, baseProperty, eventLocation)
 	case model.EventTokenContact:
-		return setOnceStringProperty(&event.Contact, value, baseProperty)
+		return setOnceProperty(&event.Contact, value, baseProperty, eventLocation)
 
 	case model.EventTokenStatus:
 		event.Status = model.EventStatus(value)
 	case model.EventTokenTransp:
 		event.Transp = model.EventTransp(value)
 	case model.EventTokenSequence:
-		return setOnceIntProperty(&event.Sequence, value, baseProperty, errInvalidEventPropertySequence)
+		return setOnceIntProperty(&event.Sequence, value, baseProperty, eventLocation)
 	case model.EventTokenOrganizer:
 		organizer, err := parseOrganizer(line)
 		if err != nil {

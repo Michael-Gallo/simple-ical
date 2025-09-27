@@ -126,13 +126,13 @@ func TestParse(t *testing.T) {
 			name:             "Invalid start date",
 			input:            testIcalInvalidStartInput,
 			expectedCalendar: nil,
-			expectedError:    errInvalidDatePropertyDtstart,
+			expectedError:    errParseErrorInComponent,
 		},
 		{
 			name:             "Invalid end date",
 			input:            testIcalInvalidEndInput,
 			expectedCalendar: nil,
-			expectedError:    errInvalidDatePropertyDtend,
+			expectedError:    errParseErrorInComponent,
 		},
 		{
 			name:             "Content after END:VCALENDAR",
