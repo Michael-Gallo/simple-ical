@@ -11,34 +11,34 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//go:embed test_data/test_event.ical
+//go:embed test_data/events/test_event.ical
 var testIcalInput string
 
-//go:embed test_data/test_event_invalid_organizer.ical
+//go:embed test_data/events/test_event_invalid_organizer.ical
 var testIcalInvalidOrganizerInput string
 
-//go:embed test_data/test_event_invalid_start.ical
+//go:embed test_data/events/test_event_invalid_start.ical
 var testIcalInvalidStartInput string
 
-//go:embed test_data/test_event_invalid_end.ical
+//go:embed test_data/events/test_event_invalid_end.ical
 var testIcalInvalidEndInput string
 
-//go:embed test_data/test_event_content_after_end_block.ical
+//go:embed test_data/events/test_event_content_after_end_block.ical
 var testIcalContentAfterEndBlockInput string
 
-//go:embed test_data/test_event_duplicate_uid.ical
+//go:embed test_data/events/test_event_duplicate_uid.ical
 var testIcalDuplicateUIDInput string
 
-//go:embed test_data/test_event_duplicate_sequence.ical
+//go:embed test_data/events/test_event_duplicate_sequence.ical
 var testIcalDuplicateSequenceInput string
 
-//go:embed test_data/test_event_both_duration_and_end.ical
+//go:embed test_data/events/test_event_both_duration_and_end.ical
 var testIcalBothDurationAndEndInput string
 
-//go:embed test_data/test_event_both_duration_and_end_duration_first.ical
+//go:embed test_data/events/test_event_both_duration_and_end_duration_first.ical
 var testIcalBothDurationAndEndDurationFirstInput string
 
-//go:embed test_data/test_event_missing_colon.ical
+//go:embed test_data/events/test_event_missing_colon.ical
 var testIcalMissingColonInput string
 
 func TestParse(t *testing.T) {
