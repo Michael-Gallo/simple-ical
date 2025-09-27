@@ -7,12 +7,6 @@ package parse
 import "errors"
 
 var (
-	//nolint:godot
-	// errNoVEventFound                     = errors.New("no VEVENT found in iCal data")
-	// errInvalidDateFormat                 = errors.New("invalid date format in iCal data")
-	// errMissingDTSTART                    = errors.New("missing DTSTART in VEVENT")
-	// errMissingDTEND                      = errors.New("missing DTEND in VEVENT")
-	// errInvalidTimeFormat                 = errors.New("invalid time format in iCal data")
 	errInvalidDatePropertyDtstart        = errors.New("invalid date property in iCal Event: DTSTART")
 	errInvalidDatePropertyDtend          = errors.New("invalid date property in iCal Event: DTEND")
 	errInvalidEventProperty              = errors.New("invalid event property")
