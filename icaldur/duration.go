@@ -23,6 +23,14 @@ var (
 	ErrDuplicateUnit  = errors.New("duplicate time unit")
 )
 
+// ParseICalDuration parses an iCal duration string according to RFC 5545 section 3.3.6 into a time.Duration.
+// The string can be prefixed with a + or - sign to indicate a positive or negative duration
+// The string can contain the following units:
+// - D: days
+// - H: hours
+// - M: minutes
+// - S: seconds
+// - W: weeks.
 func ParseICalDuration(s string) (time.Duration, error) {
 	if len(s) == 0 {
 		return 0, ErrEmpty
