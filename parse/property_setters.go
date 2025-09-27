@@ -16,6 +16,7 @@ func parseIcalTime(value string) (time.Time, error) {
 	return time.Parse(iCalDateTimeFormat, value)
 }
 
+// setOncePropertyWithParse ensures that set-once properties that require string parsing have consistent error handling
 func setOncePropertyWithParse[T comparable](field *T, value string, propertyName string, componentType string, parseFunc func(string) (T, error)) error {
 	parsedValue, err := parseFunc(value)
 	if err != nil {
@@ -24,6 +25,7 @@ func setOncePropertyWithParse[T comparable](field *T, value string, propertyName
 	return setOnceProperty(field, parsedValue, propertyName, componentType)
 }
 
+// setOnceProperty ensures that set-once properties have consistent error handling
 func setOnceProperty[T comparable](field *T, value T, propertyName string, componentType string) error {
 	var zero T
 	if *field != zero {
