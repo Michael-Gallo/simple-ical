@@ -8,11 +8,6 @@ linters-settings:
     locale: US
   lll:
     line-length: 120
-  godot:
-    scope: declarations
-    exclude:
-    period: true
-    capital: false
 
 linters:
   enable:
@@ -24,7 +19,6 @@ linters:
     - gosec
     - goconst
     - gocritic
-    - godot
     - err113
     - nakedret
     - noctx
