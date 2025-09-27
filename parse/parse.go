@@ -126,7 +126,7 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 // parsePropertyLine parses a single property line and adds it to the appropriate component based on current state.
 func parsePropertyLine(line string, ctx *parseContext) error {
 	if !strings.Contains(line, ":") {
-		return errInvalidPropertyLine
+		return fmt.Errorf("%w: %s", errInvalidPropertyLine, line)
 	}
 
 	// Route to appropriate parser based on current state

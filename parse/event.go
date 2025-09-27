@@ -13,13 +13,10 @@ import (
 
 // parseEventProperty parses a single property line and adds it to the provided vevent.
 func parseEventProperty(line string, event *model.Event) error {
-	if !strings.Contains(line, ":") {
-		return errInvalidPropertyLine
-	}
 
 	property, value, ok := strings.Cut(line, ":")
 	if !ok {
-		return errInvalidPropertyLine
+		return fmt.Errorf("%w: %s", errInvalidEventPropertyLineMissingColon, line)
 	}
 
 	// Handle properties that might have parameters (like ORGANIZER;CN=...)

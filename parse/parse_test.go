@@ -37,6 +37,9 @@ var testIcalBothDurationAndEndInput string
 //go:embed test_data/test_event_both_duration_and_end_duration_first.ical
 var testIcalBothDurationAndEndDurationFirstInput string
 
+//go:embed test_data/test_event_missing_colon.ical
+var testIcalMissingColonInput string
+
 func TestParse(t *testing.T) {
 	testCases := []struct {
 		name             string
@@ -160,6 +163,12 @@ func TestParse(t *testing.T) {
 			input:            testIcalBothDurationAndEndDurationFirstInput,
 			expectedCalendar: nil,
 			expectedError:    errInvalidDurationPropertyDtend,
+		},
+		{
+			name:             "Missing colon in event property line",
+			input:            testIcalMissingColonInput,
+			expectedCalendar: nil,
+			expectedError:    errInvalidPropertyLine,
 		},
 	}
 
