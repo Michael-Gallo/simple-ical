@@ -14,10 +14,6 @@ import (
 	"github.com/michael-gallo/simple-ical/model"
 )
 
-// iCalDateTimeFormat represents the standard iCal datetime format
-// Format: YYYYMMDDTHHMMSSZ (e.g., 20250928T183000Z).
-const iCalDateTimeFormat = "20060102T150405Z"
-
 // stateMachine tracks where the parser is in a vcalendar file.
 type stateMachine struct {
 	inEvent    bool
