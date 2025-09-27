@@ -11,35 +11,36 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-//go:embed test_data/events/test_event.ical
-var testIcalInput string
+var (
 
-//go:embed test_data/events/test_event_invalid_organizer.ical
-var testIcalInvalidOrganizerInput string
+	//go:embed test_data/events/test_event.ical
+	testIcalInput string
+	//go:embed test_data/events/test_event_invalid_organizer.ical
+	testIcalInvalidOrganizerInput string
+	//go:embed test_data/events/test_event_invalid_start.ical
+	testIcalInvalidStartInput string
+	//go:embed test_data/events/test_event_invalid_end.ical
+	testIcalInvalidEndInput string
+	//go:embed test_data/events/test_event_content_after_end_block.ical
+	testIcalContentAfterEndBlockInput string
+	//go:embed test_data/events/test_event_duplicate_uid.ical
+	testIcalDuplicateUIDInput string
+	//go:embed test_data/events/test_event_duplicate_sequence.ical
+	testIcalDuplicateSequenceInput string
+	//go:embed test_data/events/test_event_both_duration_and_end.ical
+	testIcalBothDurationAndEndInput string
+	//go:embed test_data/events/test_event_both_duration_and_end_duration_first.ical
+	testIcalBothDurationAndEndDurationFirstInput string
+	//go:embed test_data/events/test_event_missing_colon.ical
+	testIcalMissingColonInput string
 
-//go:embed test_data/events/test_event_invalid_start.ical
-var testIcalInvalidStartInput string
-
-//go:embed test_data/events/test_event_invalid_end.ical
-var testIcalInvalidEndInput string
-
-//go:embed test_data/events/test_event_content_after_end_block.ical
-var testIcalContentAfterEndBlockInput string
-
-//go:embed test_data/events/test_event_duplicate_uid.ical
-var testIcalDuplicateUIDInput string
-
-//go:embed test_data/events/test_event_duplicate_sequence.ical
-var testIcalDuplicateSequenceInput string
-
-//go:embed test_data/events/test_event_both_duration_and_end.ical
-var testIcalBothDurationAndEndInput string
-
-//go:embed test_data/events/test_event_both_duration_and_end_duration_first.ical
-var testIcalBothDurationAndEndDurationFirstInput string
-
-//go:embed test_data/events/test_event_missing_colon.ical
-var testIcalMissingColonInput string
+	//go:embed test_data/empty_calendar.ical
+	testEmptyCalendarInput string
+	//go:embed test_data/no_begin_calendar.ical
+	testInvalidBeginCalendarInput string
+	//go:embed test_data/no_end_calendar.ical
+	testInvalidEndCalendarInput string
+)
 
 func TestParse(t *testing.T) {
 	testCases := []struct {
@@ -99,7 +100,7 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name:  "No VEVENT block",
-			input: "BEGIN:VCALENDAR\nVERSION:2.0\nEND:VCALENDAR",
+			input: testEmptyCalendarInput,
 			expectedCalendar: &model.Calendar{
 				Events: []model.Event{},
 			},
@@ -113,13 +114,13 @@ func TestParse(t *testing.T) {
 		},
 		{
 			name:             "Calendar with no BEGIN:VCALENDAR",
-			input:            "VERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\nMETHOD:REQUEST",
+			input:            testInvalidBeginCalendarInput,
 			expectedCalendar: nil,
 			expectedError:    errInvalidCalendarFormatMissingBegin,
 		},
 		{
 			name:             "Calendar with no END:VCALENDAR",
-			input:            "BEGIN:VCALENDAR\nVERSION:2.0\nPRODID:-//Event//Event Calendar//EN\nCALSCALE:GREGORIAN\nMETHOD:REQUEST\n",
+			input:            testInvalidEndCalendarInput,
 			expectedCalendar: nil,
 			expectedError:    errInvalidCalendarFormatMissingEnd,
 		},
