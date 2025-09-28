@@ -39,6 +39,14 @@ func TestParseIcalLine(t *testing.T) {
 			expectedValue:        "mailto:jdoe@example.com",
 			expectedError:        nil,
 		},
+		{
+			name:                 "valid Geo Line",
+			line:                 "GEO:37.386013;-122.082932",
+			expectedPropertyName: "GEO",
+			expectedParams:       nil,
+			expectedValue:        "37.386013;-122.082932",
+			expectedError:        nil,
+		},
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
