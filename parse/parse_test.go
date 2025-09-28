@@ -209,42 +209,39 @@ func TestParse(t *testing.T) {
 func TestParseOrganizer(t *testing.T) {
 	testCases := []struct {
 		name               string
-		line               string
+		value              string
+		params             []string
 		expectedURIScheme  string
 		expectedCommonName string
 		expectedError      error
 	}{
 		{
 			name:               "Valid organizer line",
-			line:               "ORGANIZER;CN=My Org:MAILTO:dc@example.com",
+			value:              "MAILTO:dc@example.com",
+			params:             []string{"CN=My Org"},
 			expectedCommonName: "My Org",
 			expectedURIScheme:  "mailto",
 			expectedError:      nil,
 		},
 		{
 			name:               "Valid organizer line with no common name",
-			line:               "ORGANIZER:MAILTO:dc@example.com",
+			value:              "MAILTO:dc@example.com",
 			expectedCommonName: "",
 			expectedURIScheme:  "mailto",
 			expectedError:      nil,
 		},
 		{
-			name:               "Invalid Organizer line",
-			line:               "Not a valid line",
-			expectedCommonName: "",
-			expectedURIScheme:  "",
-			expectedError:      errLineShouldStartWithOrganizer,
-		},
-		{
 			name:               "Mailto has a port",
-			line:               "ORGANIZER;CN=My Org:MAILTO:dc@example.com:8080",
+			value:              "MAILTO:dc@example.com:8080",
+			params:             []string{"CN=My Org"},
 			expectedCommonName: "My Org",
 			expectedURIScheme:  "mailto",
 			expectedError:      nil,
 		},
 		{
 			name:               "Valid organizer line with non MAILTO URI",
-			line:               "ORGANIZER;CN=My Org:http://www.ietf.org/rfc/rfc2396.txt",
+			value:              "http://www.ietf.org/rfc/rfc2396.txt",
+			params:             []string{"CN=My Org"},
 			expectedCommonName: "My Org",
 			expectedURIScheme:  "http",
 			expectedError:      nil,
@@ -253,7 +250,7 @@ func TestParseOrganizer(t *testing.T) {
 
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			organizer, err := parseOrganizer(testCase.line)
+			organizer, err := parseOrganizer(testCase.value, testCase.params)
 			if testCase.expectedError != nil {
 				assert.ErrorIs(t, err, testCase.expectedError)
 				assert.Nil(t, organizer)
@@ -274,8 +271,9 @@ func BenchmarkIcalString(b *testing.B) {
 }
 
 func BenchmarkParseOrganizer(b *testing.B) {
-	line := "ORGANIZER;CN=My Org:MAILTO:dc@example.com"
+	params := []string{"CN=My Org"}
+	value := "MAILTO:dc@example.com"
 	for b.Loop() {
-		_, _ = parseOrganizer(line)
+		_, _ = parseOrganizer(value, params)
 	}
 }

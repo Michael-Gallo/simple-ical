@@ -75,35 +75,38 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 
 	for scanner.Scan() {
 		line := strings.TrimSpace(scanner.Text())
+
 		if line == "" {
 			continue
 		}
-
-		// Handle BEGIN blocks
-		if beginValue, isBeginLine := strings.CutPrefix(line, "BEGIN:"); isBeginLine {
-			if err := handleBeginBlock(beginValue, ctx); err != nil {
-				return nil, err
-			}
-			continue
-		}
-
-		// Verify that this line is within a VCALENDAR
-		if !ctx.state.inCalendar {
-			return nil, errContentAfterEndBlock
-		}
-
-		// Handle END blocks
-		if endLineValue, isEndLine := strings.CutPrefix(line, "END:"); isEndLine {
-			if err := handleEndBlock(endLineValue, ctx, calendar); err != nil {
-				return nil, err
-			}
-			continue
-		}
-
-		// Process property lines based on current state
-		if err := parsePropertyLine(line, ctx); err != nil {
+		propertyName, params, value, err := parseIcalLine(line)
+		if err != nil {
 			return nil, err
 		}
+		switch propertyName {
+		case "BEGIN":
+			if err := handleBeginBlock(value, ctx); err != nil {
+				return nil, err
+			}
+			continue
+		case "END":
+			if !ctx.state.inCalendar {
+				return nil, errContentAfterEndBlock
+			}
+			if err := handleEndBlock(value, ctx, calendar); err != nil {
+				return nil, err
+			}
+			continue
+		default:
+			if !ctx.state.inCalendar {
+				return nil, errContentAfterEndBlock
+			}
+			if err := parsePropertyLine(propertyName, value, params, ctx); err != nil {
+				return nil, err
+			}
+			continue
+		}
+
 	}
 
 	// Check for scanner errors
@@ -120,20 +123,17 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 }
 
 // parsePropertyLine parses a single property line and adds it to the appropriate component based on current state.
-func parsePropertyLine(line string, ctx *parseContext) error {
-	if !strings.Contains(line, ":") {
-		return fmt.Errorf("%w: %s", errInvalidPropertyLine, line)
-	}
+func parsePropertyLine(propertyName string, value string, params []string, ctx *parseContext) error {
 
 	// Route to appropriate parser based on current state
 	if ctx.state.inEvent {
-		return parseEventProperty(line, ctx.currentEvent)
+		return parseEventProperty(propertyName, value, params, ctx.currentEvent)
 	}
 	if ctx.state.inTimezone {
-		return parseTimezoneProperty(line, ctx)
+		return parseTimezoneProperty(propertyName, value, params, ctx)
 	}
 	if ctx.state.inTodo {
-		return parseTodoProperty(line, ctx.currentTodo)
+		return parseTodoProperty(propertyName, value, params, ctx.currentTodo)
 	}
 	// Add more state checks as needed
 
