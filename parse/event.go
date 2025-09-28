@@ -48,7 +48,7 @@ func parseEventProperty(propertyName string, value string, params []string, even
 	case model.EventTokenStatus:
 		event.Status = model.EventStatus(value)
 	case model.EventTokenTransp:
-		event.Transp = model.EventTransp(value)
+		return setOnceProperty(&event.Transp, model.EventTransp(value), propertyName, eventLocation)
 	case model.EventTokenSequence:
 		return setOnceIntProperty(&event.Sequence, value, propertyName, eventLocation)
 	case model.EventTokenOrganizer:
@@ -88,6 +88,7 @@ func parseEventProperty(propertyName string, value string, params []string, even
 // parseOrganizer parses a calendar line starting with ORGANIZER.
 func parseOrganizer(value string, params []string) (*model.Organizer, error) {
 	organizer := &model.Organizer{}
+	// TODO: add more robust parameter parsing for organizer
 	if params != nil {
 		commonName, hasCommonName := strings.CutPrefix(params[0], "CN=")
 		if hasCommonName {
