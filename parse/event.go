@@ -66,15 +66,15 @@ func parseEventProperty(propertyName string, value string, params []string, even
 			return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
 		}
 		// Geo must be two floats separted by a colon
-		geo := strings.Split(value, ";")
-		if len(geo) != 2 {
+		latitudeString, longitudeString, found := strings.Cut(value, ";")
+		if !found {
 			return errInvalidGeoProperty
 		}
-		latitude, err := strconv.ParseFloat(geo[0], 64)
+		latitude, err := strconv.ParseFloat(latitudeString, 64)
 		if err != nil {
 			return errInvalidGeoPropertyLatitude
 		}
-		longitude, err := strconv.ParseFloat(geo[1], 64)
+		longitude, err := strconv.ParseFloat(longitudeString, 64)
 		if err != nil {
 			return errInvalidGeoPropertyLongitude
 		}
