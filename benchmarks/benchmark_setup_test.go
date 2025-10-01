@@ -26,6 +26,7 @@ func BenchmarkAll(b *testing.B) {
 		for b.Loop() {
 			reader.Reset(fileContent)
 			c := gocal.NewParser(&reader)
+			c.SkipBounds = true // Parse all events regardless of date
 			err := c.Parse()
 			if err != nil {
 				panic(err)
