@@ -43,7 +43,8 @@ func parseEventProperty(propertyName string, value string, params []string, even
 	case model.EventTokenUID:
 		return setOnceProperty(&event.UID, value, propertyName, eventLocation)
 	case model.EventTokenContact:
-		return setOnceProperty(&event.Contact, value, propertyName, eventLocation)
+		event.Contacts = append(event.Contacts, value)
+		return nil
 
 	case model.EventTokenStatus:
 		event.Status = model.EventStatus(value)

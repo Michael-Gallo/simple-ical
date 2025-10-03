@@ -6,7 +6,6 @@ package model
 
 import (
 	"net/url"
-	"time"
 )
 
 // Organizer represents an ORGANIZER component in the iCalendar format, used in VEVENT, VTODO, and VJOURNAL
@@ -20,45 +19,3 @@ type Organizer struct {
 	// denoted by DIR= in the spec
 	Directory string
 }
-
-// BaseComponent represents common fields found in all top level calendar components.
-type BaseComponent struct {
-
-	// a DTSTAMP property defines the date and time that the instance of the calendar component was created.
-	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.2
-	// Note: This is technically mandatory in the spec, however I have seen examples in the wild where it is not present.
-	// I will not be enforcing this requirement in the parser. I may at some point in the future add a strict mode.
-	DTStamp time.Time
-
-	// The unique identifier for the event.
-	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.7
-	UID string
-
-	// Comment specifies non-processing information intended to provide a comment to the calendar user.
-	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.4
-	Comment []string
-}
-
-// Contact is used to represent contact information
-// Can be specified in Events, Todos, Journals, and FreeBusy Components
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.2
-type Contact = string
-
-// Sequence is used to define the revision sequence number of the component
-// Can be specified in Events, Todos, and Journals
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.4
-type Sequence = int
-
-// LastModified specifies the date and time tthat the information associated with the calendar information was last revised
-// Can be specified in Events, Todos, Journals, and TimeZones
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.7.3
-type LastModified = time.Time
-
-// Attendee is used to represent an ATTENDEE component in the iCalendar format
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.4.1
-type Attendee = url.URL
-
-// Categories specifies the categories that the calendar component belongs to
-// Can be specified in Events, Todos, and Journals
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.1.2
-type Categories = []string

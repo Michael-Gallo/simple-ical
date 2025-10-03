@@ -55,11 +55,9 @@ func TestParse(t *testing.T) {
 			expectedCalendar: &model.Calendar{
 				Events: []model.Event{
 					{
-						BaseComponent: model.BaseComponent{
-							DTStamp: time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
-							UID:     "13235@example.com",
-							Comment: []string{"I Am", "A Comment"},
-						},
+						DTStamp:     time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+						UID:         "13235@example.com",
+						Comment:     []string{"I Am", "A Comment"},
 						Start:       time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
 						End:         time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
 						Summary:     "Event Summary",
@@ -72,7 +70,7 @@ func TestParse(t *testing.T) {
 						Status:       model.EventStatusConfirmed,
 						Sequence:     1,
 						Transp:       model.EventTranspOpaque,
-						Contact:      "Jim Dolittle, ABC Industries, +1-919-555-1234",
+						Contacts:     []string{"Jim Dolittle, ABC Industries, +1-919-555-1234"},
 						LastModified: time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
 						Categories:   []string{"first", "second", "third"},
 						Geo:          []float64{37.386013, -122.082932},
