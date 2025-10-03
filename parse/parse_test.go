@@ -44,6 +44,8 @@ var (
 	testInvalidBeginCalendarInput string
 	//go:embed test_data/no_end_calendar.ical
 	testInvalidEndCalendarInput string
+	//go:embed test_data/empty_line_calendar.ical
+	testInvalidEmptyLineCalendarInput string
 )
 
 func TestParse(t *testing.T) {
@@ -185,6 +187,12 @@ func TestParse(t *testing.T) {
 			input:            testIcalMissingDTStartInput,
 			expectedCalendar: nil,
 			expectedError:    errMissingEventDTStartProperty,
+		},
+		{
+			name:             "Empty line in calendar",
+			input:            testInvalidEmptyLineCalendarInput,
+			expectedCalendar: nil,
+			expectedError:    errInvalidCalendarEmptyLine,
 		},
 	}
 

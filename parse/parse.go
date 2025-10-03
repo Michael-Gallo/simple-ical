@@ -50,7 +50,6 @@ func IcalString(input string) (*model.Calendar, error) {
 }
 
 // IcalReader takes an io.Reader containing iCalendar data and parses it into a Calendar.
-// This is more memory-efficient for large files as it processes data line by line.
 func IcalReader(reader io.Reader) (*model.Calendar, error) {
 	// Create parse context with all current parsing state
 	ctx := &parseContext{
@@ -77,7 +76,7 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 		line := strings.TrimRight(scanner.Text(), "\r")
 
 		if line == "" {
-			continue
+			return nil, errInvalidCalendarEmptyLine
 		}
 		propertyName, params, value, err := parseIcalLine(line)
 		if err != nil {

@@ -11,6 +11,7 @@ var (
 	errNoCalendarFound                   = errors.New("empty calendar sent")
 	errInvalidCalendarFormatMissingBegin = errors.New("invalid calendar format: must start with BEGIN:VCALENDAR")
 	errInvalidCalendarFormatMissingEnd   = errors.New("invalid calendar format: must end with END:VCALENDAR")
+	errInvalidCalendarEmptyLine          = errors.New("invalid calendar format: must not contain empty lines")
 	errContentAfterEndBlock              = errors.New("content after END:VCALENDAR")
 	errTemplateInvalidEndBlock           = errors.New("invalid end block")
 	errTemplateInvalidStartBlock         = errors.New("invalid start block")
