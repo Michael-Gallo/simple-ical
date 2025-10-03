@@ -43,8 +43,8 @@ type Event struct {
 	// REQUIRED, MUST NOT occur more than once
 	UID string
 
+	// Property Name: DTSTART
 	// REQUIRED if no METHOD property, MUST NOT occur more than once
-	// dtstart in the ICAL format
 	// See the datetime specification for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.5
 	Start time.Time
 

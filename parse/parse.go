@@ -175,6 +175,9 @@ func handleBeginBlock(beginValue string, ctx *parseContext) error {
 func handleEndBlock(endLineValue string, ctx *parseContext, calendar *model.Calendar) error {
 	switch endLineValue {
 	case string(model.SectionTokenVEvent):
+		if err := validateEvent(ctx.currentEvent); err != nil {
+			return err
+		}
 		ctx.state.inEvent = false
 		calendar.Events = append(calendar.Events, *ctx.currentEvent)
 	case string(model.SectionTokenVCalendar):

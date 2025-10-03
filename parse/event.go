@@ -105,3 +105,15 @@ func parseOrganizer(value string, params []string) (*model.Organizer, error) {
 
 	return organizer, nil
 }
+
+// validateEvent ensures that all required values are present for an event
+func validateEvent(event *model.Event) error {
+	if event.UID == "" {
+		return errMissingEventUIDProperty
+	}
+	// TODO: this value is technically only mandatory if no METHOD property is present
+	if event.Start.IsZero() {
+		return errMissingEventDTStartProperty
+	}
+	return nil
+}

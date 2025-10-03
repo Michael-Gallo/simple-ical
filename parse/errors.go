@@ -26,9 +26,10 @@ var (
 
 // Event-specific errors.
 var (
-	errInvalidEventPropertyLineMissingColon = errors.New("invalid event property line missing colon in line")
-	errInvalidEventProperty                 = errors.New("invalid event property")
-	errLineShouldStartWithOrganizer         = errors.New("line should start with ORGANIZER")
+	errInvalidEventProperty = errors.New("invalid event property")
+
+	errMissingEventUIDProperty     = errors.New("event must have a UID property")
+	errMissingEventDTStartProperty = errors.New("event must have a DTSTART property")
 
 	// Event duration property errors.
 	errInvalidDurationPropertyDtend = errors.New("invalid duration property in iCal Event: DTEND and DURATION are mutually exclusive")

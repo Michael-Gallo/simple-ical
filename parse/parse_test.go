@@ -33,6 +33,10 @@ var (
 	testIcalBothDurationAndEndDurationFirstInput string
 	//go:embed test_data/events/test_event_missing_colon.ical
 	testIcalMissingColonInput string
+	//go:embed test_data/events/test_event_missing_uid.ical
+	testIcalMissingUIDInput string
+	//go:embed test_data/events/test_event_missing_dtstart.ical
+	testIcalMissingDTStartInput string
 
 	//go:embed test_data/empty_calendar.ical
 	testEmptyCalendarInput string
@@ -169,6 +173,18 @@ func TestParse(t *testing.T) {
 			input:            testIcalMissingColonInput,
 			expectedCalendar: nil,
 			expectedError:    fmt.Errorf("%w: %s", errInvalidPropertyLine, "STATUSCONFIRMED"),
+		},
+		{
+			name:             "Missing UID",
+			input:            testIcalMissingUIDInput,
+			expectedCalendar: nil,
+			expectedError:    errMissingEventUIDProperty,
+		},
+		{
+			name:             "Missing DTSTART",
+			input:            testIcalMissingDTStartInput,
+			expectedCalendar: nil,
+			expectedError:    errMissingEventDTStartProperty,
 		},
 	}
 
