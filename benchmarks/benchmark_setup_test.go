@@ -4,6 +4,7 @@ package benchmarks
 import (
 	"bytes"
 	_ "embed"
+	"fmt"
 	"os"
 	"testing"
 
@@ -14,15 +15,25 @@ import (
 
 const commonName = "Org"
 
+const (
+	singleEventFileName    = "./test_event.ical"
+	multipleEventsFileName = "./test_multiple_events.ical"
+)
+
 func BenchmarkAll(b *testing.B) {
 	// Pre-load file content to avoid I/O overhead in benchmarks
-	fileContent, err := os.ReadFile("./test_event.ical")
+	testFile(b, singleEventFileName, "Single Event")
+	testFile(b, multipleEventsFileName, "Multiple Events")
+}
+
+func testFile(b *testing.B, fileName string, testName string) {
+	fileContent, err := os.ReadFile(fileName)
 	if err != nil {
 		panic("Invalid File")
 	}
 	var reader bytes.Reader
 
-	b.Run("Gocal", func(b *testing.B) {
+	b.Run(fmt.Sprintf("%s - Gocal", testName), func(b *testing.B) {
 		for b.Loop() {
 			reader.Reset(fileContent)
 			c := gocal.NewParser(&reader)
@@ -37,7 +48,7 @@ func BenchmarkAll(b *testing.B) {
 		}
 	})
 
-	b.Run("SimpleIcal", func(b *testing.B) {
+	b.Run(fmt.Sprintf("%s - SimpleIcal", testName), func(b *testing.B) {
 		for b.Loop() {
 			reader.Reset(fileContent)
 			cal, err := parse.IcalReader(&reader)
@@ -50,7 +61,7 @@ func BenchmarkAll(b *testing.B) {
 		}
 	})
 
-	b.Run("GolangIcal", func(b *testing.B) {
+	b.Run(fmt.Sprintf("%s - GolangIcal", testName), func(b *testing.B) {
 		for b.Loop() {
 			reader.Reset(fileContent)
 			cal, err := golangical.ParseCalendar(&reader)
