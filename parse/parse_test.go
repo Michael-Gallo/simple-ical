@@ -46,6 +46,12 @@ var (
 	testInvalidEndCalendarInput string
 	//go:embed test_data/empty_line_calendar.ical
 	testInvalidEmptyLineCalendarInput string
+	//go:embed test_data/valid_calendar.ical
+	testValidCalendarInput string
+	//go:embed test_data/calendar_missing_version.ical
+	testCalendarMissingVersionInput string
+	//go:embed test_data/calendar_missing_prodid.ical
+	testCalendarMissingProdIDInput string
 )
 
 func TestParse(t *testing.T) {
@@ -59,6 +65,10 @@ func TestParse(t *testing.T) {
 			name:  "Valid iCal event",
 			input: testIcalInput,
 			expectedCalendar: &model.Calendar{
+				ProdID:   "-//Event//Event Calendar//EN",
+				Version:  "2.0",
+				Method:   "REQUEST",
+				CalScale: "GREGORIAN",
 				Events: []model.Event{
 					{
 						DTStamp:     time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
@@ -106,7 +116,9 @@ func TestParse(t *testing.T) {
 			name:  "No VEVENT block",
 			input: testEmptyCalendarInput,
 			expectedCalendar: &model.Calendar{
-				Events: []model.Event{},
+				Version: "2.0",
+				ProdID:  "Id",
+				Events:  []model.Event{},
 			},
 			expectedError: nil,
 		},
@@ -194,6 +206,29 @@ func TestParse(t *testing.T) {
 			expectedCalendar: nil,
 			expectedError:    errInvalidCalendarEmptyLine,
 		},
+		{
+			name:             "Calendar missing VERSION property",
+			input:            testCalendarMissingVersionInput,
+			expectedCalendar: nil,
+			expectedError:    errMissingCalendarVersionProperty,
+		},
+		{
+			name:             "Calendar missing PRODID property",
+			input:            testCalendarMissingProdIDInput,
+			expectedCalendar: nil,
+			expectedError:    errMissingCalendarProdIDProperty,
+		},
+		{
+			name:          "Valid calendar",
+			input:         testValidCalendarInput,
+			expectedError: nil,
+			expectedCalendar: &model.Calendar{
+				ProdID:   "-//Event//Event Calendar//EN",
+				Version:  "2.0",
+				Method:   "REQUEST",
+				CalScale: "GREGORIAN",
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -213,6 +248,10 @@ func TestParse(t *testing.T) {
 			}
 
 			assert.NotNil(t, calendar)
+			assert.Equal(t, tc.expectedCalendar.ProdID, calendar.ProdID)
+			assert.Equal(t, tc.expectedCalendar.Version, calendar.Version)
+			assert.Equal(t, tc.expectedCalendar.Method, calendar.Method)
+			assert.Equal(t, tc.expectedCalendar.CalScale, calendar.CalScale)
 			assert.Equal(t, len(tc.expectedCalendar.Events), len(calendar.Events))
 			assert.Equal(t, len(tc.expectedCalendar.Todos), len(calendar.Todos))
 			assert.Equal(t, len(tc.expectedCalendar.TimeZones), len(calendar.TimeZones))

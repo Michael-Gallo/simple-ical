@@ -15,6 +15,8 @@ var (
 	errContentAfterEndBlock              = errors.New("content after END:VCALENDAR")
 	errTemplateInvalidEndBlock           = errors.New("invalid end block")
 	errTemplateInvalidStartBlock         = errors.New("invalid start block")
+	errMissingCalendarVersionProperty    = errors.New("calendar must have a VERSION property")
+	errMissingCalendarProdIDProperty     = errors.New("calendar must have a PRODID property")
 
 	// General parsing errors.
 	errInvalidPropertyLine = errors.New("invalid property line in iCal data")

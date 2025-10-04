@@ -33,6 +33,7 @@ type parseContext struct {
 	currentTimezone         *model.TimeZone
 	currentTimeZoneProperty *model.TimeZoneProperty
 	currentTodo             *model.Todo
+	currentCalendar         *model.Calendar
 	// Add more current* fields as needed for other components
 }
 
@@ -51,16 +52,17 @@ func IcalString(input string) (*model.Calendar, error) {
 
 // IcalReader takes an io.Reader containing iCalendar data and parses it into a Calendar.
 func IcalReader(reader io.Reader) (*model.Calendar, error) {
+
+	calendar := &model.Calendar{}
 	// Create parse context with all current parsing state
 	ctx := &parseContext{
+		currentCalendar: calendar,
 		state: &stateMachine{
 			// We can save an Allocation by assuming the first line is a BEGIN:VCALENDAR
 			// because we will immediately be checking for it
 			inCalendar: true,
 		},
 	}
-
-	calendar := &model.Calendar{}
 	scanner := bufio.NewScanner(reader)
 
 	if !scanner.Scan() {
@@ -132,9 +134,10 @@ func parsePropertyLine(propertyName string, value string, params []string, ctx *
 	if ctx.state.inTodo {
 		return parseTodoProperty(propertyName, value, params, ctx.currentTodo)
 	}
+
+	return parseCalendarProperty(propertyName, value, params, ctx.currentCalendar)
 	// Add more state checks as needed
 
-	return nil
 }
 
 // handleBeginBlock processes BEGIN blocks and updates the parser state.
@@ -180,6 +183,9 @@ func handleEndBlock(endLineValue string, ctx *parseContext, calendar *model.Cale
 		ctx.state.inEvent = false
 		calendar.Events = append(calendar.Events, *ctx.currentEvent)
 	case string(model.SectionTokenVCalendar):
+		if err := validateCalendar(calendar); err != nil {
+			return err
+		}
 		ctx.state.inCalendar = false
 	case string(model.SectionTokenVTimezone):
 		ctx.state.inTimezone = false
