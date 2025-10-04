@@ -176,7 +176,7 @@ func handleBeginBlock(beginValue string, ctx *parseContext) error {
 func handleEndBlock(endLineValue string, ctx *parseContext, calendar *model.Calendar) error {
 	switch endLineValue {
 	case string(model.SectionTokenVEvent):
-		if err := validateEvent(ctx.currentEvent); err != nil {
+		if err := validateEvent(ctx); err != nil {
 			return err
 		}
 		ctx.state.inEvent = false

@@ -107,12 +107,11 @@ func parseOrganizer(value string, params []string) (*model.Organizer, error) {
 }
 
 // validateEvent ensures that all required values are present for an event
-func validateEvent(event *model.Event) error {
-	if event.UID == "" {
+func validateEvent(ctx *parseContext) error {
+	if ctx.currentEvent.UID == "" {
 		return errMissingEventUIDProperty
 	}
-	// TODO: this value is technically only mandatory if no METHOD property is present
-	if event.Start.IsZero() {
+	if ctx.currentEvent.Start.IsZero() && ctx.currentCalendar.Method == "" {
 		return errMissingEventDTStartProperty
 	}
 	return nil

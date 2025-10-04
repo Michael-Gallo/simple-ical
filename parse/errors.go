@@ -32,7 +32,7 @@ var (
 	errInvalidEventProperty = errors.New("invalid event property")
 
 	errMissingEventUIDProperty     = errors.New("event must have a UID property")
-	errMissingEventDTStartProperty = errors.New("event must have a DTSTART property")
+	errMissingEventDTStartProperty = errors.New("event must have a DTSTART property if no METHOD property is present for the top level calendar")
 
 	// Event duration property errors.
 	errInvalidDurationPropertyDtend = errors.New("invalid duration property in iCal Event: DTEND and DURATION are mutually exclusive")
