@@ -45,7 +45,7 @@ type Event struct {
 
 	// Property Name: DTSTART
 	// REQUIRED if no METHOD property, MUST NOT occur more than once
-	// See the datetime specification for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.5
+	// See the datetime specification for more information: https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.2.4
 	Start time.Time
 
 	// OPTIONAL, MUST NOT occur more than once
