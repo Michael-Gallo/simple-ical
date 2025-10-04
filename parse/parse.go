@@ -52,7 +52,6 @@ func IcalString(input string) (*model.Calendar, error) {
 
 // IcalReader takes an io.Reader containing iCalendar data and parses it into a Calendar.
 func IcalReader(reader io.Reader) (*model.Calendar, error) {
-
 	calendar := &model.Calendar{}
 	// Create parse context with all current parsing state
 	ctx := &parseContext{
