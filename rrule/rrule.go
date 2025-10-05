@@ -32,6 +32,7 @@ type RRule struct {
 	Frequency Frequency
 	// The interval between occurrences of the event
 	// eg: an interval of 2 for a daily rule means the event will happen every other day
+	// Not mandatory, but treated as 1 if not present
 	Interval int
 	// The number of occurrences of the event
 	// Can not occur with the Until property
@@ -50,7 +51,10 @@ type RRule struct {
 // Output:
 // RRule{Frequency: FrequencyDaily, Interval: 1, Count: 10, Until: time.Time{}}
 func ParseRRule(rruleString string) (*RRule, error) {
-	rrule := &RRule{}
+	rrule := &RRule{
+		// Default to 1 if not present
+		Interval: 1,
+	}
 	for part := range strings.SplitSeq(rruleString, ";") {
 		parts := strings.Split(part, "=")
 		switch parts[0] {

@@ -31,6 +31,28 @@ func TestParseRRule(t *testing.T) {
 			expectError: nil,
 		},
 		{
+			name:  "Valid daily rule with interval set",
+			input: "FREQ=DAILY;INTERVAL=2;COUNT=10",
+			want: &RRule{
+				Frequency: FrequencyDaily,
+				Interval:  2,
+				Count:     getPointer(10),
+				Until:     nil,
+			},
+			expectError: nil,
+		},
+		{
+			name:  "Valid daily rule with interval not set",
+			input: "FREQ=DAILY;COUNT=10",
+			want: &RRule{
+				Frequency: FrequencyDaily,
+				Interval:  1,
+				Count:     getPointer(10),
+				Until:     nil,
+			},
+			expectError: nil,
+		},
+		{
 			name:        "Invalid rule: missing frequency",
 			input:       "INTERVAL=1;COUNT=10",
 			want:        nil,
