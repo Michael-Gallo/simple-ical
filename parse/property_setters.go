@@ -12,7 +12,7 @@ import (
 // Format: YYYYMMDDTHHMMSSZ (e.g., 20250928T183000Z).
 const iCalDateTimeFormat = "20060102T150405Z"
 
-func parseIcalTime(value string) (time.Time, error) {
+func ParseIcalTime(value string) (time.Time, error) {
 	return time.Parse(iCalDateTimeFormat, value)
 }
 
@@ -44,7 +44,7 @@ func setOnceIntProperty(field *int, value, propertyName string, componentType st
 // setOnceTimeProperty sets a time.Time field only if it hasn't been set before.
 // this is intended for properties that according to the spec must only be set once
 func setOnceTimeProperty(field *time.Time, value, propertyName string, componentType string) error {
-	return setOncePropertyWithParse(field, value, propertyName, componentType, parseIcalTime)
+	return setOncePropertyWithParse(field, value, propertyName, componentType, ParseIcalTime)
 }
 
 // setOnceDurationProperty sets a duration field only if it hasn't been set before.
