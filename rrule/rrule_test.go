@@ -87,6 +87,5 @@ func TestParseRRule(t *testing.T) {
 			assert.NoError(t, err)
 			assert.Equal(t, test.want, rule)
 		})
-
 	}
 }
