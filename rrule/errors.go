@@ -19,4 +19,7 @@ var (
 
 	// ErrInvalidInterval is returned when the interval is not a positive integer.
 	ErrInvalidInterval = errors.New("interval must be a positive integer")
+
+	// ErrInvalidByDayString is returned when the BYDAY string format is invalid.
+	ErrInvalidByDayString = errors.New("invalid BYDAY string")
 )
