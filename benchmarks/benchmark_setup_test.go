@@ -1,4 +1,3 @@
-// Package benchmarks provides comparative benchmarks against other Go iCalendar parsers
 package benchmarks
 
 import (
