@@ -9,11 +9,18 @@ import (
 )
 
 func BenchmarkParseRRule(b *testing.B) {
-	const rruleStringSimple = "FREQ=DAILY;INTERVAL=1;COUNT=10"
-	const rruleStringWithDate = "FREQ=DAILY;INTERVAL=1;UNTIL=20250928T183000Z"
+	rruleStrings := []string{
+		// Simple rule with count
+		"FREQ=DAILY;INTERVAL=1;COUNT=10",
+		// simple rule with until
+		"FREQ=DAILY;INTERVAL=1;UNTIL=20250928T183000Z",
+		// String from teambition's rrule.go example
+		"FREQ=DAILY;DTSTART=20060101T150405Z;COUNT=5",
+	}
 
-	benchmarkRrule(b, rruleStringSimple)
-	benchmarkRrule(b, rruleStringWithDate)
+	for _, rruleString := range rruleStrings {
+		benchmarkRrule(b, rruleString)
+	}
 }
 
 func benchmarkRrule(b *testing.B, rruleString string) {
