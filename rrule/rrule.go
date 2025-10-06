@@ -80,6 +80,7 @@ type RRule struct {
 
 // ParseRRule takes an iCal reccurence rule string and parses it into a RRule struct
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.5.3
 // Example for an event that happens daily for 10 days:
 // Input:
 // RRULE:FREQ=DAILY;INTERVAL=1;COUNT=10
@@ -188,12 +189,16 @@ func ParseByDay(byDayString string) (int, Weekday, error) {
 		return 0, "", ErrInvalidByDayString
 	}
 
-	// Check if string starts with a digit
-	if len(byDayString) > 0 && byDayString[0] >= '0' && byDayString[0] <= '9' {
-		// Find where the digits end
+	// Check if string starts with a digit or minus sign
+	if len(byDayString) > 0 && (byDayString[0] >= '0' && byDayString[0] <= '9' || byDayString[0] == '-') {
+		// Find where the digits end (including negative sign)
 		digitEnd := 0
 		for i, char := range byDayString {
 			if char < '0' || char > '9' {
+				// Allow minus sign at the beginning
+				if char == '-' && i == 0 {
+					continue
+				}
 				digitEnd = i
 				break
 			}
@@ -209,7 +214,7 @@ func ParseByDay(byDayString string) (int, Weekday, error) {
 			return 0, "", ErrInvalidByDayString
 		}
 
-		// Parse interval
+		// Parse interval (can be negative)
 		interval, err := strconv.Atoi(intervalStr)
 		if err != nil {
 			return 0, "", ErrInvalidByDayString
@@ -228,7 +233,7 @@ func ParseByDay(byDayString string) (int, Weekday, error) {
 
 // isValidWeekday checks if the string is a valid weekday abbreviation.
 func isValidWeekday(weekday Weekday) bool {
-	switch Weekday(weekday) {
+	switch weekday {
 	case WeekdayMonday, WeekdayTuesday, WeekdayWednesday, WeekdayThursday, WeekdayFriday, WeekdaySaturday, WeekdaySunday:
 		return true
 	default:
