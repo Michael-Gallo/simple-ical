@@ -56,12 +56,11 @@ var (
 	testCalendarMissingProdIDInput string
 )
 
-func TestParse(t *testing.T) {
+func TestParseSuccess(t *testing.T) {
 	testCases := []struct {
 		name             string
 		input            string
 		expectedCalendar *model.Calendar
-		expectedError    error
 	}{
 		{
 			name:  "Valid iCal event",
@@ -106,13 +105,6 @@ func TestParse(t *testing.T) {
 					},
 				},
 			},
-			expectedError: nil,
-		},
-		{
-			name:             "Empty input",
-			input:            "",
-			expectedCalendar: nil,
-			expectedError:    errNoCalendarFound,
 		},
 		{
 			name:  "No VEVENT block",
@@ -120,110 +112,12 @@ func TestParse(t *testing.T) {
 			expectedCalendar: &model.Calendar{
 				Version: "2.0",
 				ProdID:  "Id",
-				Events:  []model.Event{},
+				Events:  nil,
 			},
-			expectedError: nil,
 		},
 		{
-			name:             "Invalid organizer",
-			input:            testIcalInvalidOrganizerInput,
-			expectedCalendar: nil,
-			expectedError:    errInvalidProtocol,
-		},
-		{
-			name:             "Calendar with no BEGIN:VCALENDAR",
-			input:            testInvalidBeginCalendarInput,
-			expectedCalendar: nil,
-			expectedError:    errInvalidCalendarFormatMissingBegin,
-		},
-		{
-			name:             "Calendar with no END:VCALENDAR",
-			input:            testInvalidEndCalendarInput,
-			expectedCalendar: nil,
-			expectedError:    errInvalidCalendarFormatMissingEnd,
-		},
-		{
-			name:             "Invalid start date",
-			input:            testIcalInvalidStartInput,
-			expectedCalendar: nil,
-			expectedError:    errParseErrorInComponent,
-		},
-		{
-			name:             "Invalid end date",
-			input:            testIcalInvalidEndInput,
-			expectedCalendar: nil,
-			expectedError:    errParseErrorInComponent,
-		},
-		{
-			name:             "Content after END:VCALENDAR",
-			input:            testIcalContentAfterEndBlockInput,
-			expectedCalendar: nil,
-			expectedError:    errContentAfterEndBlock,
-		},
-		{
-			name:             "Duplicate UID",
-			input:            testIcalDuplicateUIDInput,
-			expectedCalendar: nil,
-			expectedError:    errDuplicateProperty,
-		},
-		{
-			name:             "Duplicate sequence",
-			input:            testIcalDuplicateSequenceInput,
-			expectedCalendar: nil,
-			expectedError:    fmt.Errorf(errDuplicatePropertyInComponentFormat, errDuplicatePropertyInComponent, model.EventTokenSequence, eventLocation),
-		},
-		{
-			name:             "Both duration and end date are specified, DTEND first",
-			input:            testIcalBothDurationAndEndInput,
-			expectedCalendar: nil,
-			expectedError:    errInvalidDurationPropertyDtend,
-		},
-		{
-			name:             "Both duration and end date are specified, DURATION first",
-			input:            testIcalBothDurationAndEndDurationFirstInput,
-			expectedCalendar: nil,
-			expectedError:    errInvalidDurationPropertyDtend,
-		},
-		{
-			name:             "Missing colon in event property line",
-			input:            testIcalMissingColonInput,
-			expectedCalendar: nil,
-			expectedError:    fmt.Errorf("%w: %s", errInvalidPropertyLine, "STATUSCONFIRMED"),
-		},
-		{
-			name:             "Missing UID",
-			input:            testIcalMissingUIDInput,
-			expectedCalendar: nil,
-			expectedError:    errMissingEventUIDProperty,
-		},
-		{
-			name:             "Missing DTSTART",
-			input:            testIcalMissingDTStartInput,
-			expectedCalendar: nil,
-			expectedError:    errMissingEventDTStartProperty,
-		},
-		{
-			name:             "Empty line in calendar",
-			input:            testInvalidEmptyLineCalendarInput,
-			expectedCalendar: nil,
-			expectedError:    errInvalidCalendarEmptyLine,
-		},
-		{
-			name:             "Calendar missing VERSION property",
-			input:            testCalendarMissingVersionInput,
-			expectedCalendar: nil,
-			expectedError:    errMissingCalendarVersionProperty,
-		},
-		{
-			name:             "Calendar missing PRODID property",
-			input:            testCalendarMissingProdIDInput,
-			expectedCalendar: nil,
-			expectedError:    errMissingCalendarProdIDProperty,
-		},
-		{
-			name:          "Valid calendar",
-			input:         testValidCalendarInput,
-			expectedError: nil,
+			name:  "Valid calendar",
+			input: testValidCalendarInput,
 			expectedCalendar: &model.Calendar{
 				ProdID:   "-//Event//Event Calendar//EN",
 				Version:  "2.0",
@@ -232,9 +126,8 @@ func TestParse(t *testing.T) {
 			},
 		},
 		{
-			name:          "Valid organizer with all parameters set",
-			input:         testIcalFullOrganizerInput,
-			expectedError: nil,
+			name:  "Valid organizer with all parameters set",
+			input: testIcalFullOrganizerInput,
 			expectedCalendar: &model.Calendar{
 				ProdID:   "-//Event//Event Calendar//EN",
 				Version:  "2.0",
@@ -288,35 +181,109 @@ func TestParse(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			calendar, err := IcalString(tc.input)
-
-			if tc.expectedError != nil {
-				assert.ErrorContains(t, err, tc.expectedError.Error())
-				return
-			}
-
 			assert.NoError(t, err)
+			assert.Equal(t, *tc.expectedCalendar, *calendar)
+		})
+	}
+}
 
-			if tc.expectedCalendar == nil {
-				assert.Nil(t, calendar)
-				return
-			}
-
-			assert.NotNil(t, calendar)
-			assert.Equal(t, tc.expectedCalendar.ProdID, calendar.ProdID)
-			assert.Equal(t, tc.expectedCalendar.Version, calendar.Version)
-			assert.Equal(t, tc.expectedCalendar.Method, calendar.Method)
-			assert.Equal(t, tc.expectedCalendar.CalScale, calendar.CalScale)
-			assert.Equal(t, len(tc.expectedCalendar.Events), len(calendar.Events))
-			assert.Equal(t, len(tc.expectedCalendar.Todos), len(calendar.Todos))
-			assert.Equal(t, len(tc.expectedCalendar.TimeZones), len(calendar.TimeZones))
-
-			// Compare events if they exist
-			if len(tc.expectedCalendar.Events) > 0 {
-				assert.Equal(t, tc.expectedCalendar.Events, calendar.Events)
-			}
-			if len(tc.expectedCalendar.TimeZones) > 0 {
-				assert.Equal(t, tc.expectedCalendar.TimeZones, calendar.TimeZones)
-			}
+func TestParseError(t *testing.T) {
+	testCases := []struct {
+		name          string
+		input         string
+		expectedError error
+	}{
+		{
+			name:          "Empty input",
+			input:         "",
+			expectedError: errNoCalendarFound,
+		},
+		{
+			name:          "Invalid organizer",
+			input:         testIcalInvalidOrganizerInput,
+			expectedError: errInvalidProtocol,
+		},
+		{
+			name:          "Calendar with no BEGIN:VCALENDAR",
+			input:         testInvalidBeginCalendarInput,
+			expectedError: errInvalidCalendarFormatMissingBegin,
+		},
+		{
+			name:          "Calendar with no END:VCALENDAR",
+			input:         testInvalidEndCalendarInput,
+			expectedError: errInvalidCalendarFormatMissingEnd,
+		},
+		{
+			name:          "Invalid start date",
+			input:         testIcalInvalidStartInput,
+			expectedError: errParseErrorInComponent,
+		},
+		{
+			name:          "Invalid end date",
+			input:         testIcalInvalidEndInput,
+			expectedError: errParseErrorInComponent,
+		},
+		{
+			name:          "Content after END:VCALENDAR",
+			input:         testIcalContentAfterEndBlockInput,
+			expectedError: errContentAfterEndBlock,
+		},
+		{
+			name:          "Duplicate UID",
+			input:         testIcalDuplicateUIDInput,
+			expectedError: errDuplicateProperty,
+		},
+		{
+			name:          "Duplicate sequence",
+			input:         testIcalDuplicateSequenceInput,
+			expectedError: fmt.Errorf(errDuplicatePropertyInComponentFormat, errDuplicatePropertyInComponent, model.EventTokenSequence, eventLocation),
+		},
+		{
+			name:          "Both duration and end date are specified, DTEND first",
+			input:         testIcalBothDurationAndEndInput,
+			expectedError: errInvalidDurationPropertyDtend,
+		},
+		{
+			name:          "Both duration and end date are specified, DURATION first",
+			input:         testIcalBothDurationAndEndDurationFirstInput,
+			expectedError: errInvalidDurationPropertyDtend,
+		},
+		{
+			name:          "Missing colon in event property line",
+			input:         testIcalMissingColonInput,
+			expectedError: fmt.Errorf("%w: %s", errInvalidPropertyLine, "STATUSCONFIRMED"),
+		},
+		{
+			name:          "Missing UID",
+			input:         testIcalMissingUIDInput,
+			expectedError: errMissingEventUIDProperty,
+		},
+		{
+			name:          "Missing DTSTART",
+			input:         testIcalMissingDTStartInput,
+			expectedError: errMissingEventDTStartProperty,
+		},
+		{
+			name:          "Empty line in calendar",
+			input:         testInvalidEmptyLineCalendarInput,
+			expectedError: errInvalidCalendarEmptyLine,
+		},
+		{
+			name:          "Calendar missing VERSION property",
+			input:         testCalendarMissingVersionInput,
+			expectedError: errMissingCalendarVersionProperty,
+		},
+		{
+			name:          "Calendar missing PRODID property",
+			input:         testCalendarMissingProdIDInput,
+			expectedError: errMissingCalendarProdIDProperty,
+		},
+	}
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			calendar, err := IcalString(tc.input)
+			assert.ErrorContains(t, err, tc.expectedError.Error())
+			assert.Nil(t, calendar)
 		})
 	}
 }
