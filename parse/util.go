@@ -9,7 +9,7 @@ import (
 // The propertyName is the string before the first colon or semicolon
 // params are semicolon separated values after the propertyName
 // value is the string after the first colon that is not encapsulated in parentheses
-func parseIcalLine(line string) (propertyName string, params []string, value string, err error) {
+func parseIcalLine(line string) (propertyName string, params map[string]string, value string, err error) {
 	// Find the first colon that is not inside quotes
 	colonIndex := findUnquotedColonIndex(line)
 	if colonIndex == -1 {
@@ -40,32 +40,41 @@ func parseIcalLine(line string) (propertyName string, params []string, value str
 }
 
 // splitParameters splits a parameter string by semicolons, respecting quoted strings.
-func splitParameters(paramString string) []string {
-	var params []string
+func splitParameters(paramString string) map[string]string {
+	var params = make(map[string]string, 1)
 	var current strings.Builder
+	var currentKey string
 	inQuotes := false
 
-	for _, c := range paramString {
-		switch {
-		case c == '"':
+	for _, character := range paramString {
+		switch character {
+		case '"':
 			inQuotes = !inQuotes
-			current.WriteRune(c)
-		case c == ';' && !inQuotes:
-			// Found a parameter separator
+		case '=':
+			if inQuotes {
+				current.WriteRune(character)
+				continue
+			}
+			currentKey = current.String()
+			current.Reset()
+		case ';':
+			if inQuotes {
+				current.WriteRune(character)
+				continue
+			}
+			// Found a parameter separator, write the parameter.
 			if current.Len() > 0 {
-				params = append(params, current.String())
+				params[currentKey] = current.String()
 				current.Reset()
 			}
 		default:
-			current.WriteRune(c)
+			current.WriteRune(character)
 		}
 	}
-
-	// Add the last parameter
+	// Write the last parameter (it never hit a semicolon).
 	if current.Len() > 0 {
-		params = append(params, current.String())
+		params[currentKey] = current.String()
 	}
-
 	return params
 }
 

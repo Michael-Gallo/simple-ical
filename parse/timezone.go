@@ -7,7 +7,7 @@ import (
 )
 
 // parseTimezoneProperty parses a single property line and adds it to the provided timezone.
-func parseTimezoneProperty(propertyName string, value string, params []string, ctx *parseContext) error {
+func parseTimezoneProperty(propertyName string, value string, params map[string]string, ctx *parseContext) error {
 	if ctx.state.inStandard {
 		return parseStandardTimeZoneProperty(propertyName, value, params, ctx.currentTimeZoneProperty)
 	}
@@ -23,7 +23,7 @@ func parseTimezoneProperty(propertyName string, value string, params []string, c
 }
 
 // parseStandardTimeZoneProperty parses a single property line and adds it to the provided standard timezone property.
-func parseStandardTimeZoneProperty(propertyName string, value string, _ []string, standard *model.TimeZoneProperty) error {
+func parseStandardTimeZoneProperty(propertyName string, value string, _ map[string]string, standard *model.TimeZoneProperty) error {
 	switch propertyName {
 	case "TZOFFSETFROM":
 		standard.TimeZoneOffsetFrom = value

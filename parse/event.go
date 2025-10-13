@@ -13,7 +13,7 @@ import (
 const eventLocation = "Event"
 
 // parseEventProperty parses a single property line and adds it to the provided vevent.
-func parseEventProperty(propertyName string, value string, params []string, event *model.Event) error {
+func parseEventProperty(propertyName string, value string, params map[string]string, event *model.Event) error {
 	switch model.EventToken(propertyName) {
 	case model.EventTokenDtstart:
 		return setOnceTimeProperty(&event.Start, value, propertyName, eventLocation)
@@ -87,14 +87,33 @@ func parseEventProperty(propertyName string, value string, params []string, even
 }
 
 // parseOrganizer parses a calendar line starting with ORGANIZER.
-func parseOrganizer(value string, params []string) (*model.Organizer, error) {
+func parseOrganizer(value string, params map[string]string) (*model.Organizer, error) {
 	organizer := &model.Organizer{}
-	// TODO: add more robust parameter parsing for organizer
-	if params != nil {
-		commonName, hasCommonName := strings.CutPrefix(params[0], "CN=")
-		if hasCommonName {
-			organizer.CommonName = commonName
+	for propName, propValue := range params {
+		switch propName {
+		case "CN":
+			organizer.CommonName = propValue
+		case "DIR":
+			parsedURI, err := url.Parse(propValue)
+			if err != nil {
+				return nil, err
+			}
+			organizer.Directory = parsedURI
+		case "LANGUAGE":
+			organizer.Language = propValue
+		case "SENT-BY":
+			parsedURI, err := url.Parse(propValue)
+			if err != nil {
+				return nil, err
+			}
+			organizer.SentBy = parsedURI
+		default:
+			if organizer.OtherParams == nil {
+				organizer.OtherParams = make(map[string]string)
+			}
+			organizer.OtherParams[propName] = propValue
 		}
+
 	}
 
 	parsedURI, err := url.Parse(value)

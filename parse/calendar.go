@@ -3,7 +3,7 @@ package parse
 import "github.com/michael-gallo/simple-ical/model"
 
 // parseCalendarProperty parses a single property line and sets its value in the provided vcalendar.
-func parseCalendarProperty(propertyName string, value string, _ []string, calendar *model.Calendar) error {
+func parseCalendarProperty(propertyName string, value string, _ map[string]string, calendar *model.Calendar) error {
 	switch propertyName {
 	case "VERSION":
 		return setOnceProperty(&calendar.Version, value, propertyName, "VCALENDAR")

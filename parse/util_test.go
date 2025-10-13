@@ -11,7 +11,7 @@ func TestParseIcalLine(t *testing.T) {
 		name                 string
 		line                 string
 		expectedPropertyName string
-		expectedParams       []string
+		expectedParams       map[string]string
 		expectedValue        string
 		expectedError        error
 	}{
@@ -27,7 +27,7 @@ func TestParseIcalLine(t *testing.T) {
 			name:                 "Valid line with params",
 			line:                 "DTSTART;VALUE=DATE:20250928",
 			expectedPropertyName: "DTSTART",
-			expectedParams:       []string{"VALUE=DATE"},
+			expectedParams:       map[string]string{"VALUE": "DATE"},
 			expectedValue:        "20250928",
 			expectedError:        nil,
 		},
@@ -35,7 +35,7 @@ func TestParseIcalLine(t *testing.T) {
 			name:                 "Valid line with quote string",
 			line:                 "ATTENDEE;ROLE=REQ-PARTICIPANT;DELEGATED-FROM=\"mailto:bob@example.com\";PARTSTAT=ACCEPTED;CN=Jane Doe:mailto:jdoe@example.com",
 			expectedPropertyName: "ATTENDEE",
-			expectedParams:       []string{"ROLE=REQ-PARTICIPANT", "DELEGATED-FROM=\"mailto:bob@example.com\"", "PARTSTAT=ACCEPTED", "CN=Jane Doe"},
+			expectedParams:       map[string]string{"ROLE": "REQ-PARTICIPANT", "DELEGATED-FROM": "mailto:bob@example.com", "PARTSTAT": "ACCEPTED", "CN": "Jane Doe"},
 			expectedValue:        "mailto:jdoe@example.com",
 			expectedError:        nil,
 		},
@@ -78,6 +78,36 @@ func TestFindUnquotedColonIndex(t *testing.T) {
 		t.Run(testCase.name, func(t *testing.T) {
 			index := findUnquotedColonIndex(testCase.line)
 			assert.Equal(t, testCase.expectedIndex, index)
+		})
+	}
+}
+
+func TestSplitParameters(t *testing.T) {
+	testCases := []struct {
+		name        string
+		paramString string
+		want        map[string]string
+	}{
+		{
+			name:        "Standard organize line with a common name",
+			paramString: "CN=ORG",
+			want:        map[string]string{"CN": "ORG"},
+		},
+		{
+			name:        "Organizer line with all parameters set",
+			paramString: "CN=ORG;DIR=http://example.com;LANGUAGE=en;SENT-BY=mailto:org@example.com",
+			want:        map[string]string{"CN": "ORG", "DIR": "http://example.com", "LANGUAGE": "en", "SENT-BY": "mailto:org@example.com"},
+		},
+		{
+			name:        "Organizer line with quoted string",
+			paramString: "CN=ORG;DIR=\"http://example.com\";LANGUAGE=en;SENT-BY=mailto:org@example.com",
+			want:        map[string]string{"CN": "ORG", "DIR": "http://example.com", "LANGUAGE": "en", "SENT-BY": "mailto:org@example.com"},
+		},
+	}
+	for _, testCase := range testCases {
+		t.Run(testCase.name, func(t *testing.T) {
+			got := splitParameters(testCase.paramString)
+			assert.Equal(t, testCase.want, got)
 		})
 	}
 }

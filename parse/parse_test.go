@@ -17,6 +17,8 @@ var (
 	testIcalInput string
 	//go:embed test_data/events/test_event_invalid_organizer.ical
 	testIcalInvalidOrganizerInput string
+	//go:embed test_data/events/test_event_full_organizer.ical
+	testIcalFullOrganizerInput string
 	//go:embed test_data/events/test_event_invalid_start.ical
 	testIcalInvalidStartInput string
 	//go:embed test_data/events/test_event_invalid_end.ical
@@ -229,6 +231,58 @@ func TestParse(t *testing.T) {
 				CalScale: "GREGORIAN",
 			},
 		},
+		{
+			name:          "Valid organizer with all parameters set",
+			input:         testIcalFullOrganizerInput,
+			expectedError: nil,
+			expectedCalendar: &model.Calendar{
+				ProdID:   "-//Event//Event Calendar//EN",
+				Version:  "2.0",
+				Method:   "REQUEST",
+				CalScale: "GREGORIAN",
+				Events: []model.Event{
+					{
+						DTStamp:     time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+						UID:         "13235@example.com",
+						Start:       time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
+						End:         time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
+						Summary:     "Event Summary",
+						Description: "Event Description",
+						Location:    "555 Fake Street",
+						Organizer: &model.Organizer{
+							CommonName: "JohnSmith",
+							Directory:  &url.URL{Scheme: "ldap", Host: "example.com:6666", Path: "/o=DC Associates,c=US", RawQuery: "??(cn=John%20Smith)"},
+							CalAddress: &url.URL{Scheme: "mailto", Opaque: "jsmith@example.com"},
+							Language:   "en-us",
+							SentBy:     &url.URL{Scheme: "mailto", Opaque: "mailtojsmith@example.com"},
+							OtherParams: map[string]string{
+								"MISCFIELD":  "TEST",
+								"MISCFIELD2": "TEST2",
+							},
+						},
+						Status:       model.EventStatusConfirmed,
+						Sequence:     1,
+						Comment:      []string{"I Am", "A Comment"},
+						Categories:   []string{"first", "second", "third"},
+						Geo:          []float64{37.386013, -122.082932},
+						Transp:       model.EventTranspOpaque,
+						Contacts:     []string{"Jim Dolittle, ABC Industries, +1-919-555-1234"},
+						LastModified: time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
+					},
+				},
+				TimeZones: []model.TimeZone{
+					{
+						TimeZoneID: "America/Detroit",
+						Standard: []model.TimeZoneProperty{
+							{
+								TimeZoneOffsetFrom: "+0000",
+								TimeZoneOffsetTo:   "+0000",
+							},
+						},
+					},
+				},
+			},
+		},
 	}
 
 	for _, tc := range testCases {
@@ -269,43 +323,63 @@ func TestParse(t *testing.T) {
 
 func TestParseOrganizer(t *testing.T) {
 	testCases := []struct {
-		name               string
-		value              string
-		params             []string
-		expectedURIScheme  string
-		expectedCommonName string
-		expectedError      error
+		name              string
+		value             string
+		params            map[string]string
+		expectedOrganizer *model.Organizer
+		expectedError     error
 	}{
 		{
-			name:               "Valid organizer line",
-			value:              "MAILTO:dc@example.com",
-			params:             []string{"CN=My Org"},
-			expectedCommonName: "My Org",
-			expectedURIScheme:  "mailto",
-			expectedError:      nil,
+			name:              "Valid organizer line",
+			value:             "MAILTO:dc@example.com",
+			params:            map[string]string{"CN": "My Org"},
+			expectedOrganizer: &model.Organizer{CommonName: "My Org", CalAddress: &url.URL{Scheme: "mailto", Opaque: "dc@example.com"}},
+			expectedError:     nil,
 		},
 		{
-			name:               "Valid organizer line with no common name",
-			value:              "MAILTO:dc@example.com",
-			expectedCommonName: "",
-			expectedURIScheme:  "mailto",
-			expectedError:      nil,
+			name:              "Valid organizer line with no common name",
+			value:             "MAILTO:dc@example.com",
+			expectedOrganizer: &model.Organizer{CalAddress: &url.URL{Scheme: "mailto", Opaque: "dc@example.com"}},
+			expectedError:     nil,
 		},
 		{
-			name:               "Mailto has a port",
-			value:              "MAILTO:dc@example.com:8080",
-			params:             []string{"CN=My Org"},
-			expectedCommonName: "My Org",
-			expectedURIScheme:  "mailto",
-			expectedError:      nil,
+			name:   "Mailto has a port",
+			value:  "MAILTO:dc@example.com:8080",
+			params: map[string]string{"CN": "My Org"},
+			expectedOrganizer: &model.Organizer{
+				CommonName: "My Org",
+				CalAddress: &url.URL{Scheme: "mailto", Opaque: "dc@example.com:8080"},
+			},
+			expectedError: nil,
 		},
 		{
-			name:               "Valid organizer line with non MAILTO URI",
-			value:              "http://www.ietf.org/rfc/rfc2396.txt",
-			params:             []string{"CN=My Org"},
-			expectedCommonName: "My Org",
-			expectedURIScheme:  "http",
-			expectedError:      nil,
+			name:   "Valid organizer line with non MAILTO URI",
+			value:  "http://www.ietf.org/rfc/rfc2396.txt",
+			params: map[string]string{"CN": "My Org"},
+			expectedOrganizer: &model.Organizer{
+				CommonName: "My Org",
+				CalAddress: &url.URL{Scheme: "http", Host: "www.ietf.org", Path: "/rfc/rfc2396.txt"},
+			},
+			expectedError: nil,
+		},
+		{
+			name:  "Valid organizer line with quoted string",
+			value: "mailto:jsmith@example.com",
+			params: map[string]string{
+				"MISCFIELD":  "TEST",
+				"MISCFIELD2": "TEST2",
+				"CN":         "JohnSmith",
+				"DIR":        "ldap://example.com:6666/o=DC%20Associates,c=US???(cn=John%20Smith)",
+			},
+			expectedOrganizer: &model.Organizer{
+				CommonName: "JohnSmith",
+				CalAddress: &url.URL{Scheme: "mailto", Opaque: "jsmith@example.com"},
+				Directory:  &url.URL{Scheme: "ldap", Host: "example.com:6666", Path: "/o=DC Associates,c=US", RawQuery: "??(cn=John%20Smith)"},
+				OtherParams: map[string]string{
+					"MISCFIELD":  "TEST",
+					"MISCFIELD2": "TEST2",
+				},
+			},
 		},
 	}
 
@@ -319,8 +393,7 @@ func TestParseOrganizer(t *testing.T) {
 			}
 			assert.NoError(t, err)
 
-			assert.Equal(t, testCase.expectedURIScheme, organizer.CalAddress.Scheme)
-			assert.Equal(t, testCase.expectedCommonName, organizer.CommonName)
+			assert.Equal(t, testCase.expectedOrganizer, organizer)
 		})
 	}
 }
@@ -332,7 +405,7 @@ func BenchmarkIcalString(b *testing.B) {
 }
 
 func BenchmarkParseOrganizer(b *testing.B) {
-	params := []string{"CN=My Org"}
+	params := map[string]string{"CN": "My Org"}
 	value := "MAILTO:dc@example.com"
 	for b.Loop() {
 		_, _ = parseOrganizer(value, params)
