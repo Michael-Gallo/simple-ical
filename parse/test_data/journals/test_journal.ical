@@ -1,0 +1,23 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Test//Journal Calendar//EN
+BEGIN:VJOURNAL
+UID:journal123@example.com
+DTSTAMP:20240101T000000Z
+SUMMARY:Project status update
+DESCRIPTION:Completed the initial research phase
+DESCRIPTION:Identified key stakeholders and requirements
+CLASS:CONFIDENTIAL
+STATUS:FINAL
+CREATED:20240101T090000Z
+LAST-MODIFIED:20240115T120000Z
+DTSTART:20240101T090000Z
+ORGANIZER;CN=Project Lead:MAILTO:lead@example.com
+ATTENDEE:MAILTO:stakeholder1@example.com
+ATTENDEE:MAILTO:stakeholder2@example.com
+CONTACT:Jane Doe, Project Manager, +1-555-0456
+CATEGORIES:work,project,status
+COMMENT:This journal entry documents the completion of Phase 1
+URL:https://project.example.com/journal/123
+END:VJOURNAL
+END:VCALENDAR

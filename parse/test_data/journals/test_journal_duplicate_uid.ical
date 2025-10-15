@@ -1,0 +1,10 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Test//Journal Calendar//EN
+BEGIN:VJOURNAL
+UID:journal123@example.com
+DTSTAMP:20240101T000000Z
+SUMMARY:Project status update
+UID:journal456@example.com
+END:VJOURNAL
+END:VCALENDAR

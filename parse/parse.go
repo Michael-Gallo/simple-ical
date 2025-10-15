@@ -24,6 +24,7 @@ type stateMachine struct {
 	inJournal  bool
 	inFreebusy bool
 	inStandard bool
+	inDaylight bool
 }
 
 // parseContext holds all the current parsing state for different components.
@@ -33,6 +34,9 @@ type parseContext struct {
 	currentTimezone         *model.TimeZone
 	currentTimeZoneProperty *model.TimeZoneProperty
 	currentTodo             *model.Todo
+	currentJournal          *model.Journal
+	currentFreeBusy         *model.FreeBusy
+	currentAlarm            *model.Alarm
 	currentCalendar         *model.Calendar
 	// Add more current* fields as needed for other components
 }
@@ -124,6 +128,10 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 // parsePropertyLine parses a single property line and adds it to the appropriate component based on current state.
 func parsePropertyLine(propertyName string, value string, params map[string]string, ctx *parseContext) error {
 	// Route to appropriate parser based on current state
+	// Check sub-components first (alarms can be inside events, todos, or journals)
+	if ctx.state.inAlarm {
+		return parseAlarmProperty(propertyName, value, params, ctx.currentAlarm)
+	}
 	if ctx.state.inEvent {
 		return parseEventProperty(propertyName, value, params, ctx.currentEvent)
 	}
@@ -133,10 +141,15 @@ func parsePropertyLine(propertyName string, value string, params map[string]stri
 	if ctx.state.inTodo {
 		return parseTodoProperty(propertyName, value, params, ctx.currentTodo)
 	}
+	if ctx.state.inJournal {
+		return parseJournalProperty(propertyName, value, params, ctx.currentJournal)
+	}
+	if ctx.state.inFreebusy {
+		return parseFreeBusyProperty(propertyName, value, params, ctx.currentFreeBusy)
+	}
 
 	return parseCalendarProperty(propertyName, value, params, ctx.currentCalendar)
 	// Add more state checks as needed
-
 }
 
 // handleBeginBlock processes BEGIN blocks and updates the parser state.
@@ -152,20 +165,22 @@ func handleBeginBlock(beginValue string, ctx *parseContext) error {
 		ctx.currentTimezone = &model.TimeZone{}
 	case string(model.SectionTokenVFreebusy):
 		ctx.state.inFreebusy = true
-		// TODO: add freebusy parsing
+		ctx.currentFreeBusy = &model.FreeBusy{}
 	case string(model.SectionTokenVAlarm):
 		ctx.state.inAlarm = true
-		// TODO: add alarm parsing
+		ctx.currentAlarm = &model.Alarm{}
 	case string(model.SectionTokenVJournal):
 		ctx.state.inJournal = true
-		// TODO: add journal parsing
+		ctx.currentJournal = &model.Journal{}
 	case string(model.SectionTokenVTodo):
 		ctx.state.inTodo = true
-		*ctx.currentTodo = model.Todo{}
+		ctx.currentTodo = &model.Todo{}
 	case string(model.SectionTokenVStandard):
 		ctx.state.inStandard = true
 		ctx.currentTimeZoneProperty = &model.TimeZoneProperty{}
-		// TODO: add standard parsing
+	case string(model.SectionTokenVDaylight):
+		ctx.state.inDaylight = true
+		ctx.currentTimeZoneProperty = &model.TimeZoneProperty{}
 	default:
 		return fmt.Errorf("%w: %s", errTemplateInvalidStartBlock, beginValue)
 	}
@@ -187,23 +202,49 @@ func handleEndBlock(endLineValue string, ctx *parseContext, calendar *model.Cale
 		}
 		ctx.state.inCalendar = false
 	case string(model.SectionTokenVTimezone):
+		if err := validateTimeZone(ctx); err != nil {
+			return err
+		}
 		ctx.state.inTimezone = false
 		calendar.TimeZones = append(calendar.TimeZones, *ctx.currentTimezone)
 	case string(model.SectionTokenVFreebusy):
+		if err := validateFreeBusy(ctx); err != nil {
+			return err
+		}
 		ctx.state.inFreebusy = false
-		// TODO: add freebusy parsing
+		calendar.FreeBusys = append(calendar.FreeBusys, *ctx.currentFreeBusy)
 	case string(model.SectionTokenVAlarm):
+		if err := validateAlarm(ctx); err != nil {
+			return err
+		}
 		ctx.state.inAlarm = false
-		// TODO: add alarm parsing
+		// Add alarm to the current parent component
+		switch {
+		case ctx.state.inEvent:
+			ctx.currentEvent.Alarms = append(ctx.currentEvent.Alarms, *ctx.currentAlarm)
+		case ctx.state.inTodo:
+			ctx.currentTodo.Alarms = append(ctx.currentTodo.Alarms, *ctx.currentAlarm)
+		case ctx.state.inJournal:
+			ctx.currentJournal.Alarms = append(ctx.currentJournal.Alarms, *ctx.currentAlarm)
+		}
 	case string(model.SectionTokenVJournal):
+		if err := validateJournal(ctx); err != nil {
+			return err
+		}
 		ctx.state.inJournal = false
-		// TODO: add journal parsing
+		calendar.Journals = append(calendar.Journals, *ctx.currentJournal)
 	case string(model.SectionTokenVTodo):
+		if err := validateTodo(ctx); err != nil {
+			return err
+		}
 		ctx.state.inTodo = false
 		calendar.Todos = append(calendar.Todos, *ctx.currentTodo)
 	case string(model.SectionTokenVStandard):
 		ctx.state.inStandard = false
 		ctx.currentTimezone.Standard = append(ctx.currentTimezone.Standard, *ctx.currentTimeZoneProperty)
+	case string(model.SectionTokenVDaylight):
+		ctx.state.inDaylight = false
+		ctx.currentTimezone.Daylight = append(ctx.currentTimezone.Daylight, *ctx.currentTimeZoneProperty)
 	default:
 		return fmt.Errorf("%w: %s", errTemplateInvalidEndBlock, endLineValue)
 	}

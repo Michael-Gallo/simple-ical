@@ -43,6 +43,62 @@ var (
 	errInvalidGeoPropertyLongitude = errors.New("invalid longitude in iCal Event: GEO must be a float")
 )
 
+// Todo-specific errors.
+var (
+	errInvalidTodoProperty = errors.New("invalid todo property")
+
+	errMissingTodoUIDProperty = errors.New("todo must have a UID property")
+
+	errMissingTodoDTStartProperty = errors.New("todo must have a DTSTART property")
+
+	// Todo duration property errors.
+	errInvalidDurationPropertyDue = errors.New("invalid duration property in iCal Todo: DUE and DURATION are mutually exclusive")
+)
+
+// Journal-specific errors.
+var (
+	errInvalidJournalProperty = errors.New("invalid journal property")
+
+	errMissingJournalUIDProperty = errors.New("journal must have a UID property")
+
+	errMissingJournalDTStartProperty = errors.New("journal must have a DTSTART property")
+)
+
+// FreeBusy-specific errors.
+var (
+	errInvalidFreeBusyProperty = errors.New("invalid freebusy property")
+
+	errMissingFreeBusyUIDProperty = errors.New("freebusy must have a UID property")
+
+	errInvalidFreeBusyFormat = errors.New("invalid FREEBUSY property format")
+
+	errMissingFreeBusyDTStartProperty = errors.New("freebusy must have a DTSTART property")
+)
+
+// Timezone-specific errors.
+var (
+	errInvalidTimezoneProperty = errors.New("invalid timezone property")
+
+	errMissingTimezoneTZIDProperty = errors.New("timezone must have a TZID property")
+)
+
+// Alarm-specific errors.
+var (
+	errInvalidAlarmProperty = errors.New("invalid alarm property")
+
+	errMissingAlarmActionProperty = errors.New("alarm must have an ACTION property")
+
+	errMissingAlarmTriggerProperty = errors.New("alarm must have a TRIGGER property")
+
+	errMissingAlarmDescriptionForDisplay = errors.New("DISPLAY alarm must have a DESCRIPTION property")
+
+	errMissingAlarmDescriptionForEmail = errors.New("EMAIL alarm must have a DESCRIPTION property")
+
+	errMissingAlarmSummaryForEmail = errors.New("EMAIL alarm must have a SUMMARY property")
+
+	errMissingAlarmAttendeesForEmail = errors.New("EMAIL alarm must have at least one ATTENDEE property")
+)
+
 // Property Setter errors.
 const errDuplicatePropertyInComponentFormat = "%w: %s set twice in component %s"
 

@@ -39,4 +39,10 @@ type Calendar struct {
 
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.2
 	Todos []Todo
+
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.3
+	Journals []Journal
+
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.4
+	FreeBusys []FreeBusy
 }

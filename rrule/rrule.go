@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/michael-gallo/simple-ical/parse"
+	"github.com/michael-gallo/simple-ical/icaldur"
 )
 
 type Frequency string
@@ -112,7 +112,7 @@ func ParseRRule(rruleString string) (*RRule, error) {
 			}
 			rrule.Count = &count
 		case "UNTIL":
-			until, err := parse.ParseIcalTime(value)
+			until, err := icaldur.ParseIcalTime(value)
 			if err != nil {
 				return nil, err
 			}
