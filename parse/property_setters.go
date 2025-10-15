@@ -48,11 +48,11 @@ func setOnceDurationProperty(field *time.Duration, value, propertyName string, c
 	return setOnceProperty(field, duration, propertyName, componentType)
 }
 
-func appendTimeProperty(field []time.Time, value, propertyName string, componentType string) error {
+func appendTimeProperty(field *[]time.Time, value, propertyName string, componentType string) error {
 	time, err := icaldur.ParseIcalTime(value)
 	if err != nil {
 		return fmt.Errorf("%w: %s property %s in iCal", errParseErrorInComponent, componentType, propertyName)
 	}
-	field = append(field, time)
+	*field = append(*field, time)
 	return nil
 }

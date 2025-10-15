@@ -105,7 +105,7 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 	case model.TodoTokenContact:
 		todo.Contacts = append(todo.Contacts, value)
 	case model.TodoTokenExceptionDates:
-		return appendTimeProperty(todo.ExceptionDates, value, propertyName, todoLocation)
+		return appendTimeProperty(&todo.ExceptionDates, value, propertyName, todoLocation)
 	case model.TodoTokenRequestStatus:
 		todo.RequestStatus = append(todo.RequestStatus, value)
 	case model.TodoTokenRelated:
@@ -113,7 +113,7 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 	case model.TodoTokenResources:
 		todo.Resources = append(todo.Resources, strings.Split(value, ",")...)
 	case model.TodoTokenRdate:
-		return appendTimeProperty(todo.Rdate, value, propertyName, todoLocation)
+		return appendTimeProperty(&todo.Rdate, value, propertyName, todoLocation)
 	default:
 		return fmt.Errorf("%w: %s", errInvalidTodoProperty, propertyName)
 	}

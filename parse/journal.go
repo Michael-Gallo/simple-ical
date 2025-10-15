@@ -62,11 +62,11 @@ func parseJournalProperty(propertyName string, value string, params map[string]s
 	case model.JournalTokenDescription:
 		journal.Description = append(journal.Description, value)
 	case model.JournalTokenExceptionDates:
-		return appendTimeProperty(journal.ExceptionDates, value, propertyName, journalLocation)
+		return appendTimeProperty(&journal.ExceptionDates, value, propertyName, journalLocation)
 	case model.JournalTokenRelated:
 		journal.Related = append(journal.Related, value)
 	case model.JournalTokenRdate:
-		return appendTimeProperty(journal.Rdate, value, propertyName, journalLocation)
+		return appendTimeProperty(&journal.Rdate, value, propertyName, journalLocation)
 	case model.JournalTokenRequestStatus:
 		journal.RequestStatus = append(journal.RequestStatus, value)
 	default:

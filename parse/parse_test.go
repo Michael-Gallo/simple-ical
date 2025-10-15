@@ -74,6 +74,8 @@ var (
 	testJournalMissingUIDInput string
 	//go:embed test_data/journals/test_journal_duplicate_uid.ical
 	testJournalDuplicateUIDInput string
+	//go:embed test_data/journals/test_journal_multiple_exdates.ical
+	testJournalMultipleExdatesInput string
 
 	// VFREEBUSY test files
 	//go:embed test_data/freebusy/test_freebusy.ical
@@ -290,6 +292,30 @@ func TestParseSuccess(t *testing.T) {
 						Categories: []string{"work", "project", "status"},
 						Comment:    []string{"This journal entry documents the completion of Phase 1"},
 						URL:        "https://project.example.com/journal/123",
+					},
+				},
+			},
+		},
+		{
+			name:  "Valid VJOURNAL with Multiple Exception Dates",
+			input: testJournalMultipleExdatesInput,
+			expectedCalendar: &model.Calendar{
+				ProdID:  "-//Test//Journal Calendar//EN",
+				Version: "2.0",
+				Journals: []model.Journal{
+					{
+						UID:         "journal123@example.com",
+						DTStamp:     time.Date(2024, time.January, 1, 0, 0, 0, 0, time.UTC),
+						DTStart:     time.Date(2024, time.January, 1, 9, 0, 0, 0, time.UTC),
+						Summary:     "Journal with Multiple Exception Dates",
+						Description: []string{"This journal has multiple exception dates to test the append functionality"},
+						Class:       model.JournalClassConfidential,
+						Status:      model.JournalStatusFinal,
+						ExceptionDates: []time.Time{
+							time.Date(2024, time.January, 15, 9, 0, 0, 0, time.UTC),
+							time.Date(2024, time.January, 22, 9, 0, 0, 0, time.UTC),
+							time.Date(2024, time.January, 29, 9, 0, 0, 0, time.UTC),
+						},
 					},
 				},
 			},
