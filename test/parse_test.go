@@ -1,4 +1,4 @@
-package parse
+package test
 
 import (
 	_ "embed"
@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/michael-gallo/simple-ical/model"
+	"github.com/michael-gallo/simple-ical/parse"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -434,7 +435,7 @@ func TestParseSuccess(t *testing.T) {
 
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			calendar, err := IcalString(tc.input)
+			calendar, err := parse.IcalString(tc.input)
 			assert.NoError(t, err)
 			assert.Equal(t, *tc.expectedCalendar, *calendar)
 		})
@@ -450,240 +451,155 @@ func TestParseError(t *testing.T) {
 		{
 			name:          "Empty input",
 			input:         "",
-			expectedError: ErrNoCalendarFound,
+			expectedError: parse.ErrNoCalendarFound,
 		},
 		{
 			name:          "Invalid organizer",
 			input:         testIcalInvalidOrganizerInput,
-			expectedError: ErrInvalidProtocol,
+			expectedError: parse.ErrInvalidProtocol,
 		},
 		{
 			name:          "Calendar with no BEGIN:VCALENDAR",
 			input:         testInvalidBeginCalendarInput,
-			expectedError: ErrInvalidCalendarFormatMissingBegin,
+			expectedError: parse.ErrInvalidCalendarFormatMissingBegin,
 		},
 		{
 			name:          "Calendar with no END:VCALENDAR",
 			input:         testInvalidEndCalendarInput,
-			expectedError: ErrInvalidCalendarFormatMissingEnd,
+			expectedError: parse.ErrInvalidCalendarFormatMissingEnd,
 		},
 		{
 			name:          "Invalid start date",
 			input:         testIcalInvalidStartInput,
-			expectedError: ErrParseErrorInComponent,
+			expectedError: parse.ErrParseErrorInComponent,
 		},
 		{
 			name:          "Invalid end date",
 			input:         testIcalInvalidEndInput,
-			expectedError: ErrParseErrorInComponent,
+			expectedError: parse.ErrParseErrorInComponent,
 		},
 		{
 			name:          "Content after END:VCALENDAR",
 			input:         testIcalContentAfterEndBlockInput,
-			expectedError: ErrContentAfterEndBlock,
+			expectedError: parse.ErrContentAfterEndBlock,
 		},
 		{
 			name:          "Duplicate UID",
 			input:         testIcalDuplicateUIDInput,
-			expectedError: ErrDuplicateProperty,
+			expectedError: parse.ErrDuplicateProperty,
 		},
 		{
 			name:          "Duplicate sequence",
 			input:         testIcalDuplicateSequenceInput,
-			expectedError: fmt.Errorf(ErrDuplicatePropertyInComponentFormat, ErrDuplicatePropertyInComponent, model.EventTokenSequence, eventLocation),
+			expectedError: fmt.Errorf(parse.ErrDuplicatePropertyInComponentFormat, parse.ErrDuplicatePropertyInComponent, model.EventTokenSequence, "Event"),
 		},
 		{
 			name:          "Both duration and end date are specified, DTEND first",
 			input:         testIcalBothDurationAndEndInput,
-			expectedError: ErrInvalidDurationPropertyDtend,
+			expectedError: parse.ErrInvalidDurationPropertyDtend,
 		},
 		{
 			name:          "Both duration and end date are specified, DURATION first",
 			input:         testIcalBothDurationAndEndDurationFirstInput,
-			expectedError: ErrInvalidDurationPropertyDtend,
+			expectedError: parse.ErrInvalidDurationPropertyDtend,
 		},
 		{
 			name:          "Missing colon in event property line",
 			input:         testIcalMissingColonInput,
-			expectedError: fmt.Errorf("%w: %s", ErrInvalidPropertyLine, "STATUSCONFIRMED"),
+			expectedError: fmt.Errorf("%w: %s", parse.ErrInvalidPropertyLine, "STATUSCONFIRMED"),
 		},
 		{
 			name:          "Missing UID",
 			input:         testIcalMissingUIDInput,
-			expectedError: ErrMissingEventUIDProperty,
+			expectedError: parse.ErrMissingEventUIDProperty,
 		},
 		{
 			name:          "Missing DTSTART",
 			input:         testIcalMissingDTStartInput,
-			expectedError: ErrMissingEventDTStartProperty,
+			expectedError: parse.ErrMissingEventDTStartProperty,
 		},
 		{
 			name:          "Empty line in calendar",
 			input:         testInvalidEmptyLineCalendarInput,
-			expectedError: ErrInvalidCalendarEmptyLine,
+			expectedError: parse.ErrInvalidCalendarEmptyLine,
 		},
 		{
 			name:          "Calendar missing VERSION property",
 			input:         testCalendarMissingVersionInput,
-			expectedError: ErrMissingCalendarVersionProperty,
+			expectedError: parse.ErrMissingCalendarVersionProperty,
 		},
 		{
 			name:          "Calendar missing PRODID property",
 			input:         testCalendarMissingProdIDInput,
-			expectedError: ErrMissingCalendarProdIDProperty,
+			expectedError: parse.ErrMissingCalendarProdIDProperty,
 		},
 		{
 			name:          "VTODO missing UID",
 			input:         testTodoMissingUIDInput,
-			expectedError: ErrMissingTodoUIDProperty,
+			expectedError: parse.ErrMissingTodoUIDProperty,
 		},
 		{
 			name:          "VTODO both DUE and DURATION",
 			input:         testTodoBothDueAndDurationInput,
-			expectedError: ErrInvalidDurationPropertyDue,
+			expectedError: parse.ErrInvalidDurationPropertyDue,
 		},
 		{
 			name:          "VTODO invalid GEO",
 			input:         testTodoInvalidGeoInput,
-			expectedError: ErrInvalidGeoProperty,
+			expectedError: parse.ErrInvalidGeoProperty,
 		},
 		{
 			name:          "VJOURNAL missing UID",
 			input:         testJournalMissingUIDInput,
-			expectedError: ErrMissingJournalUIDProperty,
+			expectedError: parse.ErrMissingJournalUIDProperty,
 		},
 		{
 			name:          "VFREEBUSY missing UID",
 			input:         testFreeBusyMissingUIDInput,
-			expectedError: ErrMissingFreeBusyUIDProperty,
+			expectedError: parse.ErrMissingFreeBusyUIDProperty,
 		},
 		{
 			name:          "VFREEBUSY invalid FREEBUSY format",
 			input:         testFreeBusyInvalidFreeBusyInput,
-			expectedError: ErrInvalidFreeBusyFormat,
+			expectedError: parse.ErrInvalidFreeBusyFormat,
 		},
 		{
 			name:          "VTIMEZONE missing TZID",
 			input:         testTimezoneMissingTZIDInput,
-			expectedError: ErrMissingTimezoneTZIDProperty,
+			expectedError: parse.ErrMissingTimezoneTZIDProperty,
 		},
 		{
 			name:          "VTIMEZONE invalid DTSTART",
 			input:         testTimezoneInvalidDTStartInput,
-			expectedError: ErrInvalidTimezoneProperty,
+			expectedError: parse.ErrInvalidTimezoneProperty,
 		},
 		{
 			name:          "VALARM missing ACTION",
 			input:         testEventAlarmMissingActionInput,
-			expectedError: ErrMissingAlarmActionProperty,
+			expectedError: parse.ErrMissingAlarmActionProperty,
 		},
 		{
 			name:          "VALARM DISPLAY missing DESCRIPTION",
 			input:         testEventAlarmMissingDescriptionDisplayInput,
-			expectedError: ErrMissingAlarmDescriptionForDisplay,
+			expectedError: parse.ErrMissingAlarmDescriptionForDisplay,
 		},
 		{
 			name:          "VALARM EMAIL missing ATTENDEE",
 			input:         testEventAlarmMissingAttendeeEmailInput,
-			expectedError: ErrMissingAlarmAttendeesForEmail,
+			expectedError: parse.ErrMissingAlarmAttendeesForEmail,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
-			calendar, err := IcalString(tc.input)
+			calendar, err := parse.IcalString(tc.input)
 			assert.ErrorContains(t, err, tc.expectedError.Error())
 			assert.Nil(t, calendar)
 		})
 	}
 }
 
-func TestParseOrganizer(t *testing.T) {
-	testCases := []struct {
-		name              string
-		value             string
-		params            map[string]string
-		expectedOrganizer *model.Organizer
-		expectedError     error
-	}{
-		{
-			name:              "Valid organizer line",
-			value:             "MAILTO:dc@example.com",
-			params:            map[string]string{"CN": "My Org"},
-			expectedOrganizer: &model.Organizer{CommonName: "My Org", CalAddress: &url.URL{Scheme: "mailto", Opaque: "dc@example.com"}},
-			expectedError:     nil,
-		},
-		{
-			name:              "Valid organizer line with no common name",
-			value:             "MAILTO:dc@example.com",
-			expectedOrganizer: &model.Organizer{CalAddress: &url.URL{Scheme: "mailto", Opaque: "dc@example.com"}},
-			expectedError:     nil,
-		},
-		{
-			name:   "Mailto has a port",
-			value:  "MAILTO:dc@example.com:8080",
-			params: map[string]string{"CN": "My Org"},
-			expectedOrganizer: &model.Organizer{
-				CommonName: "My Org",
-				CalAddress: &url.URL{Scheme: "mailto", Opaque: "dc@example.com:8080"},
-			},
-			expectedError: nil,
-		},
-		{
-			name:   "Valid organizer line with non MAILTO URI",
-			value:  "http://www.ietf.org/rfc/rfc2396.txt",
-			params: map[string]string{"CN": "My Org"},
-			expectedOrganizer: &model.Organizer{
-				CommonName: "My Org",
-				CalAddress: &url.URL{Scheme: "http", Host: "www.ietf.org", Path: "/rfc/rfc2396.txt"},
-			},
-			expectedError: nil,
-		},
-		{
-			name:  "Valid organizer line with quoted string",
-			value: "mailto:jsmith@example.com",
-			params: map[string]string{
-				"MISCFIELD":  "TEST",
-				"MISCFIELD2": "TEST2",
-				"CN":         "JohnSmith",
-				"DIR":        "ldap://example.com:6666/o=DC%20Associates,c=US???(cn=John%20Smith)",
-			},
-			expectedOrganizer: &model.Organizer{
-				CommonName: "JohnSmith",
-				CalAddress: &url.URL{Scheme: "mailto", Opaque: "jsmith@example.com"},
-				Directory:  &url.URL{Scheme: "ldap", Host: "example.com:6666", Path: "/o=DC Associates,c=US", RawQuery: "??(cn=John%20Smith)"},
-				OtherParams: map[string]string{
-					"MISCFIELD":  "TEST",
-					"MISCFIELD2": "TEST2",
-				},
-			},
-		},
-	}
-
-	for _, testCase := range testCases {
-		t.Run(testCase.name, func(t *testing.T) {
-			organizer, err := parseOrganizer(testCase.value, testCase.params)
-			if testCase.expectedError != nil {
-				assert.ErrorIs(t, err, testCase.expectedError)
-				assert.Nil(t, organizer)
-				return
-			}
-			assert.NoError(t, err)
-
-			assert.Equal(t, testCase.expectedOrganizer, organizer)
-		})
-	}
-}
-
 func BenchmarkIcalString(b *testing.B) {
 	for b.Loop() {
-		_, _ = IcalString(testIcalInput)
-	}
-}
-
-func BenchmarkParseOrganizer(b *testing.B) {
-	params := map[string]string{"CN": "My Org"}
-	value := "MAILTO:dc@example.com"
-	for b.Loop() {
-		_, _ = parseOrganizer(value, params)
+		_, _ = parse.IcalString(testIcalInput)
 	}
 }
