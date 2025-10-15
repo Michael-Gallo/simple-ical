@@ -113,7 +113,6 @@ func parseOrganizer(value string, params map[string]string) (*model.Organizer, e
 			}
 			organizer.OtherParams[propName] = propValue
 		}
-
 	}
 
 	parsedURI, err := url.Parse(value)

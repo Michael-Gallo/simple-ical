@@ -80,7 +80,7 @@ func validateJournal(ctx *parseContext) error {
 	if ctx.currentJournal.UID == "" {
 		return errMissingJournalUIDProperty
 	}
-	if ctx.currentJournal.DTStart == (time.Time{}) {
+	if time.Time.IsZero(ctx.currentJournal.DTStart) {
 		return errMissingJournalDTStartProperty
 	}
 	return nil

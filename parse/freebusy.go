@@ -100,7 +100,7 @@ func validateFreeBusy(ctx *parseContext) error {
 	if ctx.currentFreeBusy.UID == "" {
 		return errMissingFreeBusyUIDProperty
 	}
-	if ctx.currentFreeBusy.DTStart == (time.Time{}) {
+	if time.Time.IsZero(ctx.currentFreeBusy.DTStart) {
 		return errMissingFreeBusyDTStartProperty
 	}
 	return nil
