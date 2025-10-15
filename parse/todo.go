@@ -34,31 +34,31 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 	// Due and Duration are mutually exclusive
 	case model.TodoTokenDue:
 		if todo.Duration != 0 {
-			return errInvalidDurationPropertyDue
+			return ErrInvalidDurationPropertyDue
 		}
 		return setOnceTimeProperty(&todo.Due, value, propertyName, todoLocation)
 	case model.TodoTokenDuration:
 		if todo.Due != (time.Time{}) {
-			return errInvalidDurationPropertyDue
+			return ErrInvalidDurationPropertyDue
 		}
 		return setOnceDurationProperty(&todo.Duration, value, propertyName, todoLocation)
 
 	case model.TodoTokenGeo:
 		if todo.Geo != nil {
-			return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
+			return fmt.Errorf("%w: %s", ErrDuplicateProperty, propertyName)
 		}
 		// Geo must be two floats separated by a semicolon
 		latitudeString, longitudeString, found := strings.Cut(value, ";")
 		if !found {
-			return errInvalidGeoProperty
+			return ErrInvalidGeoProperty
 		}
 		latitude, err := strconv.ParseFloat(latitudeString, 64)
 		if err != nil {
-			return errInvalidGeoPropertyLatitude
+			return ErrInvalidGeoPropertyLatitude
 		}
 		longitude, err := strconv.ParseFloat(longitudeString, 64)
 		if err != nil {
-			return errInvalidGeoPropertyLongitude
+			return ErrInvalidGeoPropertyLongitude
 		}
 		todo.Geo = append(todo.Geo, latitude, longitude)
 	case model.TodoTokenLastModified:
@@ -115,7 +115,7 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 	case model.TodoTokenRdate:
 		return appendTimeProperty(&todo.Rdate, value, propertyName, todoLocation)
 	default:
-		return fmt.Errorf("%w: %s", errInvalidTodoProperty, propertyName)
+		return fmt.Errorf("%w: %s", ErrInvalidTodoProperty, propertyName)
 	}
 	return nil
 }
@@ -123,10 +123,10 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 // validateTodo ensures that all required values are present for a todo.
 func validateTodo(ctx *parseContext) error {
 	if ctx.currentTodo.UID == "" {
-		return errMissingTodoUIDProperty
+		return ErrMissingTodoUIDProperty
 	}
 	if ctx.currentTodo.DTStart == (time.Time{}) {
-		return errMissingTodoDTStartProperty
+		return ErrMissingTodoDTStartProperty
 	}
 	return nil
 }

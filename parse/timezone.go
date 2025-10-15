@@ -30,7 +30,7 @@ func parseTimezoneProperty(propertyName string, value string, params map[string]
 		}
 		return setOnceProperty(&ctx.currentTimezone.TimeZoneURL, parsedURL, propertyName, timezoneLocation)
 	default:
-		return fmt.Errorf("%w: %s", errInvalidTimezoneProperty, propertyName)
+		return fmt.Errorf("%w: %s", ErrInvalidTimezoneProperty, propertyName)
 	}
 }
 
@@ -44,7 +44,7 @@ func parseTimeZonePropertySubComponent(propertyName string, value string, _ map[
 	case model.TimezoneTokenDTStart:
 		parsedTime, err := parseTimezoneTime(value)
 		if err != nil {
-			return fmt.Errorf("%w: %s", errInvalidTimezoneProperty, err.Error())
+			return fmt.Errorf("%w: %s", ErrInvalidTimezoneProperty, err.Error())
 		}
 		tzProp.DTStart = parsedTime
 	case model.TimezoneTokenComment:
@@ -52,13 +52,13 @@ func parseTimeZonePropertySubComponent(propertyName string, value string, _ map[
 	case model.TimezoneTokenRdate:
 		parsedTime, err := parseTimezoneTime(value)
 		if err != nil {
-			return fmt.Errorf("%w: %s", errInvalidTimezoneProperty, err.Error())
+			return fmt.Errorf("%w: %s", ErrInvalidTimezoneProperty, err.Error())
 		}
 		tzProp.Rdate = append(tzProp.Rdate, parsedTime)
 	case model.TimezoneTokenTimeZoneName:
 		tzProp.TimeZoneName = append(tzProp.TimeZoneName, value)
 	default:
-		return fmt.Errorf("%w: %s", errInvalidTimezoneProperty, propertyName)
+		return fmt.Errorf("%w: %s", ErrInvalidTimezoneProperty, propertyName)
 	}
 	return nil
 }
@@ -73,13 +73,13 @@ func parseTimezoneTime(value string) (time.Time, error) {
 	if time, err := time.Parse("20060102T150405", value); err == nil {
 		return time, nil
 	}
-	return time.Time{}, fmt.Errorf("%w: %s", errInvalidTimezoneDatetimeFormat, value)
+	return time.Time{}, fmt.Errorf("%w: %s", ErrInvalidTimezoneDatetimeFormat, value)
 }
 
 // validateTimeZone ensures that all required values are present for a timezone.
 func validateTimeZone(ctx *parseContext) error {
 	if ctx.currentTimezone.TimeZoneID == "" {
-		return errMissingTimezoneTZIDProperty
+		return ErrMissingTimezoneTZIDProperty
 	}
 	return nil
 }

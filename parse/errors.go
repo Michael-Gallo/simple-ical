@@ -8,101 +8,102 @@ import "errors"
 
 // Calendar-level errors.
 var (
-	errNoCalendarFound                   = errors.New("empty calendar sent")
-	errInvalidCalendarFormatMissingBegin = errors.New("invalid calendar format: must start with BEGIN:VCALENDAR")
-	errInvalidCalendarFormatMissingEnd   = errors.New("invalid calendar format: must end with END:VCALENDAR")
-	errInvalidCalendarEmptyLine          = errors.New("invalid calendar format: must not contain empty lines")
-	errContentAfterEndBlock              = errors.New("content after END:VCALENDAR")
-	errTemplateInvalidEndBlock           = errors.New("invalid end block")
-	errTemplateInvalidStartBlock         = errors.New("invalid start block")
-	errMissingCalendarVersionProperty    = errors.New("calendar must have a VERSION property")
-	errMissingCalendarProdIDProperty     = errors.New("calendar must have a PRODID property")
+	ErrNoCalendarFound                   = errors.New("empty calendar sent")
+	ErrInvalidCalendarFormatMissingBegin = errors.New("invalid calendar format: must start with BEGIN:VCALENDAR")
+	ErrInvalidCalendarFormatMissingEnd   = errors.New("invalid calendar format: must end with END:VCALENDAR")
+	ErrInvalidCalendarEmptyLine          = errors.New("invalid calendar format: must not contain empty lines")
+	ErrContentAfterEndBlock              = errors.New("content after END:VCALENDAR")
+	ErrTemplateInvalidEndBlock           = errors.New("invalid end block")
+	ErrTemplateInvalidStartBlock         = errors.New("invalid start block")
+	ErrMissingCalendarVersionProperty    = errors.New("calendar must have a VERSION property")
+	ErrMissingCalendarProdIDProperty     = errors.New("calendar must have a PRODID property")
 
 	// General parsing errors.
-	errInvalidPropertyLine = errors.New("invalid property line in iCal data")
-	errDuplicateProperty   = errors.New("duplicate property")
+	ErrInvalidPropertyLine = errors.New("invalid property line in iCal data")
+	ErrDuplicateProperty   = errors.New("duplicate property")
 
 	// URI parsing errors.
-	// errInvalidProtocol is one of the errors that could be returned when parsing a URI with the standard library.
-	errInvalidProtocol = errors.New("parse \"://invalid\": missing protocol scheme")
+	// ErrInvalidProtocol is one of the errors that could be returned when parsing a URI with the standard library.
+	ErrInvalidProtocol = errors.New("parse \"://invalid\": missing protocol scheme")
 )
 
 // Event-specific errors.
 var (
-	errInvalidEventProperty = errors.New("invalid event property")
+	ErrInvalidEventProperty = errors.New("invalid event property")
 
-	errMissingEventUIDProperty     = errors.New("event must have a UID property")
-	errMissingEventDTStartProperty = errors.New("event must have a DTSTART property if no METHOD property is present for the top level calendar")
+	ErrMissingEventUIDProperty     = errors.New("event must have a UID property")
+	ErrMissingEventDTStartProperty = errors.New("event must have a DTSTART property if no METHOD property is present for the top level calendar")
 
 	// Event duration property errors.
-	errInvalidDurationPropertyDtend = errors.New("invalid duration property in iCal Event: DTEND and DURATION are mutually exclusive")
+	ErrInvalidDurationPropertyDtend = errors.New("invalid duration property in iCal Event: DTEND and DURATION are mutually exclusive")
 
 	// Event geographic property errors.
-	errInvalidGeoProperty          = errors.New("invalid event property in iCal Event: GEO must be two floats separated by a semicolon")
-	errInvalidGeoPropertyLatitude  = errors.New("invalid latitude in iCal Event: GEO must be a float")
-	errInvalidGeoPropertyLongitude = errors.New("invalid longitude in iCal Event: GEO must be a float")
+	ErrInvalidGeoProperty          = errors.New("invalid event property in iCal Event: GEO must be two floats separated by a semicolon")
+	ErrInvalidGeoPropertyLatitude  = errors.New("invalid latitude in iCal Event: GEO must be a float")
+	ErrInvalidGeoPropertyLongitude = errors.New("invalid longitude in iCal Event: GEO must be a float")
 )
 
 // Todo-specific errors.
 var (
-	errInvalidTodoProperty = errors.New("invalid todo property")
+	ErrInvalidTodoProperty = errors.New("invalid todo property")
 
-	errMissingTodoUIDProperty = errors.New("todo must have a UID property")
+	ErrMissingTodoUIDProperty = errors.New("todo must have a UID property")
 
-	errMissingTodoDTStartProperty = errors.New("todo must have a DTSTART property")
+	ErrMissingTodoDTStartProperty = errors.New("todo must have a DTSTART property")
 
 	// Todo duration property errors.
-	errInvalidDurationPropertyDue = errors.New("invalid duration property in iCal Todo: DUE and DURATION are mutually exclusive")
+	ErrInvalidDurationPropertyDue = errors.New("invalid duration property in iCal Todo: DUE and DURATION are mutually exclusive")
 )
 
 // Journal-specific errors.
 var (
-	errInvalidJournalProperty = errors.New("invalid journal property")
+	ErrInvalidJournalProperty = errors.New("invalid journal property")
 
-	errMissingJournalUIDProperty = errors.New("journal must have a UID property")
+	ErrMissingJournalUIDProperty = errors.New("journal must have a UID property")
 
-	errMissingJournalDTStartProperty = errors.New("journal must have a DTSTART property")
+	ErrMissingJournalDTStartProperty = errors.New("journal must have a DTSTART property")
 )
 
 // FreeBusy-specific errors.
 var (
-	errInvalidFreeBusyProperty = errors.New("invalid freebusy property")
+	ErrInvalidFreeBusyProperty = errors.New("invalid freebusy property")
 
-	errMissingFreeBusyUIDProperty = errors.New("freebusy must have a UID property")
+	ErrMissingFreeBusyUIDProperty = errors.New("freebusy must have a UID property")
 
-	errInvalidFreeBusyFormat = errors.New("invalid FREEBUSY property format")
+	ErrInvalidFreeBusyFormat = errors.New("invalid FREEBUSY property format")
 
-	errMissingFreeBusyDTStartProperty = errors.New("freebusy must have a DTSTART property")
+	ErrMissingFreeBusyDTStartProperty = errors.New("freebusy must have a DTSTART property")
 )
 
 // Timezone-specific errors.
 var (
-	errInvalidTimezoneProperty       = errors.New("invalid timezone property")
-	errMissingTimezoneTZIDProperty   = errors.New("timezone must have a TZID property")
-	errInvalidTimezoneDatetimeFormat = errors.New("invalid timezone datetime format")
+	ErrInvalidTimezoneProperty       = errors.New("invalid timezone property")
+	ErrMissingTimezoneTZIDProperty   = errors.New("timezone must have a TZID property")
+	ErrInvalidTimezoneDatetimeFormat = errors.New("invalid timezone datetime format")
 )
 
 // Alarm-specific errors.
 var (
-	errInvalidAlarmProperty = errors.New("invalid alarm property")
+	ErrInvalidAlarmProperty = errors.New("invalid alarm property")
 
-	errMissingAlarmActionProperty = errors.New("alarm must have an ACTION property")
+	ErrMissingAlarmActionProperty = errors.New("alarm must have an ACTION property")
 
-	errMissingAlarmTriggerProperty = errors.New("alarm must have a TRIGGER property")
+	ErrMissingAlarmTriggerProperty = errors.New("alarm must have a TRIGGER property")
 
-	errMissingAlarmDescriptionForDisplay = errors.New("DISPLAY alarm must have a DESCRIPTION property")
+	ErrMissingAlarmDescriptionForDisplay = errors.New("DISPLAY alarm must have a DESCRIPTION property")
 
-	errMissingAlarmDescriptionForEmail = errors.New("EMAIL alarm must have a DESCRIPTION property")
+	ErrMissingAlarmDescriptionForEmail = errors.New("EMAIL alarm must have a DESCRIPTION property")
 
-	errMissingAlarmSummaryForEmail = errors.New("EMAIL alarm must have a SUMMARY property")
+	ErrMissingAlarmSummaryForEmail = errors.New("EMAIL alarm must have a SUMMARY property")
 
-	errMissingAlarmAttendeesForEmail = errors.New("EMAIL alarm must have at least one ATTENDEE property")
+	ErrMissingAlarmAttendeesForEmail = errors.New("EMAIL alarm must have at least one ATTENDEE property")
 )
 
 // Property Setter errors.
-const errDuplicatePropertyInComponentFormat = "%w: %s set twice in component %s"
+
+const ErrDuplicatePropertyInComponentFormat = "%w: %s set twice in component %s"
 
 var (
-	errDuplicatePropertyInComponent = errors.New("duplicate property error")
-	errParseErrorInComponent        = errors.New("parse error in component")
+	ErrDuplicatePropertyInComponent = errors.New("duplicate property error")
+	ErrParseErrorInComponent        = errors.New("parse error in component")
 )

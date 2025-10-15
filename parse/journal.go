@@ -70,7 +70,7 @@ func parseJournalProperty(propertyName string, value string, params map[string]s
 	case model.JournalTokenRequestStatus:
 		journal.RequestStatus = append(journal.RequestStatus, value)
 	default:
-		return fmt.Errorf("%w: %s", errInvalidJournalProperty, propertyName)
+		return fmt.Errorf("%w: %s", ErrInvalidJournalProperty, propertyName)
 	}
 	return nil
 }
@@ -78,10 +78,10 @@ func parseJournalProperty(propertyName string, value string, params map[string]s
 // validateJournal ensures that all required values are present for a journal.
 func validateJournal(ctx *parseContext) error {
 	if ctx.currentJournal.UID == "" {
-		return errMissingJournalUIDProperty
+		return ErrMissingJournalUIDProperty
 	}
 	if time.Time.IsZero(ctx.currentJournal.DTStart) {
-		return errMissingJournalDTStartProperty
+		return ErrMissingJournalDTStartProperty
 	}
 	return nil
 }

@@ -46,7 +46,7 @@ type parseContext struct {
 func IcalString(input string) (*model.Calendar, error) {
 	// Handle empty input
 	if input == "" {
-		return nil, errNoCalendarFound
+		return nil, ErrNoCalendarFound
 	}
 
 	// Use the reader-based parser for consistency
@@ -69,19 +69,19 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 	scanner := bufio.NewScanner(reader)
 
 	if !scanner.Scan() {
-		return nil, errNoCalendarFound
+		return nil, ErrNoCalendarFound
 	}
 
 	line := strings.TrimRight(scanner.Text(), "\r")
 	if line != "BEGIN:VCALENDAR" {
-		return nil, errInvalidCalendarFormatMissingBegin
+		return nil, ErrInvalidCalendarFormatMissingBegin
 	}
 
 	for scanner.Scan() {
 		line := strings.TrimRight(scanner.Text(), "\r")
 
 		if line == "" {
-			return nil, errInvalidCalendarEmptyLine
+			return nil, ErrInvalidCalendarEmptyLine
 		}
 		propertyName, params, value, err := parseIcalLine(line)
 		if err != nil {
@@ -95,7 +95,7 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 			continue
 		case "END":
 			if !ctx.state.inCalendar {
-				return nil, errContentAfterEndBlock
+				return nil, ErrContentAfterEndBlock
 			}
 			if err := handleEndBlock(value, ctx, calendar); err != nil {
 				return nil, err
@@ -103,7 +103,7 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 			continue
 		default:
 			if !ctx.state.inCalendar {
-				return nil, errContentAfterEndBlock
+				return nil, ErrContentAfterEndBlock
 			}
 			if err := parsePropertyLine(propertyName, value, params, ctx); err != nil {
 				return nil, err
@@ -119,7 +119,7 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 
 	// Verify that the last line was a END:VCALENDAR
 	if ctx.state.inCalendar {
-		return nil, errInvalidCalendarFormatMissingEnd
+		return nil, ErrInvalidCalendarFormatMissingEnd
 	}
 
 	return calendar, nil
@@ -182,7 +182,7 @@ func handleBeginBlock(beginValue string, ctx *parseContext) error {
 		ctx.state.inDaylight = true
 		ctx.currentTimeZoneProperty = &model.TimeZoneProperty{}
 	default:
-		return fmt.Errorf("%w: %s", errTemplateInvalidStartBlock, beginValue)
+		return fmt.Errorf("%w: %s", ErrTemplateInvalidStartBlock, beginValue)
 	}
 	return nil
 }
@@ -246,7 +246,7 @@ func handleEndBlock(endLineValue string, ctx *parseContext, calendar *model.Cale
 		ctx.state.inDaylight = false
 		ctx.currentTimezone.Daylight = append(ctx.currentTimezone.Daylight, *ctx.currentTimeZoneProperty)
 	default:
-		return fmt.Errorf("%w: %s", errTemplateInvalidEndBlock, endLineValue)
+		return fmt.Errorf("%w: %s", ErrTemplateInvalidEndBlock, endLineValue)
 	}
 	return nil
 }

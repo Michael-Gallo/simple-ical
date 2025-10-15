@@ -52,7 +52,7 @@ func parseFreeBusyProperty(propertyName string, value string, params map[string]
 	case model.FreeBusyTokenRequestStatus:
 		freeBusy.RequestStatus = append(freeBusy.RequestStatus, value)
 	default:
-		return fmt.Errorf("%w: %s", errInvalidFreeBusyProperty, propertyName)
+		return fmt.Errorf("%w: %s", ErrInvalidFreeBusyProperty, propertyName)
 	}
 	return nil
 }
@@ -64,7 +64,7 @@ func parseFreeBusyTime(value string) (model.FreeBusyTime, error) {
 	// Extract start time (everything before first '/')
 	startStr, remaining, found := strings.Cut(value, "/")
 	if !found {
-		return model.FreeBusyTime{}, fmt.Errorf("%w: %s", errInvalidFreeBusyFormat, value)
+		return model.FreeBusyTime{}, fmt.Errorf("%w: %s", ErrInvalidFreeBusyFormat, value)
 	}
 
 	startTime, err := icaldur.ParseIcalTime(startStr)
@@ -98,10 +98,10 @@ func parseFreeBusyTime(value string) (model.FreeBusyTime, error) {
 // validateFreeBusy ensures that all required values are present for a freebusy.
 func validateFreeBusy(ctx *parseContext) error {
 	if ctx.currentFreeBusy.UID == "" {
-		return errMissingFreeBusyUIDProperty
+		return ErrMissingFreeBusyUIDProperty
 	}
 	if time.Time.IsZero(ctx.currentFreeBusy.DTStart) {
-		return errMissingFreeBusyDTStartProperty
+		return ErrMissingFreeBusyDTStartProperty
 	}
 	return nil
 }
