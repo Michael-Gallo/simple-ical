@@ -73,7 +73,7 @@ func parseTimezoneTime(value string) (time.Time, error) {
 	if time, err := time.Parse("20060102T150405", value); err == nil {
 		return time, nil
 	}
-	return time.Time{}, fmt.Errorf("invalid timezone datetime format: %s", value)
+	return time.Time{}, fmt.Errorf("%w: %s", errInvalidTimezoneDatetimeFormat, value)
 }
 
 // validateTimeZone ensures that all required values are present for a timezone.

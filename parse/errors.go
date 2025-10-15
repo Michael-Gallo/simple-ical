@@ -77,9 +77,9 @@ var (
 
 // Timezone-specific errors.
 var (
-	errInvalidTimezoneProperty = errors.New("invalid timezone property")
-
-	errMissingTimezoneTZIDProperty = errors.New("timezone must have a TZID property")
+	errInvalidTimezoneProperty       = errors.New("invalid timezone property")
+	errMissingTimezoneTZIDProperty   = errors.New("timezone must have a TZID property")
+	errInvalidTimezoneDatetimeFormat = errors.New("invalid timezone datetime format")
 )
 
 // Alarm-specific errors.
