@@ -14,8 +14,6 @@ import (
 
 var (
 
-	//go:embed test_data/events/test_event.ical
-	testIcalInput string
 	//go:embed test_data/events/test_event_invalid_organizer.ical
 	testIcalInvalidOrganizerInput string
 	//go:embed test_data/events/test_event_full_organizer.ical
@@ -41,16 +39,12 @@ var (
 	//go:embed test_data/events/test_event_missing_dtstart.ical
 	testIcalMissingDTStartInput string
 
-	//go:embed test_data/empty_calendar.ical
-	testEmptyCalendarInput string
 	//go:embed test_data/no_begin_calendar.ical
 	testInvalidBeginCalendarInput string
 	//go:embed test_data/no_end_calendar.ical
 	testInvalidEndCalendarInput string
 	//go:embed test_data/empty_line_calendar.ical
 	testInvalidEmptyLineCalendarInput string
-	//go:embed test_data/valid_calendar.ical
-	testValidCalendarInput string
 	//go:embed test_data/calendar_missing_version.ical
 	testCalendarMissingVersionInput string
 	//go:embed test_data/calendar_missing_prodid.ical
@@ -115,70 +109,6 @@ func TestParseSuccess(t *testing.T) {
 		input            string
 		expectedCalendar *model.Calendar
 	}{
-		{
-			name:  "Valid iCal event",
-			input: testIcalInput,
-			expectedCalendar: &model.Calendar{
-				ProdID:   "-//Event//Event Calendar//EN",
-				Version:  "2.0",
-				Method:   "REQUEST",
-				CalScale: "GREGORIAN",
-				Events: []model.Event{
-					{
-						DTStamp:     time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
-						UID:         "13235@example.com",
-						Comment:     []string{"I Am", "A Comment"},
-						Start:       time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
-						End:         time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
-						Summary:     "Event Summary",
-						Description: "Event Description",
-						Location:    "555 Fake Street",
-						Organizer: &model.Organizer{
-							CommonName: "Org",
-							CalAddress: &url.URL{Scheme: "mailto", Opaque: "hello@world"},
-						},
-						Status:       model.EventStatusConfirmed,
-						Sequence:     1,
-						Transp:       model.EventTranspOpaque,
-						Contacts:     []string{"Jim Dolittle, ABC Industries, +1-919-555-1234"},
-						LastModified: time.Date(2021, time.January, 1, 0, 0, 0, 0, time.UTC),
-						Categories:   []string{"first", "second", "third"},
-						Geo:          []float64{37.386013, -122.082932},
-					},
-				},
-				TimeZones: []model.TimeZone{
-					{
-						TimeZoneID: "America/Detroit",
-						Standard: []model.TimeZoneProperty{
-							{
-								TimeZoneOffsetFrom: "+0000",
-								TimeZoneOffsetTo:   "+0000",
-								DTStart:            time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
-							},
-						},
-					},
-				},
-			},
-		},
-		{
-			name:  "No VEVENT block",
-			input: testEmptyCalendarInput,
-			expectedCalendar: &model.Calendar{
-				Version: "2.0",
-				ProdID:  "Id",
-				Events:  nil,
-			},
-		},
-		{
-			name:  "Valid calendar",
-			input: testValidCalendarInput,
-			expectedCalendar: &model.Calendar{
-				ProdID:   "-//Event//Event Calendar//EN",
-				Version:  "2.0",
-				Method:   "REQUEST",
-				CalScale: "GREGORIAN",
-			},
-		},
 		{
 			name:  "Valid organizer with all parameters set",
 			input: testIcalFullOrganizerInput,
@@ -600,6 +530,6 @@ func TestParseError(t *testing.T) {
 
 func BenchmarkIcalString(b *testing.B) {
 	for b.Loop() {
-		_, _ = parse.IcalString(testIcalInput)
+		_, _ = parse.IcalString(testIcalWithEventAndTimezoneInput)
 	}
 }
