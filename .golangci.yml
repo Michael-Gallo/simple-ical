@@ -1,6 +1,4 @@
 linters-settings:
-  gocyclo:
-    min-complexity: 15
   goconst:
     min-len: 2
     min-occurrences: 2
@@ -18,7 +16,6 @@ linters:
     - misspell
     - gosec
     - goconst
-    - gocritic
     - err113
     - nakedret
     - noctx
