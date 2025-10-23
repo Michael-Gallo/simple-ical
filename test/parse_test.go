@@ -12,6 +12,8 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
+// TODO: more heavily test multiple alarms, alarms in VEVENT and VTODOs
+
 var (
 
 	//go:embed test_data/events/test_event_invalid_organizer.ical

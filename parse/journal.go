@@ -77,11 +77,11 @@ func parseJournalProperty(propertyName string, value string, params map[string]s
 }
 
 // validateJournal ensures that all required values are present for a journal.
-func validateJournal(ctx *parseContext, calendar *model.Calendar) error {
-	if calendar.Journals[ctx.currentJournalIndex].UID == "" {
+func validateJournal(journal *model.Journal) error {
+	if journal.UID == "" {
 		return ErrMissingJournalUIDProperty
 	}
-	if time.Time.IsZero(calendar.Journals[ctx.currentJournalIndex].DTStart) {
+	if time.Time.IsZero(journal.DTStart) {
 		return ErrMissingJournalDTStartProperty
 	}
 	return nil

@@ -22,7 +22,7 @@ const (
 
 // Alarm represents a VALARM component in the iCalendar format.
 // A VALARM is a grouping of component properties that defines an alarm.
-// VALARM components are sub-components of VEVENT, VTODO, or VJOURNAL.
+// VALARM components are sub-components of VEVENT and VTODOs
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.6
 type Alarm struct {
 	// REQUIRED, MUST NOT occur more than once

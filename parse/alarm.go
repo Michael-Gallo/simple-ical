@@ -10,17 +10,7 @@ import (
 const alarmLocation = "Alarm"
 
 // parseAlarmProperty parses a single property line and adds it to the provided alarm.
-func parseAlarmProperty(propertyName string, value string, params map[string]string, ctx *parseContext, calendar *model.Calendar) error {
-	// Get the current alarm based on context
-	var alarm *model.Alarm
-	if ctx.inEvent {
-		alarm = &calendar.Events[ctx.currentEventIndex].Alarms[ctx.currentAlarmIndex]
-	} else if ctx.inTodo {
-		alarm = &calendar.Todos[ctx.currentTodoIndex].Alarms[ctx.currentAlarmIndex]
-	} else if ctx.inJournal {
-		alarm = &calendar.Journals[ctx.currentJournalIndex].Alarms[ctx.currentAlarmIndex]
-	}
-
+func parseAlarmProperty(propertyName string, value string, params map[string]string, alarm *model.Alarm) error {
 	switch model.AlarmToken(propertyName) {
 	case model.AlarmTokenAction:
 		return setOnceProperty(&alarm.Action, model.AlarmAction(value), propertyName, alarmLocation)
@@ -51,38 +41,28 @@ func parseAlarmProperty(propertyName string, value string, params map[string]str
 }
 
 // validateAlarm ensures that all required values are present for an alarm.
-func validateAlarm(ctx *parseContext, calendar *model.Calendar) error {
-	// Get the current alarm based on context
-	var currentAlarm *model.Alarm
-	if ctx.inEvent {
-		currentAlarm = &calendar.Events[ctx.currentEventIndex].Alarms[ctx.currentAlarmIndex]
-	} else if ctx.inTodo {
-		currentAlarm = &calendar.Todos[ctx.currentTodoIndex].Alarms[ctx.currentAlarmIndex]
-	} else if ctx.inJournal {
-		currentAlarm = &calendar.Journals[ctx.currentJournalIndex].Alarms[ctx.currentAlarmIndex]
-	}
-
-	if currentAlarm.Action == "" {
+func validateAlarm(alarm *model.Alarm) error {
+	if alarm.Action == "" {
 		return ErrMissingAlarmActionProperty
 	}
-	if currentAlarm.Trigger == "" {
+	if alarm.Trigger == "" {
 		return ErrMissingAlarmTriggerProperty
 	}
 
 	// Validate action-specific requirements
-	switch currentAlarm.Action {
+	switch alarm.Action {
 	case model.AlarmActionDisplay:
-		if len(currentAlarm.Description) == 0 {
+		if len(alarm.Description) == 0 {
 			return ErrMissingAlarmDescriptionForDisplay
 		}
 	case model.AlarmActionEmail:
-		if len(currentAlarm.Description) == 0 {
+		if len(alarm.Description) == 0 {
 			return ErrMissingAlarmDescriptionForEmail
 		}
-		if currentAlarm.Summary == "" {
+		if alarm.Summary == "" {
 			return ErrMissingAlarmSummaryForEmail
 		}
-		if len(currentAlarm.Attendees) == 0 {
+		if len(alarm.Attendees) == 0 {
 			return ErrMissingAlarmAttendeesForEmail
 		}
 	}

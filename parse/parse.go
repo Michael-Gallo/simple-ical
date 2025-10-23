@@ -36,8 +36,9 @@ type parseContext struct {
 	currentTodoIndex         int16
 	currentJournalIndex      int16
 	currentFreeBusyIndex     int16
-	currentAlarmIndex        int16
-	currentCalendar          *model.Calendar
+	// Because Alarms are sub-components of VEVENT and VTODOs, the currentAlarmIndex will reset to 0 whenever we exit an event or todo
+	currentAlarmIndex int16
+	currentCalendar   *model.Calendar
 }
 
 // IcalString takes the string representation of an ICAL and parses it into a Calendar.
@@ -129,7 +130,13 @@ func parsePropertyLine(propertyName string, value string, params map[string]stri
 	// Route to appropriate parser based on current state
 	// Check sub-components first (alarms can be inside events, todos, or journals)
 	if ctx.inAlarm {
-		return parseAlarmProperty(propertyName, value, params, ctx, calendar)
+		var currentAlarm *model.Alarm
+		if ctx.inEvent {
+			currentAlarm = &calendar.Events[ctx.currentEventIndex].Alarms[ctx.currentAlarmIndex]
+		} else if ctx.inTodo {
+			currentAlarm = &calendar.Todos[ctx.currentTodoIndex].Alarms[ctx.currentAlarmIndex]
+		}
+		return parseAlarmProperty(propertyName, value, params, currentAlarm)
 	}
 	if ctx.inEvent {
 		return parseEventProperty(propertyName, value, params, ctx.currentEventIndex, calendar)
@@ -162,40 +169,31 @@ func handleBeginBlock(beginValue string, ctx *parseContext, calendar *model.Cale
 	case string(model.SectionTokenVTimezone):
 		ctx.inTimezone = true
 		calendar.TimeZones = append(calendar.TimeZones, model.TimeZone{})
-		ctx.currentTimezoneIndex = int16(len(calendar.TimeZones) - 1)
 	case string(model.SectionTokenVFreebusy):
 		ctx.inFreebusy = true
 		calendar.FreeBusys = append(calendar.FreeBusys, model.FreeBusy{})
-		ctx.currentFreeBusyIndex = int16(len(calendar.FreeBusys) - 1)
 	case string(model.SectionTokenVAlarm):
 		ctx.inAlarm = true
 		// Determine which parent component to add the alarm to
 		if ctx.inEvent {
 			calendar.Events[ctx.currentEventIndex].Alarms = append(calendar.Events[ctx.currentEventIndex].Alarms, model.Alarm{})
-			ctx.currentAlarmIndex = int16(len(calendar.Events[ctx.currentEventIndex].Alarms) - 1)
 		} else if ctx.inTodo {
 			calendar.Todos[ctx.currentTodoIndex].Alarms = append(calendar.Todos[ctx.currentTodoIndex].Alarms, model.Alarm{})
-			ctx.currentAlarmIndex = int16(len(calendar.Todos[ctx.currentTodoIndex].Alarms) - 1)
 		} else if ctx.inJournal {
 			calendar.Journals[ctx.currentJournalIndex].Alarms = append(calendar.Journals[ctx.currentJournalIndex].Alarms, model.Alarm{})
-			ctx.currentAlarmIndex = int16(len(calendar.Journals[ctx.currentJournalIndex].Alarms) - 1)
 		}
 	case string(model.SectionTokenVJournal):
 		ctx.inJournal = true
 		calendar.Journals = append(calendar.Journals, model.Journal{})
-		ctx.currentJournalIndex = int16(len(calendar.Journals) - 1)
 	case string(model.SectionTokenVTodo):
 		ctx.inTodo = true
 		calendar.Todos = append(calendar.Todos, model.Todo{})
-		ctx.currentTodoIndex = int16(len(calendar.Todos) - 1)
 	case string(model.SectionTokenVStandard):
 		ctx.inStandard = true
 		calendar.TimeZones[ctx.currentTimezoneIndex].Standard = append(calendar.TimeZones[ctx.currentTimezoneIndex].Standard, model.TimeZoneProperty{})
-		ctx.currentTimeZonePropIndex = int16(len(calendar.TimeZones[ctx.currentTimezoneIndex].Standard) - 1)
 	case string(model.SectionTokenVDaylight):
 		ctx.inDaylight = true
 		calendar.TimeZones[ctx.currentTimezoneIndex].Daylight = append(calendar.TimeZones[ctx.currentTimezoneIndex].Daylight, model.TimeZoneProperty{})
-		ctx.currentTimeZonePropIndex = int16(len(calendar.TimeZones[ctx.currentTimezoneIndex].Daylight) - 1)
 	default:
 		return fmt.Errorf("%w: %s", ErrTemplateInvalidStartBlock, beginValue)
 	}
@@ -210,6 +208,7 @@ func handleEndBlock(endLineValue string, ctx *parseContext, calendar *model.Cale
 			return err
 		}
 		ctx.currentEventIndex++
+		ctx.currentAlarmIndex = 0
 		ctx.inEvent = false
 	case string(model.SectionTokenVCalendar):
 		if err := validateCalendar(calendar); err != nil {
@@ -221,26 +220,32 @@ func handleEndBlock(endLineValue string, ctx *parseContext, calendar *model.Cale
 			return err
 		}
 		ctx.inTimezone = false
+		ctx.currentTimezoneIndex++
 	case string(model.SectionTokenVFreebusy):
 		if err := validateFreeBusy(ctx, calendar); err != nil {
 			return err
 		}
 		ctx.inFreebusy = false
+		ctx.currentFreeBusyIndex++
 	case string(model.SectionTokenVAlarm):
-		if err := validateAlarm(ctx, calendar); err != nil {
+		if err := validateAlarm(&calendar.Events[ctx.currentEventIndex].Alarms[ctx.currentAlarmIndex]); err != nil {
 			return err
 		}
 		ctx.inAlarm = false
+		ctx.currentAlarmIndex++
 	case string(model.SectionTokenVJournal):
-		if err := validateJournal(ctx, calendar); err != nil {
+		if err := validateJournal(&calendar.Journals[ctx.currentJournalIndex]); err != nil {
 			return err
 		}
 		ctx.inJournal = false
+		ctx.currentJournalIndex++
 	case string(model.SectionTokenVTodo):
-		if err := validateTodo(ctx, calendar); err != nil {
+		if err := validateTodo(&calendar.Todos[ctx.currentTodoIndex]); err != nil {
 			return err
 		}
 		ctx.inTodo = false
+		ctx.currentTodoIndex++
+		ctx.currentAlarmIndex = 0
 	case string(model.SectionTokenVStandard):
 		ctx.inStandard = false
 	case string(model.SectionTokenVDaylight):

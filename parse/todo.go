@@ -122,11 +122,11 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 }
 
 // validateTodo ensures that all required values are present for a todo.
-func validateTodo(ctx *parseContext, calendar *model.Calendar) error {
-	if calendar.Todos[ctx.currentTodoIndex].UID == "" {
+func validateTodo(todo *model.Todo) error {
+	if todo.UID == "" {
 		return ErrMissingTodoUIDProperty
 	}
-	if calendar.Todos[ctx.currentTodoIndex].DTStart == (time.Time{}) {
+	if time.Time.IsZero(todo.DTStart) {
 		return ErrMissingTodoDTStartProperty
 	}
 	return nil
