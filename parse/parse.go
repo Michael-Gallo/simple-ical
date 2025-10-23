@@ -38,7 +38,6 @@ type parseContext struct {
 	currentFreeBusyIndex     int16
 	// Because Alarms are sub-components of VEVENT and VTODOs, the currentAlarmIndex will reset to 0 whenever we exit an event or todo
 	currentAlarmIndex int16
-	currentCalendar   *model.Calendar
 }
 
 // IcalString takes the string representation of an ICAL and parses it into a Calendar.
@@ -59,7 +58,6 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 	calendar := &model.Calendar{}
 	// Create parse context with all current parsing state
 	ctx := &parseContext{
-		currentCalendar: calendar,
 		stateMachine: stateMachine{
 			// We can save an Allocation by assuming the first line is a BEGIN:VCALENDAR
 			// because we will immediately be checking for it
@@ -129,6 +127,7 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 func parsePropertyLine(propertyName string, value string, params map[string]string, ctx *parseContext, calendar *model.Calendar) error {
 	// Route to appropriate parser based on current state
 	// Check sub-components first (alarms can be inside events, todos, or journals)
+	// TODO: make all parse lines take the struct they parse on instead of full calendars/indexes
 	if ctx.inAlarm {
 		var currentAlarm *model.Alarm
 		if ctx.inEvent {
@@ -142,7 +141,7 @@ func parsePropertyLine(propertyName string, value string, params map[string]stri
 		return parseEventProperty(propertyName, value, params, ctx.currentEventIndex, calendar)
 	}
 	if ctx.inTimezone {
-		return parseTimezoneProperty(propertyName, value, params, ctx)
+		return parseTimezoneProperty(propertyName, value, params, ctx, calendar)
 	}
 	if ctx.inTodo {
 		return parseTodoProperty(propertyName, value, params, ctx.currentTodoIndex, calendar)
@@ -154,7 +153,7 @@ func parsePropertyLine(propertyName string, value string, params map[string]stri
 		return parseFreeBusyProperty(propertyName, value, params, ctx.currentFreeBusyIndex, calendar)
 	}
 
-	return parseCalendarProperty(propertyName, value, params, ctx.currentCalendar)
+	return parseCalendarProperty(propertyName, value, params, calendar)
 	// Add more state checks as needed
 }
 
