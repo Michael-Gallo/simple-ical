@@ -12,8 +12,7 @@ import (
 const journalLocation = "Journal"
 
 // parseJournalProperty parses a single property line and adds it to the provided journal.
-func parseJournalProperty(propertyName string, value string, params map[string]string, journalIndex int16, calendar *model.Calendar) error {
-	journal := &calendar.Journals[journalIndex]
+func parseJournalProperty(propertyName string, value string, params map[string]string, journal *model.Journal) error {
 	switch model.JournalToken(propertyName) {
 	case model.JournalTokenDTStamp:
 		return setOnceTimeProperty(&journal.DTStamp, value, propertyName, journalLocation)

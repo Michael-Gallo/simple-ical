@@ -13,8 +13,7 @@ import (
 const todoLocation = "Todo"
 
 // parseTodoProperty parses a single property line and adds it to the provided todo.
-func parseTodoProperty(propertyName string, value string, params map[string]string, todoIndex int16, calendar *model.Calendar) error {
-	todo := &calendar.Todos[todoIndex]
+func parseTodoProperty(propertyName string, value string, params map[string]string, todo *model.Todo) error {
 	switch model.TodoToken(propertyName) {
 	case model.TodoTokenDTStamp:
 		return setOnceTimeProperty(&todo.DTStamp, value, propertyName, todoLocation)

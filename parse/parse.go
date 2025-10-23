@@ -127,7 +127,6 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 func parsePropertyLine(propertyName string, value string, params map[string]string, ctx *parseContext, calendar *model.Calendar) error {
 	// Route to appropriate parser based on current state
 	// Check sub-components first (alarms can be inside events, todos, or journals)
-	// TODO: make all parse lines take the struct they parse on instead of full calendars/indexes
 	if ctx.inAlarm {
 		var currentAlarm *model.Alarm
 		if ctx.inEvent {
@@ -138,23 +137,22 @@ func parsePropertyLine(propertyName string, value string, params map[string]stri
 		return parseAlarmProperty(propertyName, value, params, currentAlarm)
 	}
 	if ctx.inEvent {
-		return parseEventProperty(propertyName, value, params, ctx.currentEventIndex, calendar)
+		return parseEventProperty(propertyName, value, params, &calendar.Events[ctx.currentEventIndex])
 	}
 	if ctx.inTimezone {
-		return parseTimezoneProperty(propertyName, value, params, ctx, calendar)
+		return parseTimezoneProperty(propertyName, value, params, ctx, &calendar.TimeZones[ctx.currentTimezoneIndex])
 	}
 	if ctx.inTodo {
-		return parseTodoProperty(propertyName, value, params, ctx.currentTodoIndex, calendar)
+		return parseTodoProperty(propertyName, value, params, &calendar.Todos[ctx.currentTodoIndex])
 	}
 	if ctx.inJournal {
-		return parseJournalProperty(propertyName, value, params, ctx.currentJournalIndex, calendar)
+		return parseJournalProperty(propertyName, value, params, &calendar.Journals[ctx.currentJournalIndex])
 	}
 	if ctx.inFreebusy {
-		return parseFreeBusyProperty(propertyName, value, params, ctx.currentFreeBusyIndex, calendar)
+		return parseFreeBusyProperty(propertyName, value, params, &calendar.FreeBusys[ctx.currentFreeBusyIndex])
 	}
 
 	return parseCalendarProperty(propertyName, value, params, calendar)
-	// Add more state checks as needed
 }
 
 // handleBeginBlock processes BEGIN blocks and updates the parser state.

@@ -11,20 +11,19 @@ import (
 const timezoneLocation = "TimeZone"
 
 // parseTimezoneProperty parses a single property line and adds it to the provided timezone.
-func parseTimezoneProperty(propertyName string, value string, params map[string]string, ctx *parseContext, calendar *model.Calendar) error {
+func parseTimezoneProperty(propertyName string, value string, params map[string]string, ctx *parseContext, timezone *model.TimeZone) error {
 	// Handle sub-components (STANDARD and DAYLIGHT)
 	if ctx.inStandard || ctx.inDaylight {
 		var tzProp *model.TimeZoneProperty
 		if ctx.inStandard {
-			tzProp = &calendar.TimeZones[ctx.currentTimezoneIndex].Standard[ctx.currentTimeZonePropIndex]
+			tzProp = &timezone.Standard[ctx.currentTimeZonePropIndex]
 		} else {
-			tzProp = &calendar.TimeZones[ctx.currentTimezoneIndex].Daylight[ctx.currentTimeZonePropIndex]
+			tzProp = &timezone.Daylight[ctx.currentTimeZonePropIndex]
 		}
 		return parseTimeZonePropertySubComponent(propertyName, value, params, tzProp)
 	}
 
 	// Handle timezone-level properties
-	timezone := &calendar.TimeZones[ctx.currentTimezoneIndex]
 	switch model.TimezoneToken(propertyName) {
 	case model.TimezoneTokenTimeZoneID:
 		return setOnceProperty(&timezone.TimeZoneID, value, propertyName, timezoneLocation)

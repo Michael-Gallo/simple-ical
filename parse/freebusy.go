@@ -13,8 +13,7 @@ import (
 const freeBusyLocation = "FreeBusy"
 
 // parseFreeBusyProperty parses a single property line and adds it to the provided freebusy.
-func parseFreeBusyProperty(propertyName string, value string, params map[string]string, freeBusyIndex int16, calendar *model.Calendar) error {
-	freeBusy := &calendar.FreeBusys[freeBusyIndex]
+func parseFreeBusyProperty(propertyName string, value string, params map[string]string, freeBusy *model.FreeBusy) error {
 	switch model.FreeBusyToken(propertyName) {
 	case model.FreeBusyTokenDTStamp:
 		return setOnceTimeProperty(&freeBusy.DTStamp, value, propertyName, freeBusyLocation)
