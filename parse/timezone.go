@@ -13,22 +13,29 @@ const timezoneLocation = "TimeZone"
 // parseTimezoneProperty parses a single property line and adds it to the provided timezone.
 func parseTimezoneProperty(propertyName string, value string, params map[string]string, ctx *parseContext) error {
 	// Handle sub-components (STANDARD and DAYLIGHT)
-	if ctx.state.inStandard || ctx.state.inDaylight {
-		return parseTimeZonePropertySubComponent(propertyName, value, params, ctx.currentTimeZoneProperty)
+	if ctx.inStandard || ctx.inDaylight {
+		var tzProp *model.TimeZoneProperty
+		if ctx.inStandard {
+			tzProp = &ctx.currentCalendar.TimeZones[ctx.currentTimezoneIndex].Standard[ctx.currentTimeZonePropIndex]
+		} else {
+			tzProp = &ctx.currentCalendar.TimeZones[ctx.currentTimezoneIndex].Daylight[ctx.currentTimeZonePropIndex]
+		}
+		return parseTimeZonePropertySubComponent(propertyName, value, params, tzProp)
 	}
 
 	// Handle timezone-level properties
+	timezone := &ctx.currentCalendar.TimeZones[ctx.currentTimezoneIndex]
 	switch model.TimezoneToken(propertyName) {
 	case model.TimezoneTokenTimeZoneID:
-		return setOnceProperty(&ctx.currentTimezone.TimeZoneID, value, propertyName, timezoneLocation)
+		return setOnceProperty(&timezone.TimeZoneID, value, propertyName, timezoneLocation)
 	case model.TimezoneTokenLastMod:
-		return setOnceTimeProperty(&ctx.currentTimezone.LastMod, value, propertyName, timezoneLocation)
+		return setOnceTimeProperty(&timezone.LastMod, value, propertyName, timezoneLocation)
 	case model.TimezoneTokenTimeZoneURL:
 		parsedURL, err := url.Parse(value)
 		if err != nil {
 			return err
 		}
-		return setOnceProperty(&ctx.currentTimezone.TimeZoneURL, parsedURL, propertyName, timezoneLocation)
+		return setOnceProperty(&timezone.TimeZoneURL, parsedURL, propertyName, timezoneLocation)
 	default:
 		return fmt.Errorf("%w: %s", ErrInvalidTimezoneProperty, propertyName)
 	}
@@ -77,8 +84,8 @@ func parseTimezoneTime(value string) (time.Time, error) {
 }
 
 // validateTimeZone ensures that all required values are present for a timezone.
-func validateTimeZone(ctx *parseContext) error {
-	if ctx.currentTimezone.TimeZoneID == "" {
+func validateTimeZone(ctx *parseContext, calendar *model.Calendar) error {
+	if calendar.TimeZones[ctx.currentTimezoneIndex].TimeZoneID == "" {
 		return ErrMissingTimezoneTZIDProperty
 	}
 	return nil

@@ -13,7 +13,8 @@ import (
 const todoLocation = "Todo"
 
 // parseTodoProperty parses a single property line and adds it to the provided todo.
-func parseTodoProperty(propertyName string, value string, params map[string]string, todo *model.Todo) error {
+func parseTodoProperty(propertyName string, value string, params map[string]string, todoIndex int16, calendar *model.Calendar) error {
+	todo := &calendar.Todos[todoIndex]
 	switch model.TodoToken(propertyName) {
 	case model.TodoTokenDTStamp:
 		return setOnceTimeProperty(&todo.DTStamp, value, propertyName, todoLocation)
@@ -121,11 +122,11 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 }
 
 // validateTodo ensures that all required values are present for a todo.
-func validateTodo(ctx *parseContext) error {
-	if ctx.currentTodo.UID == "" {
+func validateTodo(ctx *parseContext, calendar *model.Calendar) error {
+	if calendar.Todos[ctx.currentTodoIndex].UID == "" {
 		return ErrMissingTodoUIDProperty
 	}
-	if ctx.currentTodo.DTStart == (time.Time{}) {
+	if calendar.Todos[ctx.currentTodoIndex].DTStart == (time.Time{}) {
 		return ErrMissingTodoDTStartProperty
 	}
 	return nil

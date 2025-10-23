@@ -2,19 +2,19 @@ goos: linux
 goarch: amd64
 pkg: github.com/michael-gallo/simple-ical/benchmarks
 cpu: AMD Ryzen 7 5700X3D 8-Core Processor           
-BenchmarkParseRRule/Simple_rule_with_count/SimpleIcal-16         	11876176	       103.2 ns/op	     152 B/op	       2 allocs/op
-BenchmarkParseRRule/Simple_rule_with_count/RRuleGo-16            	  971533	      1181 ns/op	    1864 B/op	      20 allocs/op
-BenchmarkParseRRule/Simple_rule_with_until/SimpleIcal-16         	 5265951	       232.7 ns/op	     168 B/op	       2 allocs/op
-BenchmarkParseRRule/Simple_rule_with_until/RRuleGo-16            	  890440	      1430 ns/op	    1864 B/op	      20 allocs/op
-BenchmarkParseRRule/String_from_teambition's_rrule.go_example/SimpleIcal-16         	11904898	       101.4 ns/op	     152 B/op	       2 allocs/op
-BenchmarkParseRRule/String_from_teambition's_rrule.go_example/RRuleGo-16            	  815905	      1324 ns/op	    1864 B/op	      20 allocs/op
-BenchmarkParseRRule/Every_20th_Monday_of_the_year,_forever/SimpleIcal-16            	 8853519	       131.8 ns/op	     184 B/op	       3 allocs/op
-BenchmarkParseRRule/Every_20th_Monday_of_the_year,_forever/RRuleGo-16               	  875251	      1337 ns/op	    1864 B/op	      22 allocs/op
-BenchmarkAll/Single_Event_-_Gocal-16                                                	   94969	     11720 ns/op	   11776 B/op	     198 allocs/op
-BenchmarkAll/Single_Event_-_SimpleIcal-16                                           	  243177	      5132 ns/op	    7656 B/op	      58 allocs/op
-BenchmarkAll/Single_Event_-_GolangIcal-16                                           	   41926	     27851 ns/op	   18316 B/op	     440 allocs/op
-BenchmarkAll/Multiple_Events_-_Gocal-16                                             	   65035	     18217 ns/op	   17188 B/op	     314 allocs/op
-BenchmarkAll/Multiple_Events_-_SimpleIcal-16                                        	  148671	      8037 ns/op	   10688 B/op	      95 allocs/op
-BenchmarkAll/Multiple_Events_-_GolangIcal-16                                        	   27422	     43722 ns/op	   27761 B/op	     694 allocs/op
+BenchmarkParseRRule/Simple_rule_with_count/SimpleIcal-16         	11987568	       101.1 ns/op	     152 B/op	       2 allocs/op
+BenchmarkParseRRule/Simple_rule_with_count/RRuleGo-16            	  997730	      1183 ns/op	    1864 B/op	      20 allocs/op
+BenchmarkParseRRule/Simple_rule_with_until/SimpleIcal-16         	 5285800	       223.5 ns/op	     168 B/op	       2 allocs/op
+BenchmarkParseRRule/Simple_rule_with_until/RRuleGo-16            	  845850	      1376 ns/op	    1864 B/op	      20 allocs/op
+BenchmarkParseRRule/String_from_teambition's_rrule.go_example/SimpleIcal-16         	11977005	       100.8 ns/op	     152 B/op	       2 allocs/op
+BenchmarkParseRRule/String_from_teambition's_rrule.go_example/RRuleGo-16            	  901822	      1339 ns/op	    1864 B/op	      20 allocs/op
+BenchmarkParseRRule/Every_20th_Monday_of_the_year,_forever/SimpleIcal-16            	 9089233	       129.1 ns/op	     184 B/op	       3 allocs/op
+BenchmarkParseRRule/Every_20th_Monday_of_the_year,_forever/RRuleGo-16               	  848829	      1396 ns/op	    1864 B/op	      22 allocs/op
+BenchmarkAll/Single_Event_-_Gocal-16                                                	  102388	     11648 ns/op	   11776 B/op	     198 allocs/op
+BenchmarkAll/Single_Event_-_SimpleIcal-16                                           	  245391	      4987 ns/op	    6808 B/op	      55 allocs/op
+BenchmarkAll/Single_Event_-_GolangIcal-16                                           	   42490	     28626 ns/op	   18322 B/op	     440 allocs/op
+BenchmarkAll/Multiple_Events_-_Gocal-16                                             	   63946	     18661 ns/op	   17188 B/op	     314 allocs/op
+BenchmarkAll/Multiple_Events_-_SimpleIcal-16                                        	  145362	      7933 ns/op	    9264 B/op	      91 allocs/op
+BenchmarkAll/Multiple_Events_-_GolangIcal-16                                        	   27075	     46272 ns/op	   27752 B/op	     694 allocs/op
 PASS
-ok  	github.com/michael-gallo/simple-ical/benchmarks	16.615s
+ok  	github.com/michael-gallo/simple-ical/benchmarks	16.754s

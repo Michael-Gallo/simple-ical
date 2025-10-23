@@ -13,7 +13,8 @@ import (
 const freeBusyLocation = "FreeBusy"
 
 // parseFreeBusyProperty parses a single property line and adds it to the provided freebusy.
-func parseFreeBusyProperty(propertyName string, value string, params map[string]string, freeBusy *model.FreeBusy) error {
+func parseFreeBusyProperty(propertyName string, value string, params map[string]string, freeBusyIndex int16, calendar *model.Calendar) error {
+	freeBusy := &calendar.FreeBusys[freeBusyIndex]
 	switch model.FreeBusyToken(propertyName) {
 	case model.FreeBusyTokenDTStamp:
 		return setOnceTimeProperty(&freeBusy.DTStamp, value, propertyName, freeBusyLocation)
@@ -96,11 +97,11 @@ func parseFreeBusyTime(value string) (model.FreeBusyTime, error) {
 }
 
 // validateFreeBusy ensures that all required values are present for a freebusy.
-func validateFreeBusy(ctx *parseContext) error {
-	if ctx.currentFreeBusy.UID == "" {
+func validateFreeBusy(ctx *parseContext, calendar *model.Calendar) error {
+	if calendar.FreeBusys[ctx.currentFreeBusyIndex].UID == "" {
 		return ErrMissingFreeBusyUIDProperty
 	}
-	if time.Time.IsZero(ctx.currentFreeBusy.DTStart) {
+	if time.Time.IsZero(calendar.FreeBusys[ctx.currentFreeBusyIndex].DTStart) {
 		return ErrMissingFreeBusyDTStartProperty
 	}
 	return nil

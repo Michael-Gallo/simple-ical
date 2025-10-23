@@ -13,57 +13,57 @@ import (
 const eventLocation = "Event"
 
 // parseEventProperty parses a single property line and adds it to the provided vevent.
-func parseEventProperty(propertyName string, value string, params map[string]string, event *model.Event) error {
+func parseEventProperty(propertyName string, value string, params map[string]string, eventIndex int16, calendar *model.Calendar) error {
 	switch model.EventToken(propertyName) {
 	case model.EventTokenDtstart:
-		return setOnceTimeProperty(&event.Start, value, propertyName, eventLocation)
+		return setOnceTimeProperty(&calendar.Events[eventIndex].Start, value, propertyName, eventLocation)
 	case model.EventTokenDTStamp:
-		return setOnceTimeProperty(&event.DTStamp, value, propertyName, eventLocation)
+		return setOnceTimeProperty(&calendar.Events[eventIndex].DTStamp, value, propertyName, eventLocation)
 
 	// End and Duration are mutually exclusive
 	case model.EventTokenDtend:
-		if event.Duration != 0 {
+		if calendar.Events[eventIndex].Duration != 0 {
 			return ErrInvalidDurationPropertyDtend
 		}
-		return setOnceTimeProperty(&event.End, value, propertyName, eventLocation)
+		return setOnceTimeProperty(&calendar.Events[eventIndex].End, value, propertyName, eventLocation)
 	case model.EventTokenDuration:
-		if event.End != (time.Time{}) {
+		if calendar.Events[eventIndex].End != (time.Time{}) {
 			return ErrInvalidDurationPropertyDtend
 		}
-		return setOnceDurationProperty(&event.Duration, value, propertyName, eventLocation)
+		return setOnceDurationProperty(&calendar.Events[eventIndex].Duration, value, propertyName, eventLocation)
 	case model.EventTokenLastModified:
-		return setOnceTimeProperty(&event.LastModified, value, propertyName, eventLocation)
+		return setOnceTimeProperty(&calendar.Events[eventIndex].LastModified, value, propertyName, eventLocation)
 
 	case model.EventTokenSummary:
-		return setOnceProperty(&event.Summary, value, propertyName, eventLocation)
+		return setOnceProperty(&calendar.Events[eventIndex].Summary, value, propertyName, eventLocation)
 	case model.EventTokenDescription:
-		return setOnceProperty(&event.Description, value, propertyName, eventLocation)
+		return setOnceProperty(&calendar.Events[eventIndex].Description, value, propertyName, eventLocation)
 	case model.EventTokenLocation:
-		return setOnceProperty(&event.Location, value, propertyName, eventLocation)
+		return setOnceProperty(&calendar.Events[eventIndex].Location, value, propertyName, eventLocation)
 	case model.EventTokenUID:
-		return setOnceProperty(&event.UID, value, propertyName, eventLocation)
+		return setOnceProperty(&calendar.Events[eventIndex].UID, value, propertyName, eventLocation)
 	case model.EventTokenContact:
-		event.Contacts = append(event.Contacts, value)
+		calendar.Events[eventIndex].Contacts = append(calendar.Events[eventIndex].Contacts, value)
 		return nil
 
 	case model.EventTokenStatus:
-		event.Status = model.EventStatus(value)
+		calendar.Events[eventIndex].Status = model.EventStatus(value)
 	case model.EventTokenTransp:
-		return setOnceProperty(&event.Transp, model.EventTransp(value), propertyName, eventLocation)
+		return setOnceProperty(&calendar.Events[eventIndex].Transp, model.EventTransp(value), propertyName, eventLocation)
 	case model.EventTokenSequence:
-		return setOnceIntProperty(&event.Sequence, value, propertyName, eventLocation)
+		return setOnceIntProperty(&calendar.Events[eventIndex].Sequence, value, propertyName, eventLocation)
 	case model.EventTokenOrganizer:
 		organizer, err := parseOrganizer(value, params)
 		if err != nil {
 			return err
 		}
-		event.Organizer = organizer
+		calendar.Events[eventIndex].Organizer = organizer
 	case model.EventTokenComment:
-		event.Comment = append(event.Comment, value)
+		calendar.Events[eventIndex].Comment = append(calendar.Events[eventIndex].Comment, value)
 	case model.EventTokenCategories:
-		event.Categories = append(event.Categories, strings.Split(value, ",")...)
+		calendar.Events[eventIndex].Categories = append(calendar.Events[eventIndex].Categories, strings.Split(value, ",")...)
 	case model.EventTokenGeo:
-		if event.Geo != nil {
+		if calendar.Events[eventIndex].Geo != nil {
 			return fmt.Errorf("%w: %s", ErrDuplicateProperty, propertyName)
 		}
 		// Geo must be two floats separted by a colon
@@ -79,7 +79,7 @@ func parseEventProperty(propertyName string, value string, params map[string]str
 		if err != nil {
 			return ErrInvalidGeoPropertyLongitude
 		}
-		event.Geo = append(event.Geo, latitude, longitude)
+		calendar.Events[eventIndex].Geo = append(calendar.Events[eventIndex].Geo, latitude, longitude)
 	default:
 		return fmt.Errorf("%w: %s", ErrInvalidEventProperty, propertyName)
 	}
@@ -125,11 +125,11 @@ func parseOrganizer(value string, params map[string]string) (*model.Organizer, e
 }
 
 // validateEvent ensures that all required values are present for an event
-func validateEvent(ctx *parseContext) error {
-	if ctx.currentEvent.UID == "" {
+func validateEvent(event model.Event) error {
+	if event.UID == "" {
 		return ErrMissingEventUIDProperty
 	}
-	if ctx.currentEvent.Start.IsZero() && ctx.currentCalendar.Method == "" {
+	if event.Start.IsZero() {
 		return ErrMissingEventDTStartProperty
 	}
 	return nil

@@ -12,7 +12,8 @@ import (
 const journalLocation = "Journal"
 
 // parseJournalProperty parses a single property line and adds it to the provided journal.
-func parseJournalProperty(propertyName string, value string, params map[string]string, journal *model.Journal) error {
+func parseJournalProperty(propertyName string, value string, params map[string]string, journalIndex int16, calendar *model.Calendar) error {
+	journal := &calendar.Journals[journalIndex]
 	switch model.JournalToken(propertyName) {
 	case model.JournalTokenDTStamp:
 		return setOnceTimeProperty(&journal.DTStamp, value, propertyName, journalLocation)
@@ -76,11 +77,11 @@ func parseJournalProperty(propertyName string, value string, params map[string]s
 }
 
 // validateJournal ensures that all required values are present for a journal.
-func validateJournal(ctx *parseContext) error {
-	if ctx.currentJournal.UID == "" {
+func validateJournal(ctx *parseContext, calendar *model.Calendar) error {
+	if calendar.Journals[ctx.currentJournalIndex].UID == "" {
 		return ErrMissingJournalUIDProperty
 	}
-	if time.Time.IsZero(ctx.currentJournal.DTStart) {
+	if time.Time.IsZero(calendar.Journals[ctx.currentJournalIndex].DTStart) {
 		return ErrMissingJournalDTStartProperty
 	}
 	return nil
