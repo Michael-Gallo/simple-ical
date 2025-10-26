@@ -56,13 +56,13 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 		return nil, ErrNoCalendarFound
 	}
 
-	line := strings.TrimRight(scanner.Text(), "\r")
+	line := strings.TrimRight(scanner.Text(), " ")
 	if line != "BEGIN:VCALENDAR" {
 		return nil, ErrInvalidCalendarFormatMissingBegin
 	}
 
 	for scanner.Scan() {
-		line := strings.TrimRight(scanner.Text(), "\r")
+		line := strings.TrimRight(scanner.Text(), " ")
 
 		if line == "" {
 			return nil, ErrInvalidCalendarEmptyLine

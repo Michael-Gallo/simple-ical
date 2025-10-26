@@ -4,7 +4,7 @@ test-slow:
 	go test ./... --race --count 1
 
 test:
-	go test ./...
+	go test --count 1 ./...
 
 lint:
 	golangci-lint run

@@ -18,7 +18,8 @@ var (
 	testValidCalendarInput string
 	//go:embed test_data/calendar/valid_empty_calendar.ical
 	testEmptyCalendarInput string
-
+	//go:embed test_data/calendar/valid_calendar_trailing_whitespace.ical
+	testTrailingWithSpaceInput string
 	//go:embed test_data/calendar/no_begin_calendar.ical
 	testInvalidBeginCalendarInput string
 	//go:embed test_data/calendar/no_end_calendar.ical
@@ -99,6 +100,16 @@ func TestParseCalendarSuccess(t *testing.T) {
 				Version: "2.0",
 				ProdID:  "Id",
 				Events:  nil,
+			},
+		},
+		{
+			name:  "Calendar with trailing space",
+			input: testTrailingWithSpaceInput,
+			expectedCalendar: &model.Calendar{
+				ProdID:   "-//Event//Event Calendar//EN",
+				Version:  "2.0",
+				Method:   "REQUEST",
+				CalScale: "GREGORIAN",
 			},
 		},
 	}
