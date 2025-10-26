@@ -41,17 +41,6 @@ var (
 	//go:embed test_data/events/test_event_missing_dtstart.ical
 	testIcalMissingDTStartInput string
 
-	//go:embed test_data/no_begin_calendar.ical
-	testInvalidBeginCalendarInput string
-	//go:embed test_data/no_end_calendar.ical
-	testInvalidEndCalendarInput string
-	//go:embed test_data/empty_line_calendar.ical
-	testInvalidEmptyLineCalendarInput string
-	//go:embed test_data/calendar_missing_version.ical
-	testCalendarMissingVersionInput string
-	//go:embed test_data/calendar_missing_prodid.ical
-	testCalendarMissingProdIDInput string
-
 	// VTODO test files
 	//go:embed test_data/todos/test_todo.ical
 	testTodoInput string
@@ -391,16 +380,6 @@ func TestParseError(t *testing.T) {
 			expectedError: parse.ErrInvalidProtocol,
 		},
 		{
-			name:          "Calendar with no BEGIN:VCALENDAR",
-			input:         testInvalidBeginCalendarInput,
-			expectedError: parse.ErrInvalidCalendarFormatMissingBegin,
-		},
-		{
-			name:          "Calendar with no END:VCALENDAR",
-			input:         testInvalidEndCalendarInput,
-			expectedError: parse.ErrInvalidCalendarFormatMissingEnd,
-		},
-		{
 			name:          "Invalid start date",
 			input:         testIcalInvalidStartInput,
 			expectedError: parse.ErrParseErrorInComponent,
@@ -449,21 +428,6 @@ func TestParseError(t *testing.T) {
 			name:          "Missing DTSTART",
 			input:         testIcalMissingDTStartInput,
 			expectedError: parse.ErrMissingEventDTStartProperty,
-		},
-		{
-			name:          "Empty line in calendar",
-			input:         testInvalidEmptyLineCalendarInput,
-			expectedError: parse.ErrInvalidCalendarEmptyLine,
-		},
-		{
-			name:          "Calendar missing VERSION property",
-			input:         testCalendarMissingVersionInput,
-			expectedError: parse.ErrMissingCalendarVersionProperty,
-		},
-		{
-			name:          "Calendar missing PRODID property",
-			input:         testCalendarMissingProdIDInput,
-			expectedError: parse.ErrMissingCalendarProdIDProperty,
 		},
 		{
 			name:          "VTODO missing UID",

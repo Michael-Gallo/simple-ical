@@ -18,6 +18,17 @@ var (
 	testValidCalendarInput string
 	//go:embed test_data/calendar/valid_empty_calendar.ical
 	testEmptyCalendarInput string
+
+	//go:embed test_data/calendar/no_begin_calendar.ical
+	testInvalidBeginCalendarInput string
+	//go:embed test_data/calendar/no_end_calendar.ical
+	testInvalidEndCalendarInput string
+	//go:embed test_data/calendar/empty_line_calendar.ical
+	testInvalidEmptyLineCalendarInput string
+	//go:embed test_data/calendar/calendar_missing_version.ical
+	testCalendarMissingVersionInput string
+	//go:embed test_data/calendar/calendar_missing_prodid.ical
+	testCalendarMissingProdIDInput string
 )
 
 func TestParseCalendarSuccess(t *testing.T) {
@@ -105,7 +116,33 @@ func TestParseCalendarError(t *testing.T) {
 		name          string
 		input         string
 		expectedError error
-	}{}
+	}{
+		{
+			name:          "Calendar with no BEGIN:VCALENDAR",
+			input:         testInvalidBeginCalendarInput,
+			expectedError: parse.ErrInvalidCalendarFormatMissingBegin,
+		},
+		{
+			name:          "Calendar with no END:VCALENDAR",
+			input:         testInvalidEndCalendarInput,
+			expectedError: parse.ErrInvalidCalendarFormatMissingEnd,
+		},
+		{
+			name:          "Empty line in calendar",
+			input:         testInvalidEmptyLineCalendarInput,
+			expectedError: parse.ErrInvalidCalendarEmptyLine,
+		},
+		{
+			name:          "Calendar missing VERSION property",
+			input:         testCalendarMissingVersionInput,
+			expectedError: parse.ErrMissingCalendarVersionProperty,
+		},
+		{
+			name:          "Calendar missing PRODID property",
+			input:         testCalendarMissingProdIDInput,
+			expectedError: parse.ErrMissingCalendarProdIDProperty,
+		},
+	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			calendar, err := parse.IcalString(tc.input)
