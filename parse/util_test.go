@@ -50,7 +50,7 @@ func TestParseIcalLine(t *testing.T) {
 	}
 	for _, testCase := range testCases {
 		t.Run(testCase.name, func(t *testing.T) {
-			propertyName, params, value, err := parseIcalLine(testCase.line)
+			propertyName, params, value, err := parseIcalLineWithReusableMap(testCase.line, make(map[string]string))
 			assert.Equal(t, testCase.expectedPropertyName, propertyName)
 			assert.Equal(t, testCase.expectedParams, params)
 			assert.Equal(t, testCase.expectedValue, value)

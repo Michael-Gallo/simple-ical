@@ -47,8 +47,9 @@ func IcalString(input string) (*model.Calendar, error) {
 // IcalReader takes an io.Reader containing iCalendar data and parses it into a Calendar.
 func IcalReader(reader io.Reader) (*model.Calendar, error) {
 	calendar := &model.Calendar{}
-	// Single state variable - much more efficient than parseContext struct
 	currentState := StateCalendar
+	// Reusable parameter map to avoid allocations on every property
+	reusableParams := make(map[string]string, 2)
 	scanner := bufio.NewScanner(reader)
 
 	if !scanner.Scan() {
@@ -66,7 +67,13 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 		if line == "" {
 			return nil, ErrInvalidCalendarEmptyLine
 		}
-		propertyName, params, value, err := parseIcalLine(line)
+
+		// Clear the reusable parameter map before each use
+		for k := range reusableParams {
+			delete(reusableParams, k)
+		}
+
+		propertyName, params, value, err := parseIcalLineWithReusableMap(line, reusableParams)
 		if err != nil {
 			return nil, err
 		}
