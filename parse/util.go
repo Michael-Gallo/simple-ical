@@ -5,7 +5,7 @@ import (
 	"strings"
 )
 
-// parseIcalLine parses a single property line and returns the property name, parameters, and value.
+// ParseIcalLine parses a single property line and returns the property name, parameters, and value.
 // The propertyName is the string before the first colon or semicolon
 // params are semicolon separated values after the propertyName
 // value is the string after the first colon that is not encapsulated in parentheses
@@ -19,7 +19,6 @@ func parseIcalLine(line string) (propertyName string, params map[string]string, 
 
 	// Split the line at the colon
 	beforeColon := line[:colonIndex]
-	afterColon := line[colonIndex+1:]
 
 	// The property name is the first part before any semicolon
 	propertyName = beforeColon
@@ -33,10 +32,7 @@ func parseIcalLine(line string) (propertyName string, params map[string]string, 
 		}
 	}
 
-	// The value is everything after the colon
-	value = afterColon
-
-	return propertyName, params, value, nil
+	return propertyName, params, line[colonIndex+1:], nil
 }
 
 // splitParameters splits a parameter string by semicolons, respecting quoted strings.
