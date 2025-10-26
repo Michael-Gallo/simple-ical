@@ -19,13 +19,33 @@ const (
 	multipleEventsFileName = "./test_multiple_events.ical"
 )
 
-func BenchmarkAll(b *testing.B) {
-	// Pre-load file content to avoid I/O overhead in benchmarks
-	testFile(b, singleEventFileName, "Single Event")
-	testFile(b, multipleEventsFileName, "Multiple Events")
+func BenchmarkSimpleIcalSingleEvent(b *testing.B) {
+	fileContent, err := os.ReadFile(singleEventFileName)
+	if err != nil {
+		panic("Invalid File")
+	}
+
+	var reader bytes.Reader
+	for b.Loop() {
+		reader.Reset(fileContent)
+		cal, err := parse.IcalReader(&reader)
+		if err != nil {
+			panic(err)
+		}
+		if cal.Events[0].Organizer.CommonName != commonName {
+			panic("Invalid Organizer")
+		}
+	}
 }
 
-func testFile(b *testing.B, fileName string, testName string) {
+// Runs benchmarks to test simmple-ical against other parsers
+func BenchmarkComparativeAll(b *testing.B) {
+	// Pre-load file content to avoid I/O overhead in benchmarks
+	benchmarkFileComparison(b, singleEventFileName, "Single Event")
+	benchmarkFileComparison(b, multipleEventsFileName, "Multiple Events")
+}
+
+func benchmarkFileComparison(b *testing.B, fileName string, testName string) {
 	fileContent, err := os.ReadFile(fileName)
 	if err != nil {
 		panic("Invalid File")
