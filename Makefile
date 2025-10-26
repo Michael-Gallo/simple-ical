@@ -16,6 +16,7 @@ vet:
 	go vet ./...
 
 bench:
-	cd benchmarks && go test -bench=BenchmarkSimpleIcalSingleEvent ./... -benchmem
+	cd benchmarks && go test -bench=BenchmarkAllScenarios -benchmem 
+
 
 pre-commit: fmt vet test-slow

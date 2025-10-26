@@ -17,24 +17,56 @@ const commonName = "Org"
 const (
 	singleEventFileName    = "./test_event.ical"
 	multipleEventsFileName = "./test_multiple_events.ical"
+
+	// An extremely minimal ical file, with a single event with only required properties
+	simpleFileName   = "./test_simple.ical"
+	singleFileName   = "./test_event.ical"
+	multipleFileName = "./test_multiple_events.ical"
+	complexFileName  = "./test_complex.ical"
 )
 
-func BenchmarkSimpleIcalSingleEvent(b *testing.B) {
-	fileContent, err := os.ReadFile(singleEventFileName)
+func BenchmarkAllScenarios(b *testing.B) {
+	b.Run("Simple", func(b *testing.B) {
+		benchmarkFile(b, simpleFileName, "Simple Event")
+	})
+
+	b.Run("Single", func(b *testing.B) {
+		benchmarkFile(b, singleFileName, "Single Event")
+	})
+
+	b.Run("Multiple", func(b *testing.B) {
+		benchmarkFile(b, multipleFileName, "Multiple Events")
+	})
+
+	b.Run("Complex", func(b *testing.B) {
+		benchmarkFile(b, complexFileName, "Complex Calendar")
+	})
+}
+
+func benchmarkFile(b *testing.B, fileName string, description string) {
+	fileContent, err := os.ReadFile(fileName)
 	if err != nil {
-		panic("Invalid File")
+		b.Fatalf("Failed to read file %s: %v", fileName, err)
 	}
 
 	var reader bytes.Reader
-	for b.Loop() {
+	b.ResetTimer()
+	b.ReportAllocs()
+
+	for i := 0; i < b.N; i++ {
 		reader.Reset(fileContent)
 		cal, err := parse.IcalReader(&reader)
 		if err != nil {
-			panic(err)
+			b.Fatalf("Failed to parse %s: %v", description, err)
 		}
-		if cal.Events[0].Organizer.CommonName != commonName {
-			panic("Invalid Organizer")
+
+		// Basic validation to ensure parsing worked
+		if cal == nil {
+			b.Fatal("Calendar is nil")
 		}
+
+		// Prevent optimization
+		_ = cal
 	}
 }
 
