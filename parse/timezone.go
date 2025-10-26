@@ -11,14 +11,14 @@ import (
 const timezoneLocation = "TimeZone"
 
 // parseTimezoneProperty parses a single property line and adds it to the provided timezone.
-func parseTimezoneProperty(propertyName string, value string, params map[string]string, ctx *parseContext, timezone *model.TimeZone) error {
+func parseTimezoneProperty(propertyName string, value string, params map[string]string, currentState ParserState, timezone *model.TimeZone) error {
 	// Handle sub-components (STANDARD and DAYLIGHT)
-	if ctx.inStandard || ctx.inDaylight {
+	if currentState == StateStandard || currentState == StateDaylight {
 		var tzProp *model.TimeZoneProperty
-		if ctx.inStandard {
-			tzProp = &timezone.Standard[ctx.currentTimeZonePropIndex]
+		if currentState == StateStandard {
+			tzProp = &timezone.Standard[len(timezone.Standard)-1]
 		} else {
-			tzProp = &timezone.Daylight[ctx.currentTimeZonePropIndex]
+			tzProp = &timezone.Daylight[len(timezone.Daylight)-1]
 		}
 		return parseTimeZonePropertySubComponent(propertyName, value, params, tzProp)
 	}
@@ -83,8 +83,8 @@ func parseTimezoneTime(value string) (time.Time, error) {
 }
 
 // validateTimeZone ensures that all required values are present for a timezone.
-func validateTimeZone(ctx *parseContext, calendar *model.Calendar) error {
-	if calendar.TimeZones[ctx.currentTimezoneIndex].TimeZoneID == "" {
+func validateTimeZone(currentState *ParserState, calendar *model.Calendar) error {
+	if calendar.TimeZones[len(calendar.TimeZones)-1].TimeZoneID == "" {
 		return ErrMissingTimezoneTZIDProperty
 	}
 	return nil

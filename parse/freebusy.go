@@ -96,11 +96,11 @@ func parseFreeBusyTime(value string) (model.FreeBusyTime, error) {
 }
 
 // validateFreeBusy ensures that all required values are present for a freebusy.
-func validateFreeBusy(ctx *parseContext, calendar *model.Calendar) error {
-	if calendar.FreeBusys[ctx.currentFreeBusyIndex].UID == "" {
+func validateFreeBusy(currentState *ParserState, calendar *model.Calendar) error {
+	if calendar.FreeBusys[len(calendar.FreeBusys)-1].UID == "" {
 		return ErrMissingFreeBusyUIDProperty
 	}
-	if time.Time.IsZero(calendar.FreeBusys[ctx.currentFreeBusyIndex].DTStart) {
+	if time.Time.IsZero(calendar.FreeBusys[len(calendar.FreeBusys)-1].DTStart) {
 		return ErrMissingFreeBusyDTStartProperty
 	}
 	return nil
