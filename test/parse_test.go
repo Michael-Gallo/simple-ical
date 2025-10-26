@@ -177,11 +177,6 @@ func TestParseError(t *testing.T) {
 		expectedError error
 	}{
 		{
-			name:          "Empty input",
-			input:         "",
-			expectedError: parse.ErrNoCalendarFound,
-		},
-		{
 			name:          "VTODO missing UID",
 			input:         testTodoMissingUIDInput,
 			expectedError: parse.ErrMissingTodoUIDProperty,

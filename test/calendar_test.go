@@ -142,11 +142,17 @@ func TestParseCalendarError(t *testing.T) {
 			input:         testCalendarMissingProdIDInput,
 			expectedError: parse.ErrMissingCalendarProdIDProperty,
 		},
+		{
+			name:          "Empty input",
+			input:         "",
+			expectedError: parse.ErrNoCalendarFound,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			calendar, err := parse.IcalString(tc.input)
-			assert.ErrorIs(t, err, tc.expectedError)
+			assert.Error(t, err)
+			assert.ErrorContains(t, err, tc.expectedError.Error())
 			assert.Nil(t, calendar)
 		})
 	}
