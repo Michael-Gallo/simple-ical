@@ -38,6 +38,14 @@ var (
 	testIcalMissingUIDInput string
 	//go:embed test_data/events/test_event_missing_dtstart.ical
 	testIcalMissingDTStartInput string
+	//go:embed test_data/events/test_event_with_alarm.ical
+	testEventWithAlarmInput string
+	//go:embed test_data/events/test_event_alarm_missing_action.ical
+	testEventAlarmMissingActionInput string
+	//go:embed test_data/events/test_event_alarm_missing_description_display.ical
+	testEventAlarmMissingDescriptionDisplayInput string
+	//go:embed test_data/events/test_event_alarm_missing_attendee_email.ical
+	testEventAlarmMissingAttendeeEmailInput string
 )
 
 func TestValidEvent(t *testing.T) {
@@ -92,6 +100,40 @@ func TestValidEvent(t *testing.T) {
 								TimeZoneOffsetFrom: "+0000",
 								TimeZoneOffsetTo:   "+0000",
 								DTStart:            time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+							},
+						},
+					},
+				},
+			},
+		},
+		{
+			name:  "Valid VEVENT with VALARM",
+			input: testEventWithAlarmInput,
+			expectedCalendar: &model.Calendar{
+				ProdID:  "-//Event//Event Calendar//EN",
+				Version: "2.0",
+				Events: []model.Event{
+					{
+						UID:         "13235@example.com",
+						DTStamp:     time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
+						Start:       time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
+						End:         time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
+						Summary:     "Event with Alarm",
+						Description: "Event Description",
+						Alarms: []model.Alarm{
+							{
+								Action:      model.AlarmActionDisplay,
+								Trigger:     "-PT15M",
+								Description: []string{"Reminder: Event starting in 15 minutes"},
+								Repeat:      2,
+								Duration:    5 * time.Minute,
+							},
+							{
+								Action:      model.AlarmActionEmail,
+								Trigger:     "-PT1H",
+								Description: []string{"Email reminder for upcoming event"},
+								Summary:     "Event Reminder",
+								Attendees:   []url.URL{{Scheme: "mailto", Opaque: "user@example.com"}},
 							},
 						},
 					},
@@ -168,6 +210,21 @@ func TestInvalidEvent(t *testing.T) {
 			name:          "Missing DTSTART",
 			input:         testIcalMissingDTStartInput,
 			expectedError: parse.ErrMissingEventDTStartProperty,
+		},
+		{
+			name:          "VALARM missing ACTION",
+			input:         testEventAlarmMissingActionInput,
+			expectedError: parse.ErrMissingAlarmActionProperty,
+		},
+		{
+			name:          "VALARM DISPLAY missing DESCRIPTION",
+			input:         testEventAlarmMissingDescriptionDisplayInput,
+			expectedError: parse.ErrMissingAlarmDescriptionForDisplay,
+		},
+		{
+			name:          "VALARM EMAIL missing ATTENDEE",
+			input:         testEventAlarmMissingAttendeeEmailInput,
+			expectedError: parse.ErrMissingAlarmAttendeesForEmail,
 		},
 	}
 	for _, tc := range testCases {

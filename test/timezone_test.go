@@ -11,38 +11,25 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-// TODO: more heavily test multiple alarms, alarms in VEVENT and VTODOs
-
 var (
 
-	// VTIMEZONE test files
 	//go:embed test_data/timezones/test_timezone.ical
 	testTimezoneInput string
+
 	//go:embed test_data/timezones/test_timezone_missing_tzid.ical
 	testTimezoneMissingTZIDInput string
 	//go:embed test_data/timezones/test_timezone_duplicate_tzid.ical
 	testTimezoneDuplicateTZIDInput string
 	//go:embed test_data/timezones/test_timezone_invalid_dtstart.ical
 	testTimezoneInvalidDTStartInput string
-
-	// VALARM test files (within events)
-	//go:embed test_data/events/test_event_with_alarm.ical
-	testEventWithAlarmInput string
-	//go:embed test_data/events/test_event_alarm_missing_action.ical
-	testEventAlarmMissingActionInput string
-	//go:embed test_data/events/test_event_alarm_missing_description_display.ical
-	testEventAlarmMissingDescriptionDisplayInput string
-	//go:embed test_data/events/test_event_alarm_missing_attendee_email.ical
-	testEventAlarmMissingAttendeeEmailInput string
 )
 
-func TestParseSuccess(t *testing.T) {
+func TestValidTimezone(t *testing.T) {
 	testCases := []struct {
 		name             string
 		input            string
 		expectedCalendar *model.Calendar
 	}{
-
 		{
 			name:  "Valid VTIMEZONE",
 			input: testTimezoneInput,
@@ -78,42 +65,7 @@ func TestParseSuccess(t *testing.T) {
 				},
 			},
 		},
-		{
-			name:  "Valid VEVENT with VALARM",
-			input: testEventWithAlarmInput,
-			expectedCalendar: &model.Calendar{
-				ProdID:  "-//Event//Event Calendar//EN",
-				Version: "2.0",
-				Events: []model.Event{
-					{
-						UID:         "13235@example.com",
-						DTStamp:     time.Date(1970, time.January, 1, 0, 0, 0, 0, time.UTC),
-						Start:       time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
-						End:         time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
-						Summary:     "Event with Alarm",
-						Description: "Event Description",
-						Alarms: []model.Alarm{
-							{
-								Action:      model.AlarmActionDisplay,
-								Trigger:     "-PT15M",
-								Description: []string{"Reminder: Event starting in 15 minutes"},
-								Repeat:      2,
-								Duration:    5 * time.Minute,
-							},
-							{
-								Action:      model.AlarmActionEmail,
-								Trigger:     "-PT1H",
-								Description: []string{"Email reminder for upcoming event"},
-								Summary:     "Event Reminder",
-								Attendees:   []url.URL{{Scheme: "mailto", Opaque: "user@example.com"}},
-							},
-						},
-					},
-				},
-			},
-		},
 	}
-
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			calendar, err := parse.IcalString(tc.input)
@@ -123,7 +75,7 @@ func TestParseSuccess(t *testing.T) {
 	}
 }
 
-func TestParseError(t *testing.T) {
+func TestInvalidTimezone(t *testing.T) {
 	testCases := []struct {
 		name          string
 		input         string
@@ -140,24 +92,15 @@ func TestParseError(t *testing.T) {
 			expectedError: parse.ErrInvalidTimezoneProperty,
 		},
 		{
-			name:          "VALARM missing ACTION",
-			input:         testEventAlarmMissingActionInput,
-			expectedError: parse.ErrMissingAlarmActionProperty,
-		},
-		{
-			name:          "VALARM DISPLAY missing DESCRIPTION",
-			input:         testEventAlarmMissingDescriptionDisplayInput,
-			expectedError: parse.ErrMissingAlarmDescriptionForDisplay,
-		},
-		{
-			name:          "VALARM EMAIL missing ATTENDEE",
-			input:         testEventAlarmMissingAttendeeEmailInput,
-			expectedError: parse.ErrMissingAlarmAttendeesForEmail,
+			name:          "VTIMEZONE duplicate TZID",
+			input:         testTimezoneDuplicateTZIDInput,
+			expectedError: parse.ErrDuplicatePropertyInComponent,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			calendar, err := parse.IcalString(tc.input)
+			assert.Error(t, err)
 			assert.ErrorContains(t, err, tc.expectedError.Error())
 			assert.Nil(t, calendar)
 		})
