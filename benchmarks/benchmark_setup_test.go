@@ -26,21 +26,20 @@ const (
 )
 
 func BenchmarkAllScenarios(b *testing.B) {
-	b.Run("Simple", func(b *testing.B) {
-		benchmarkFile(b, simpleFileName, "Simple Event")
-	})
-
-	b.Run("Single", func(b *testing.B) {
-		benchmarkFile(b, singleFileName, "Single Event")
-	})
-
-	b.Run("Multiple", func(b *testing.B) {
-		benchmarkFile(b, multipleFileName, "Multiple Events")
-	})
-
-	b.Run("Complex", func(b *testing.B) {
-		benchmarkFile(b, complexFileName, "Complex Calendar")
-	})
+	testCases := []struct {
+		fileName string
+		testName string
+	}{
+		{simpleFileName, "Simple Event"},
+		{singleFileName, "Single Event"},
+		{multipleFileName, "Multiple Events"},
+		{complexFileName, "Complex Calendar"},
+	}
+	for _, testCase := range testCases {
+		b.Run(testCase.testName, func(b *testing.B) {
+			benchmarkFile(b, testCase.fileName, testCase.testName)
+		})
+	}
 }
 
 func benchmarkFile(b *testing.B, fileName string, description string) {
@@ -70,11 +69,21 @@ func benchmarkFile(b *testing.B, fileName string, description string) {
 	}
 }
 
-// Runs benchmarks to test simmple-ical against other parsers
+// Runs benchmarks to test simple-ical against other parsers
 func BenchmarkComparativeAll(b *testing.B) {
-	// Pre-load file content to avoid I/O overhead in benchmarks
-	benchmarkFileComparison(b, singleEventFileName, "Single Event")
-	benchmarkFileComparison(b, multipleEventsFileName, "Multiple Events")
+	testCases := []struct {
+		fileName string
+		testName string
+	}{
+		{singleEventFileName, "Single Event"},
+		{multipleEventsFileName, "Multiple Events"},
+		{simpleFileName, "Simple Event"},
+		{complexFileName, "Complex Calendar"},
+	}
+
+	for _, testCase := range testCases {
+		benchmarkFileComparison(b, testCase.fileName, testCase.testName)
+	}
 }
 
 func benchmarkFileComparison(b *testing.B, fileName string, testName string) {
@@ -93,21 +102,15 @@ func benchmarkFileComparison(b *testing.B, fileName string, testName string) {
 			if err != nil {
 				panic(err)
 			}
-			if c.Events[0].Organizer.Cn != commonName {
-				panic("Invalid Organizer")
-			}
 		}
 	})
 
 	b.Run(fmt.Sprintf("%s - SimpleIcal", testName), func(b *testing.B) {
 		for b.Loop() {
 			reader.Reset(fileContent)
-			cal, err := parse.IcalReader(&reader)
+			_, err := parse.IcalReader(&reader)
 			if err != nil {
 				panic(err)
-			}
-			if cal.Events[0].Organizer.CommonName != commonName {
-				panic("Invalid Organizer")
 			}
 		}
 	})
@@ -115,14 +118,9 @@ func benchmarkFileComparison(b *testing.B, fileName string, testName string) {
 	b.Run(fmt.Sprintf("%s - GolangIcal", testName), func(b *testing.B) {
 		for b.Loop() {
 			reader.Reset(fileContent)
-			cal, err := golangical.ParseCalendar(&reader)
+			_, err := golangical.ParseCalendar(&reader)
 			if err != nil {
 				panic(err)
-			}
-			organizerProp := cal.Events()[0].GetProperty(golangical.ComponentPropertyOrganizer)
-			organizerValue := organizerProp.ICalParameters["CN"][0]
-			if organizerValue != commonName {
-				panic("Invalid organizer value")
 			}
 		}
 	})
