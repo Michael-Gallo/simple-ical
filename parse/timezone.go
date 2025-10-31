@@ -83,8 +83,8 @@ func parseTimezoneTime(value string) (time.Time, error) {
 }
 
 // validateTimeZone ensures that all required values are present for a timezone.
-func validateTimeZone(currentState *ParserState, calendar *model.Calendar) error {
-	if calendar.TimeZones[len(calendar.TimeZones)-1].TimeZoneID == "" {
+func validateTimeZone(timezone *model.TimeZone) error {
+	if timezone.TimeZoneID == "" {
 		return ErrMissingTimezoneTZIDProperty
 	}
 	return nil

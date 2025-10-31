@@ -202,12 +202,12 @@ func handleEndBlock(endLineValue string, currentState *ParserState, calendar *mo
 		}
 		*currentState = StateFinished
 	case string(model.SectionTokenVTimezone):
-		if err := validateTimeZone(currentState, calendar); err != nil {
+		if err := validateTimeZone(&calendar.TimeZones[len(calendar.TimeZones)-1]); err != nil {
 			return err
 		}
 		*currentState = StateCalendar
 	case string(model.SectionTokenVFreebusy):
-		if err := validateFreeBusy(currentState, calendar); err != nil {
+		if err := validateFreeBusy(&calendar.FreeBusys[len(calendar.FreeBusys)-1]); err != nil {
 			return err
 		}
 		*currentState = StateCalendar
