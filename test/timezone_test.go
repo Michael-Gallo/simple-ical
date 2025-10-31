@@ -89,7 +89,7 @@ func TestInvalidTimezone(t *testing.T) {
 		{
 			name:          "VTIMEZONE invalid DTSTART",
 			input:         testTimezoneInvalidDTStartInput,
-			expectedError: parse.ErrInvalidTimezoneProperty,
+			expectedError: parse.ErrParseErrorInComponent,
 		},
 		{
 			name:          "VTIMEZONE duplicate TZID",

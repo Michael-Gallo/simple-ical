@@ -3,8 +3,8 @@ package parse
 import (
 	"fmt"
 	"net/url"
-	"time"
 
+	"github.com/michael-gallo/simpleical/icaldur"
 	"github.com/michael-gallo/simpleical/model"
 )
 
@@ -48,15 +48,11 @@ func parseTimeZonePropertySubComponent(propertyName string, value string, _ map[
 	case model.TimezoneTokenTimeZoneOffsetTo:
 		tzProp.TimeZoneOffsetTo = value
 	case model.TimezoneTokenDTStart:
-		parsedTime, err := parseTimezoneTime(value)
-		if err != nil {
-			return fmt.Errorf("%w: %s", ErrInvalidTimezoneProperty, err.Error())
-		}
-		tzProp.DTStart = parsedTime
+		return setOnceTimeProperty(&tzProp.DTStart, value, propertyName, timezoneLocation)
 	case model.TimezoneTokenComment:
 		tzProp.Comment = append(tzProp.Comment, value)
 	case model.TimezoneTokenRdate:
-		parsedTime, err := parseTimezoneTime(value)
+		parsedTime, err := icaldur.ParseIcalTime(value)
 		if err != nil {
 			return fmt.Errorf("%w: %s", ErrInvalidTimezoneProperty, err.Error())
 		}
@@ -67,19 +63,6 @@ func parseTimeZonePropertySubComponent(propertyName string, value string, _ map[
 		return fmt.Errorf("%w: %s", ErrInvalidTimezoneProperty, propertyName)
 	}
 	return nil
-}
-
-// parseTimezoneTime parses a datetime value that may or may not have a Z suffix.
-func parseTimezoneTime(value string) (time.Time, error) {
-	// Try with Z format first
-	if time, err := time.Parse("20060102T150405Z", value); err == nil {
-		return time, nil
-	}
-	// Try without Z format
-	if time, err := time.Parse("20060102T150405", value); err == nil {
-		return time, nil
-	}
-	return time.Time{}, fmt.Errorf("%w: %s", ErrInvalidTimezoneDatetimeFormat, value)
 }
 
 // validateTimeZone ensures that all required values are present for a timezone.
