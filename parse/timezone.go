@@ -5,7 +5,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/michael-gallo/simple-ical/model"
+	"github.com/michael-gallo/simpleical/model"
 )
 
 const timezoneLocation = "TimeZone"

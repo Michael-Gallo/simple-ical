@@ -1,8 +1,8 @@
 goos: linux
 goarch: amd64
-pkg: github.com/michael-gallo/simple-ical/benchmarks
+pkg: github.com/michael-gallo/simpleical/benchmarks
 cpu: AMD Ryzen 7 5700X3D 8-Core Processor           
 BenchmarkParseRRule/Simple_rule_with_count/SimpleIcal-16         	11619766	       102.3 ns/op	     152 B/op	       2 allocs/op
 BenchmarkParseRRule/Simple_rule_with_count/RRuleGo-16            	  943456	      1198 ns/op	    1864 B/op	      20 allocs/op
 signal: interrupt
-FAIL	github.com/michael-gallo/simple-ical/benchmarks	2.627s
+FAIL	github.com/michael-gallo/simpleical/benchmarks	2.627s

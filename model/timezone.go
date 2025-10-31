@@ -8,7 +8,7 @@ import (
 	"net/url"
 	"time"
 
-	"github.com/michael-gallo/simple-ical/rrule"
+	"github.com/michael-gallo/simpleical/rrule"
 )
 
 // TimeZone represents a VTIMEZONE component in the iCalendar format.

@@ -4,7 +4,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/michael-gallo/simple-ical/model"
+	"github.com/michael-gallo/simpleical/model"
 	"github.com/stretchr/testify/assert"
 )
 

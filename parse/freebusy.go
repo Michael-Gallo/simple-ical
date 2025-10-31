@@ -6,8 +6,8 @@ import (
 	"strings"
 	"time"
 
-	"github.com/michael-gallo/simple-ical/icaldur"
-	"github.com/michael-gallo/simple-ical/model"
+	"github.com/michael-gallo/simpleical/icaldur"
+	"github.com/michael-gallo/simpleical/model"
 )
 
 const freeBusyLocation = "FreeBusy"

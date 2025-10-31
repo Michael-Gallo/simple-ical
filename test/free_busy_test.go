@@ -6,8 +6,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/michael-gallo/simple-ical/model"
-	"github.com/michael-gallo/simple-ical/parse"
+	"github.com/michael-gallo/simpleical/model"
+	"github.com/michael-gallo/simpleical/parse"
 	"github.com/stretchr/testify/assert"
 )
 

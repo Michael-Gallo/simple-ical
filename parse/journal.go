@@ -6,7 +6,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/michael-gallo/simple-ical/model"
+	"github.com/michael-gallo/simpleical/model"
 )
 
 const journalLocation = "Journal"

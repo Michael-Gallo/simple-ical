@@ -11,7 +11,7 @@ import (
 	"io"
 	"strings"
 
-	"github.com/michael-gallo/simple-ical/model"
+	"github.com/michael-gallo/simpleical/model"
 )
 
 // ParserState represents the current parsing state using a single integer.

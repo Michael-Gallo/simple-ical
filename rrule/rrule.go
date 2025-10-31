@@ -11,7 +11,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/michael-gallo/simple-ical/icaldur"
+	"github.com/michael-gallo/simpleical/icaldur"
 )
 
 type Frequency string

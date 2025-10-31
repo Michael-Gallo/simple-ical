@@ -18,7 +18,7 @@ This project is licensed under the Mozilla Public License 2.0. See the [LICENSE]
 
 
 ```sh
-go get github.com/michael-gallo/simple-ical
+go get github.com/michael-gallo/simpleical
 ```
 
 
@@ -27,7 +27,7 @@ go get github.com/michael-gallo/simple-ical
 ```go
 package main
 import (
-    ical "github.com/michael-gallo/simple-ical/parse"
+    ical "github.com/michael-gallo/simpleical/parse"
     "fmt"
     )
 

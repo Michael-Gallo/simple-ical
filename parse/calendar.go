@@ -1,6 +1,6 @@
 package parse
 
-import "github.com/michael-gallo/simple-ical/model"
+import "github.com/michael-gallo/simpleical/model"
 
 // parseCalendarProperty parses a single property line and sets its value in the provided vcalendar.
 func parseCalendarProperty(propertyName string, value string, _ map[string]string, calendar *model.Calendar) error {

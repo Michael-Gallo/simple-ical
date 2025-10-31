@@ -9,7 +9,7 @@ import (
 
 	"github.com/apognu/gocal"
 	golangical "github.com/arran4/golang-ical"
-	"github.com/michael-gallo/simple-ical/parse"
+	"github.com/michael-gallo/simpleical/parse"
 )
 
 const commonName = "Org"

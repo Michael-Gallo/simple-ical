@@ -5,7 +5,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/michael-gallo/simple-ical/icaldur"
+	"github.com/michael-gallo/simpleical/icaldur"
 )
 
 // setOnceProperty ensures that set-once properties have consistent error handling

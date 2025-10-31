@@ -7,7 +7,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/michael-gallo/simple-ical/model"
+	"github.com/michael-gallo/simpleical/model"
 )
 
 const todoLocation = "Todo"

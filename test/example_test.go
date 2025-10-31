@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"testing"
 
-	ical "github.com/michael-gallo/simple-ical/parse"
+	ical "github.com/michael-gallo/simpleical/parse"
 )
 
 const testIcalString string = `BEGIN:VCALENDAR

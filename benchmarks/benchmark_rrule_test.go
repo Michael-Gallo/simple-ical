@@ -4,7 +4,7 @@ package benchmarks
 import (
 	"testing"
 
-	"github.com/michael-gallo/simple-ical/rrule"
+	"github.com/michael-gallo/simpleical/rrule"
 	rrule_go "github.com/teambition/rrule-go"
 )
 
