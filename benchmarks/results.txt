@@ -2,7 +2,45 @@ goos: linux
 goarch: amd64
 pkg: github.com/michael-gallo/simpleical/benchmarks
 cpu: AMD Ryzen 7 5700X3D 8-Core Processor           
-BenchmarkParseRRule/Simple_rule_with_count/SimpleIcal-16         	11619766	       102.3 ns/op	     152 B/op	       2 allocs/op
-BenchmarkParseRRule/Simple_rule_with_count/RRuleGo-16            	  943456	      1198 ns/op	    1864 B/op	      20 allocs/op
-signal: interrupt
-FAIL	github.com/michael-gallo/simpleical/benchmarks	2.627s
+BenchmarkAllScenarios/Simple_Event-16         	  854440	      1436 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Simple_Event-16         	  782661	      1441 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Simple_Event-16         	  731724	      1431 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Simple_Event-16         	  759429	      1439 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Simple_Event-16         	  744753	      1422 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Simple_Event-16         	  789979	      1444 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Simple_Event-16         	  790046	      1427 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Simple_Event-16         	  754616	      1425 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Simple_Event-16         	  760483	      1439 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Simple_Event-16         	  743294	      1416 ns/op	    5080 B/op	      13 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  269217	      4185 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  275346	      4169 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  264063	      4193 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  280767	      4173 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  282469	      4278 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  279576	      4202 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  273032	      4179 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  278480	      4179 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  279804	      4253 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Single_Event-16         	  269500	      4176 ns/op	    6376 B/op	      51 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  175986	      6703 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  175183	      6710 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  173248	      6707 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  181161	      6692 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  174039	      6712 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  173485	      6729 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  176617	      6802 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  176342	      6678 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  176558	      6678 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Multiple_Events-16      	  178015	      6641 ns/op	    8496 B/op	      85 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  132856	      8668 ns/op	   10328 B/op	     110 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  137143	      8719 ns/op	   10328 B/op	     110 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  138080	      8629 ns/op	   10328 B/op	     110 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  138842	      8638 ns/op	   10328 B/op	     110 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  136671	      8647 ns/op	   10328 B/op	     110 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  137610	      8600 ns/op	   10328 B/op	     110 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  135793	      8661 ns/op	   10328 B/op	     110 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  135956	      8558 ns/op	   10328 B/op	     110 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  133684	      8762 ns/op	   10328 B/op	     110 allocs/op
+BenchmarkAllScenarios/Complex_Calendar-16     	  134862	      8658 ns/op	   10328 B/op	     110 allocs/op
+PASS
+ok  	github.com/michael-gallo/simpleical/benchmarks	48.420s
