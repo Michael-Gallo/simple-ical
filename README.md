@@ -70,3 +70,35 @@ func main(){
 }
 
 ```
+
+## Performance
+Performance tests were ran against [golang-ical v0.3.2](https://github.com/arran4/golang-ical/releases/tag/v0.3.2) and [gocal v0.9.1](https://github.com/apognu/gocal/releases/tag/v0.9.1)
+
+### Specs
+All tests were ran on a 5700X3D Processor with 32GB of RAM.
+
+### Single Event Calendar File
+
+|         | Gocal       | SimpleIcal  | GolangIcal |
+|---------|-------------|-------------| -----------|
+| sec/op  | 11.32µ ± 1% | 4.760µ ± 1% | 26.83µ ± 0%|
+| B/op    | 11.50Ki ± 0%| 6.320Ki ± 0%|17.89Ki ± 0%|
+|allocs/op| 198.0 ± 0%  | 53.00 ± 0%  |439.0 ± 0%  |
+
+
+### Multiple Event Calendar File
+
+|         | Gocal       | SimpleIcal  | GolangIcal  |
+|---------|-------------|-------------| ------------|
+| sec/op  | 18.06µ ± 1% | 7.585µ ± 1% | 42.74µ ± 0% |
+| B/op    | 16.79Ki ± 0%| 8.391Ki ± 0%| 27.09Ki ± 0%|
+|allocs/op| 314.0 ± 0%  | 87.00 ± 0%  | 692.0 ± 0%  |
+
+
+### Complex Calendar File
+
+|         | Gocal       | SimpleIcal  | GolangIcal  |
+|---------|-------------|-------------| ------------|
+| sec/op  | 21.24µ ± 1% | 9.832µ ± 1% | 58.01µ ± 1% |
+| B/op    | 18.78Ki ± 0%| 10.27Ki ± 0%| 32.35Ki ± 0%|
+|allocs/op|412.0 ± 0%   | 114.0 ± 0%  |959.0 ± 0%   |

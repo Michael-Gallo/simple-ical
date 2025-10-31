@@ -18,5 +18,8 @@ vet:
 bench:
 	cd benchmarks && go test -bench=BenchmarkAllScenarios -benchmem 
 
+bench-comparative:
+	cd benchmarks && go test -bench=BenchmarkComparativeAll -benchmem -count 10 > results.txt
+
 
 pre-commit: fmt vet test-slow
