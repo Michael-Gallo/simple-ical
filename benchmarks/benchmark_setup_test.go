@@ -93,22 +93,22 @@ func benchmarkFileComparison(b *testing.B, fileName string, testName string) {
 	}
 	var reader bytes.Reader
 
-	b.Run(fmt.Sprintf("%s - Gocal", testName), func(b *testing.B) {
+	b.Run(fmt.Sprintf("%s - SimpleIcal", testName), func(b *testing.B) {
 		for b.Loop() {
 			reader.Reset(fileContent)
-			c := gocal.NewParser(&reader)
-			c.SkipBounds = true // Parse all events regardless of date
-			err := c.Parse()
+			_, err := parse.IcalReader(&reader)
 			if err != nil {
 				panic(err)
 			}
 		}
 	})
 
-	b.Run(fmt.Sprintf("%s - SimpleIcal", testName), func(b *testing.B) {
+	b.Run(fmt.Sprintf("%s - Gocal", testName), func(b *testing.B) {
 		for b.Loop() {
 			reader.Reset(fileContent)
-			_, err := parse.IcalReader(&reader)
+			c := gocal.NewParser(&reader)
+			c.SkipBounds = true // Parse all events regardless of date
+			err := c.Parse()
 			if err != nil {
 				panic(err)
 			}
