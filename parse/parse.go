@@ -9,6 +9,7 @@ import (
 	"bufio"
 	"fmt"
 	"io"
+	"os"
 	"strings"
 
 	"github.com/michael-gallo/simpleical/model"
@@ -31,8 +32,20 @@ const (
 	StateFinished
 )
 
+// IcalFromFile takes a filename and parses it into a Calendar.
+// This is a convenience function that wraps IcalReader.
+func IcalFromFile(filename string) (*model.Calendar, error) {
+	file, err := os.Open(filename)
+	if err != nil {
+		return nil, err
+	}
+	defer file.Close()
+	return IcalReader(file)
+}
+
 // IcalString takes the string representation of an ICAL and parses it into a Calendar.
 // It returns an error if the input is not a valid ICAL string.
+// This is a convenience function that wraps IcalReader.
 func IcalString(input string) (*model.Calendar, error) {
 	// Handle empty input
 	if input == "" {
