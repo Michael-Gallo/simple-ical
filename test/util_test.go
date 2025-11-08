@@ -14,5 +14,4 @@ func TestIcalFromFile(t *testing.T) {
 	calendarFromString, err := parse.IcalString(testValidCalendarInput)
 	assert.NoError(t, err)
 	assert.Equal(t, *calendarFromFile, *calendarFromString)
-
 }
