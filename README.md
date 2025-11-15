@@ -28,55 +28,6 @@ go get github.com/michael-gallo/simpleical
 ```
 
 
-## Usage
-
-```go
-package main
-import (
-    ical "github.com/michael-gallo/simpleical/parse"
-    "fmt"
-    )
-
-
-const testIcalString string =  `BEGIN:VCALENDAR
-VERSION:2.0
-PRODID:-//Event//Event Calendar//EN
-CALSCALE:GREGORIAN
-METHOD:REQUEST
-BEGIN:VTIMEZONE
-TZID:America/Detroit
-BEGIN:STANDARD
-DTSTART:19700101T000000
-TZOFFSETFROM:+0000
-TZOFFSETTO:+0000
-END:STANDARD
-END:VTIMEZONE
-BEGIN:VEVENT
-UID:13235@example.com
-DTSTART:20250928T183000Z
-DTEND:20250928T203000Z
-SUMMARY:Event Summary
-DESCRIPTION:Event Description
-LOCATION:555 Fake Street
-ORGANIZER;CN=Org:MAILTO:hello@world
-STATUS:CONFIRMED
-SEQUENCE:0
-TRANSP:OPAQUE
-END:VEVENT
-END:VCALENDAR
-`
-
-func main(){
-    calendar,err := ical.ParseIcalString(testIcalString)
-    if err != nil {
-        panic("Broken calendar string")
-    }
-    fmt.Println(calendar.Description)
-
-}
-
-```
-
 ## Performance
 Performance tests were ran against [golang-ical v0.3.2](https://github.com/arran4/golang-ical/releases/tag/v0.3.2) and [gocal v0.9.1](https://github.com/apognu/gocal/releases/tag/v0.9.1)
 
