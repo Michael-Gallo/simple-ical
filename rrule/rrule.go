@@ -122,7 +122,7 @@ func ParseRRule(rruleString string) (*RRule, error) {
 			rrule.Weekday = make([]ByDay, 0, len(weekdays))
 			for _, weekday := range weekdays {
 				// if there is an interval other than 1, it can be expressed as the number at the start of the string
-				interval, weekday, err := ParseByDay(weekday)
+				interval, weekday, err := parseByDay(weekday)
 				if err != nil {
 					return nil, err
 				}
@@ -179,12 +179,12 @@ func validateRRule(rrule *RRule) error {
 	return nil
 }
 
-// ParseByDay parses a BYDAY value string and returns the interval and weekday.
+// parseByDay parses a BYDAY value string and returns the interval and weekday.
 // The string can be in the format "20MO" (interval + weekday) or just "MO" (weekday only).
 // If no interval is specified, the interval defaults to 1.
 // Valid weekdays are: MO, TU, WE, TH, FR, SA, SU.
 // Returns (interval, weekday, error) where interval is an integer and weekday is a string.
-func ParseByDay(byDayString string) (int, Weekday, error) {
+func parseByDay(byDayString string) (int, Weekday, error) {
 	if byDayString == "" {
 		return 0, "", ErrInvalidByDayString
 	}

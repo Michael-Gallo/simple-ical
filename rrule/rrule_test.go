@@ -754,7 +754,7 @@ func TestParseByDay(t *testing.T) {
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			interval, weekday, err := ParseByDay(test.input)
+			interval, weekday, err := parseByDay(test.input)
 			if test.expectError != nil {
 				assert.ErrorIs(t, err, test.expectError)
 				return
