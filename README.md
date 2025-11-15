@@ -4,6 +4,12 @@ A very much not ready ICAL parser for Golang intended to follow the official [IC
 
 Focused on ease of use and good documentation, with frequent links to the spec.
 
+[![Go Reference](https://pkg.go.dev/badge/github.com/michael-gallo/simpleical.svg)](https://pkg.go.dev/github.com/michael-gallo/simpleical)
+
+## Documentation
+
+Full API documentation is available on [pkg.go.dev](https://pkg.go.dev/github.com/michael-gallo/simpleical).
+
 ## Deviations from spec
 
 1. The VCALENDAR spec does not address whitespace at the end of lines. We assume in this parser it is to be ignored and right trim all whitespace.
