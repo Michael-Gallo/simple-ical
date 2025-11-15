@@ -6,7 +6,7 @@ import (
 	"github.com/michael-gallo/simpleical/rrule"
 )
 
-func ExampleRRule() {
+func ExampleParseRRule() {
 	rrule, err := rrule.ParseRRule("FREQ=DAILY;INTERVAL=1;COUNT=10")
 	if err != nil {
 		panic(err)
