@@ -36,7 +36,6 @@ END:VCALENDAR
 `
 
 func ExampleIcalString() {
-
 	calendar, err := parse.IcalString(testIcalString)
 	if err != nil {
 		panic(err)
