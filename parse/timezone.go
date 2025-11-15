@@ -11,11 +11,11 @@ import (
 const timezoneLocation = "TimeZone"
 
 // parseTimezoneProperty parses a single property line and adds it to the provided timezone.
-func parseTimezoneProperty(propertyName string, value string, params map[string]string, currentState ParserState, timezone *model.TimeZone) error {
+func parseTimezoneProperty(propertyName string, value string, params map[string]string, currentState parserState, timezone *model.TimeZone) error {
 	// Handle sub-components (STANDARD and DAYLIGHT)
-	if currentState == StateStandard || currentState == StateDaylight {
+	if currentState == stateStandard || currentState == stateDaylight {
 		var tzProp *model.TimeZoneProperty
-		if currentState == StateStandard {
+		if currentState == stateStandard {
 			tzProp = &timezone.Standard[len(timezone.Standard)-1]
 		} else {
 			tzProp = &timezone.Daylight[len(timezone.Daylight)-1]
