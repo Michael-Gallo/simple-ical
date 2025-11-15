@@ -31,6 +31,8 @@ type Calendar struct {
 	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.7.2
 	Method string
 
+	// TimeZones contains all VTIMEZONE components in the calendar.
+	// https://datatracker.ietf.org/doc/html/rfc5545#section-3.6.5
 	TimeZones []TimeZone
 
 	// A grouping of component properties that describe an event.
