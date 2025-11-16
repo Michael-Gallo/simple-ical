@@ -2,9 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// Package parse provides functions for parsing iCalendar (RFC 5545) files and strings
-// into Go structs. It supports all standard iCalendar components including events,
-// todos, journals, freebusy, timezones, and alarms.
 package parse
 
 import (

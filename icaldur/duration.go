@@ -2,8 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// Package icaldur provides functionality to convert between iCal duration strings and golang's native time.Duration
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.6
 package icaldur
 
 import (
