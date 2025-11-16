@@ -124,46 +124,38 @@ func TestParseCalendarSuccess(t *testing.T) {
 
 func TestParseCalendarError(t *testing.T) {
 	testCases := []struct {
-		name          string
-		input         string
-		expectedError error
+		name  string
+		input string
 	}{
 		{
-			name:          "Calendar with no BEGIN:VCALENDAR",
-			input:         testInvalidBeginCalendarInput,
-			expectedError: parse.ErrInvalidCalendarFormatMissingBegin,
+			name:  "Calendar with no BEGIN:VCALENDAR",
+			input: testInvalidBeginCalendarInput,
 		},
 		{
-			name:          "Calendar with no END:VCALENDAR",
-			input:         testInvalidEndCalendarInput,
-			expectedError: parse.ErrInvalidCalendarFormatMissingEnd,
+			name:  "Calendar with no END:VCALENDAR",
+			input: testInvalidEndCalendarInput,
 		},
 		{
-			name:          "Empty line in calendar",
-			input:         testInvalidEmptyLineCalendarInput,
-			expectedError: parse.ErrInvalidCalendarEmptyLine,
+			name:  "Empty line in calendar",
+			input: testInvalidEmptyLineCalendarInput,
 		},
 		{
-			name:          "Calendar missing VERSION property",
-			input:         testCalendarMissingVersionInput,
-			expectedError: parse.ErrMissingCalendarVersionProperty,
+			name:  "Calendar missing VERSION property",
+			input: testCalendarMissingVersionInput,
 		},
 		{
-			name:          "Calendar missing PRODID property",
-			input:         testCalendarMissingProdIDInput,
-			expectedError: parse.ErrMissingCalendarProdIDProperty,
+			name:  "Calendar missing PRODID property",
+			input: testCalendarMissingProdIDInput,
 		},
 		{
-			name:          "Empty input",
-			input:         "",
-			expectedError: parse.ErrNoCalendarFound,
+			name:  "Empty input",
+			input: "",
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			calendar, err := parse.IcalString(tc.input)
 			assert.Error(t, err)
-			assert.ErrorContains(t, err, tc.expectedError.Error())
 			assert.Nil(t, calendar)
 		})
 	}

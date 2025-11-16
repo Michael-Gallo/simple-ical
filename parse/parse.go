@@ -53,7 +53,7 @@ func IcalFromFileName(filename string) (*model.Calendar, error) {
 func IcalString(input string) (*model.Calendar, error) {
 	// Handle empty input
 	if input == "" {
-		return nil, ErrNoCalendarFound
+		return nil, errNoCalendarFound
 	}
 
 	// Use the reader-based parser for consistency
@@ -70,19 +70,19 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 	scanner := bufio.NewScanner(reader)
 
 	if !scanner.Scan() {
-		return nil, ErrNoCalendarFound
+		return nil, errNoCalendarFound
 	}
 
 	line := strings.TrimRight(scanner.Text(), " ")
 	if line != "BEGIN:VCALENDAR" {
-		return nil, ErrInvalidCalendarFormatMissingBegin
+		return nil, errInvalidCalendarFormatMissingBegin
 	}
 
 	for scanner.Scan() {
 		line := strings.TrimRight(scanner.Text(), " ")
 
 		if line == "" {
-			return nil, ErrInvalidCalendarEmptyLine
+			return nil, errInvalidCalendarEmptyLine
 		}
 
 		// Clear the reusable parameter map before each use
@@ -102,7 +102,7 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 			continue
 		case "END":
 			if currentState == stateFinished {
-				return nil, ErrContentAfterEndBlock
+				return nil, errContentAfterEndBlock
 			}
 			if err := handleEndBlock(value, &currentState, calendar); err != nil {
 				return nil, err
@@ -110,7 +110,7 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 			continue
 		default:
 			if currentState == stateFinished {
-				return nil, ErrContentAfterEndBlock
+				return nil, errContentAfterEndBlock
 			}
 			if err := parsePropertyLine(propertyName, value, params, currentState, calendar); err != nil {
 				return nil, err
@@ -126,7 +126,7 @@ func IcalReader(reader io.Reader) (*model.Calendar, error) {
 
 	// Verify that the last line was a END:VCALENDAR
 	if currentState != stateFinished {
-		return nil, ErrInvalidCalendarFormatMissingEnd
+		return nil, errInvalidCalendarFormatMissingEnd
 	}
 
 	return calendar, nil
@@ -200,7 +200,7 @@ func handleBeginBlock(beginValue string, currentState *parserState, calendar *mo
 		*currentState = stateDaylight
 		calendar.TimeZones[len(calendar.TimeZones)-1].Daylight = append(calendar.TimeZones[len(calendar.TimeZones)-1].Daylight, model.TimeZoneProperty{})
 	default:
-		return fmt.Errorf("%w: %s", ErrTemplateInvalidStartBlock, beginValue)
+		return fmt.Errorf("%w: %s", errTemplateInvalidStartBlock, beginValue)
 	}
 	return nil
 }
@@ -257,7 +257,7 @@ func handleEndBlock(endLineValue string, currentState *parserState, calendar *mo
 	case string(model.SectionTokenVDaylight):
 		*currentState = stateTimezone
 	default:
-		return fmt.Errorf("%w: %s", ErrTemplateInvalidEndBlock, endLineValue)
+		return fmt.Errorf("%w: %s", errTemplateInvalidEndBlock, endLineValue)
 	}
 	return nil
 }

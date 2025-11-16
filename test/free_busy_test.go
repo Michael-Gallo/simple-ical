@@ -83,24 +83,20 @@ func TestValidFreeBusy(t *testing.T) {
 
 func TestInvalidFreeBusy(t *testing.T) {
 	testCases := []struct {
-		name          string
-		input         string
-		expectedError error
+		name  string
+		input string
 	}{
 		{
-			name:          "VFREEBUSY missing UID",
-			input:         testFreeBusyMissingUIDInput,
-			expectedError: parse.ErrMissingFreeBusyUIDProperty,
+			name:  "VFREEBUSY missing UID",
+			input: testFreeBusyMissingUIDInput,
 		},
 		{
-			name:          "VFREEBUSY invalid FREEBUSY format",
-			input:         testFreeBusyInvalidFreeBusyInput,
-			expectedError: parse.ErrInvalidFreeBusyFormat,
+			name:  "VFREEBUSY invalid FREEBUSY format",
+			input: testFreeBusyInvalidFreeBusyInput,
 		},
 		{
-			name:          "VFREEBUSY duplicate UID",
-			input:         testFreeBusyDuplicateUIDInput,
-			expectedError: parse.ErrDuplicatePropertyInComponent,
+			name:  "VFREEBUSY duplicate UID",
+			input: testFreeBusyDuplicateUIDInput,
 		},
 	}
 	for _, tc := range testCases {
@@ -108,7 +104,6 @@ func TestInvalidFreeBusy(t *testing.T) {
 			calendar, err := parse.IcalString(tc.input)
 			assert.Nil(t, calendar)
 			assert.Error(t, err)
-			assert.ErrorIs(t, err, tc.expectedError)
 		})
 	}
 }

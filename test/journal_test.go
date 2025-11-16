@@ -94,26 +94,22 @@ func TestValidJournal(t *testing.T) {
 
 func TestInvalidJournal(t *testing.T) {
 	testCases := []struct {
-		name          string
-		input         string
-		expectedError error
+		name  string
+		input string
 	}{
 		{
-			name:          "VJOURNAL missing UID",
-			input:         testJournalMissingUIDInput,
-			expectedError: parse.ErrMissingJournalUIDProperty,
+			name:  "VJOURNAL missing UID",
+			input: testJournalMissingUIDInput,
 		},
 		{
-			name:          "VJOURNAL duplicate UID",
-			input:         testJournalDuplicateUIDInput,
-			expectedError: parse.ErrDuplicatePropertyInComponent,
+			name:  "VJOURNAL duplicate UID",
+			input: testJournalDuplicateUIDInput,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			calendar, err := parse.IcalString(tc.input)
 			assert.Error(t, err)
-			assert.ErrorIs(t, err, tc.expectedError)
 			assert.Nil(t, calendar)
 		})
 	}

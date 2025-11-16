@@ -19,10 +19,10 @@ func parseCalendarProperty(propertyName string, value string, _ map[string]strin
 
 func validateCalendar(calendar *model.Calendar) error {
 	if calendar.Version == "" {
-		return ErrMissingCalendarVersionProperty
+		return errMissingCalendarVersionProperty
 	}
 	if calendar.ProdID == "" {
-		return ErrMissingCalendarProdIDProperty
+		return errMissingCalendarProdIDProperty
 	}
 	return nil
 }
