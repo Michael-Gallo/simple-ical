@@ -2,9 +2,6 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// Package parse provides functions for parsing iCalendar (RFC 5545) files and strings
-// into Go structs. It supports all standard iCalendar components including events,
-// todos, journals, freebusy, timezones, and alarms.
 package parse
 
 import (
@@ -35,7 +32,7 @@ const (
 )
 
 // IcalFromFileName parses an iCalendar file from the given file path into a Calendar.
-// it opens the file, parses its contents, and returns a Calendar
+// It opens the file, parses its contents, and returns a Calendar.
 // This is a convenience function that wraps IcalReader.
 // The file is automatically closed after parsing.
 func IcalFromFileName(filename string) (*model.Calendar, error) {

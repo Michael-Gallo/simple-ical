@@ -8,18 +8,20 @@ import "errors"
 
 // Predefined errors for the rrule package.
 var (
-	// ErrInvalidRRuleString is returned when the rrule string format is invalid.
-	ErrInvalidRRuleString = errors.New("invalid rrule string")
+	// errInvalidRRuleString is returned when the rrule string format is invalid.
+	errInvalidRRuleString = errors.New("invalid rrule string")
 
-	// ErrFrequencyRequired is returned when the frequency property is missing.
-	ErrFrequencyRequired = errors.New("frequency is required")
+	// errFrequencyRequired is returned when the frequency property is missing.
+	errFrequencyRequired = errors.New("frequency is required")
 
-	// ErrCountAndUntilBothSet is returned when both count and until properties are set.
-	ErrCountAndUntilBothSet = errors.New("count and until cannot both be set")
+	// errCountAndUntilBothSet is returned when both count and until properties are set.
+	errCountAndUntilBothSet = errors.New("count and until cannot both be set")
 
-	// ErrInvalidInterval is returned when the interval is not a positive integer.
-	ErrInvalidInterval = errors.New("interval must be a positive integer")
+	// errInvalidInterval is returned when the interval is not a positive integer.
+	errInvalidInterval = errors.New("interval must be a positive integer")
 
-	// ErrInvalidByDayString is returned when the BYDAY string format is invalid.
-	ErrInvalidByDayString = errors.New("invalid BYDAY string")
+	// errInvalidByDayString is returned when the BYDAY string format is invalid.
+	errInvalidByDayString = errors.New("invalid BYDAY string")
+
+	errInvalidFrequency = errors.New("invalid frequency")
 )

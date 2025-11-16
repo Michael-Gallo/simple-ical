@@ -1,6 +1,7 @@
 package rrule
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -32,6 +33,12 @@ func TestParseRRule(t *testing.T) {
 			expectError: nil,
 		},
 		{
+			name:        "Invalid frequency",
+			input:       "FREQ=DALLY;INTERVAL=2;COUNT=10",
+			want:        nil,
+			expectError: fmt.Errorf("%w: %s", errInvalidFrequency, "DALLY"),
+		},
+		{
 			name:  "Valid daily rule with interval not set",
 			input: "FREQ=DAILY;COUNT=10",
 			want: &RRule{
@@ -46,25 +53,25 @@ func TestParseRRule(t *testing.T) {
 			name:        "Invalid rule: missing frequency",
 			input:       "INTERVAL=1;COUNT=10",
 			want:        nil,
-			expectError: ErrFrequencyRequired,
+			expectError: errFrequencyRequired,
 		},
 		{
 			name:        "Invalid rule: count and until cannot both be set",
 			input:       "FREQ=DAILY;COUNT=10;UNTIL=19730429T070000Z",
 			want:        nil,
-			expectError: ErrCountAndUntilBothSet,
+			expectError: errCountAndUntilBothSet,
 		},
 		{
 			name:        "Invalid rule: interval must be a positive integer",
 			input:       "FREQ=DAILY;INTERVAL=0;COUNT=10",
 			want:        nil,
-			expectError: ErrInvalidInterval,
+			expectError: errInvalidInterval,
 		},
 		{
 			name:        "Invalid rule: malformed rrule string",
 			input:       "FREQ=DAILY;INVALID",
 			want:        nil,
-			expectError: ErrInvalidRRuleString,
+			expectError: errInvalidRRuleString,
 		},
 		{
 			name:  "Monthly on the third-to-the-last day of the month, forever",
@@ -595,7 +602,9 @@ func TestParseRRule(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			rule, err := ParseRRule(test.input)
 			if test.expectError != nil {
-				assert.ErrorIs(t, err, test.expectError)
+				assert.Error(t, err)
+				assert.ErrorContains(t, err, test.expectError.Error())
+				assert.Nil(t, rule)
 				return
 			}
 			assert.NoError(t, err)
@@ -714,20 +723,20 @@ func TestParseByDay(t *testing.T) {
 			name:        "Invalid string returns error",
 			input:       "INVALID",
 			expectedInt: 0,
-			expectError: ErrInvalidByDayString,
+			expectError: errInvalidByDayString,
 		},
 		{
 			name:        "Empty string returns error",
 			input:       "",
 			expectedInt: 0,
-			expectError: ErrInvalidByDayString,
+			expectError: errInvalidByDayString,
 		},
 		{
 			name:            "String with invalid weekday returns error",
 			input:           "5XX",
 			expectedInt:     0,
 			expectedWeekDay: "",
-			expectError:     ErrInvalidByDayString,
+			expectError:     errInvalidByDayString,
 		},
 		{
 			name:            "String with negative interval and weekday",

@@ -2,11 +2,10 @@
 // License, v. 2.0. If a copy of the MPL was not distributed with this
 // file, You can obtain one at http://mozilla.org/MPL/2.0/.
 
-// Package rrule implements the recurrence rules defined in RFC 5545
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10
 package rrule
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -14,6 +13,7 @@ import (
 	"github.com/michael-gallo/simpleical/icaldur"
 )
 
+// Frequency represents the RRULE FREQ property.
 type Frequency string
 
 const (
@@ -26,6 +26,7 @@ const (
 	FrequencyYearly   Frequency = "YEARLY"
 )
 
+// Weekday is a two-letter weekday abbreviation used by RRULE BYDAY property.
 type Weekday string
 
 const (
@@ -38,54 +39,52 @@ const (
 	WeekdaySunday    Weekday = "SU"
 )
 
+// ByDay represents a BYDAY property with an optional interval prefix.
 type ByDay struct {
-	// The day of the week that the event occurs on
+	// The day of the week that the event occurs on.
 	Weekday Weekday
-	// The interval between occurrences of the event
-	// eg: If Weekday is Tuesday, and Interval is 2, then the event will happen every other Tuesday
+	// The interval between occurrences of the event.
+	// eg: If Weekday is Tuesday, and Interval is 2, then the event will happen every other Tuesday.
 	Interval int
 }
 
+// RRule represents an ical reccurence rule.
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10.
 type RRule struct {
-	// The frequency of the event
-	// This MUST be specified
+	// The frequency of the event.
+	// This MUST be specified.
 	Frequency Frequency
-	// The interval between occurrences of the event
-	// eg: an interval of 2 for a daily rule means the event will happen every other day
-	// Not mandatory, but treated as 1 if not present
+	// The interval between occurrences of the event.
+	// eg: an interval of 2 for a daily rule means the event will happen every other day.
+	// Not mandatory, but treated as 1 if not present.
 	Interval int
-	// The number of occurrences of the event
-	// Can not occur with the Until property
-	// DTStart always counts as the first occurrence
+	// The number of occurrences of the event.
+	// Can not occur with the Until property.
+	// DTStart always counts as the first occurrence.
 	Count *int
-	// The date and time until the rule ends, inclusive
-	// Can not occur with the Count property
+	// The date and time until the rule ends, inclusive.
+	// Can not occur with the Count property.
 	Until *time.Time
-	// The day of the week that the event occurs on
-	// This is optional and repeatable
+	// The day of the week that the event occurs on.
+	// This is optional and repeatable.
 	Weekday []ByDay
 
-	// The Month(s) of the year that the event occurs on
+	// The Month(s) of the year that the event occurs on.
 	Month []int
 
-	// The day of the month that the event occurs on
-	// eg: 10th of the month, negative numbers are allowed to indicate the last day of the month
-	// for example, -3 is the third-to-last-day of the month
+	// The day of the month that the event occurs on.
+	// eg: 10th of the month, negative numbers are allowed to indicate the last day of the month.
+	// for example, -3 is the third-to-last-day of the month.
 	Monthday []int
 
-	// The day of the year that the event occurs on
-	// eg: 100th day of the year, negative numbers are allowed to indicate the last day of the year
+	// The day of the year that the event occurs on.
+	// eg: 100th day of the year, negative numbers are allowed to indicate the last day of the year.
 	YearDay []int
 }
 
-// ParseRRule takes an iCal reccurence rule string and parses it into a RRule struct
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.5.3
-// Example for an event that happens daily for 10 days:
-// Input:
-// RRULE:FREQ=DAILY;INTERVAL=1;COUNT=10
-// Output:
-// RRule{Frequency: FrequencyDaily, Interval: 1, Count: 10, Until: time.Time{}}
+// ParseRRule takes an iCal reccurence rule string and parses it into a RRule struct.
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10.
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.5.3.
 func ParseRRule(rruleString string) (*RRule, error) {
 	rrule := &RRule{
 		// Default to 1 if not present
@@ -94,11 +93,17 @@ func ParseRRule(rruleString string) (*RRule, error) {
 	for part := range strings.SplitSeq(rruleString, ";") {
 		tag, value, found := strings.Cut(part, "=")
 		if !found {
-			return nil, ErrInvalidRRuleString
+			return nil, errInvalidRRuleString
 		}
 		switch tag {
 		case "FREQ":
-			rrule.Frequency = Frequency(value)
+			// Validate the frequency is valid
+			switch Frequency(value) {
+			case FrequencySecondly, FrequencyMinutely, FrequencyHourly, FrequencyDaily, FrequencyWeekly, FrequencyMonthly, FrequencyYearly:
+				rrule.Frequency = Frequency(value)
+			default:
+				return nil, fmt.Errorf("%w: %s", errInvalidFrequency, value)
+			}
 		case "INTERVAL":
 			interval, err := strconv.Atoi(value)
 			if err != nil {
@@ -168,13 +173,13 @@ func ParseRRule(rruleString string) (*RRule, error) {
 
 func validateRRule(rrule *RRule) error {
 	if rrule.Frequency == "" {
-		return ErrFrequencyRequired
+		return errFrequencyRequired
 	}
 	if rrule.Count != nil && rrule.Until != nil {
-		return ErrCountAndUntilBothSet
+		return errCountAndUntilBothSet
 	}
 	if rrule.Interval <= 0 {
-		return ErrInvalidInterval
+		return errInvalidInterval
 	}
 	return nil
 }
@@ -186,7 +191,7 @@ func validateRRule(rrule *RRule) error {
 // Returns (interval, weekday, error) where interval is an integer and weekday is a string.
 func parseByDay(byDayString string) (int, Weekday, error) {
 	if byDayString == "" {
-		return 0, "", ErrInvalidByDayString
+		return 0, "", errInvalidByDayString
 	}
 
 	// Check if string starts with a digit or minus sign
@@ -211,13 +216,13 @@ func parseByDay(byDayString string) (int, Weekday, error) {
 
 		// Validate weekday
 		if !isValidWeekday(weekday) {
-			return 0, "", ErrInvalidByDayString
+			return 0, "", errInvalidByDayString
 		}
 
 		// Parse interval (can be negative)
 		interval, err := strconv.Atoi(intervalStr)
 		if err != nil {
-			return 0, "", ErrInvalidByDayString
+			return 0, "", errInvalidByDayString
 		}
 
 		return interval, weekday, nil
@@ -225,7 +230,7 @@ func parseByDay(byDayString string) (int, Weekday, error) {
 
 	// No interval prefix, check if it's a valid weekday
 	if !isValidWeekday(Weekday(byDayString)) {
-		return 0, "", ErrInvalidByDayString
+		return 0, "", errInvalidByDayString
 	}
 
 	return 1, Weekday(byDayString), nil
@@ -235,6 +240,15 @@ func parseByDay(byDayString string) (int, Weekday, error) {
 func isValidWeekday(weekday Weekday) bool {
 	switch weekday {
 	case WeekdayMonday, WeekdayTuesday, WeekdayWednesday, WeekdayThursday, WeekdayFriday, WeekdaySaturday, WeekdaySunday:
+		return true
+	default:
+		return false
+	}
+}
+
+func isValidFrequency(frequency Frequency) bool {
+	switch frequency {
+	case FrequencySecondly, FrequencyMinutely, FrequencyHourly, FrequencyDaily, FrequencyWeekly, FrequencyMonthly, FrequencyYearly:
 		return true
 	default:
 		return false
