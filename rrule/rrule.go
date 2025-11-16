@@ -93,7 +93,7 @@ func ParseRRule(rruleString string) (*RRule, error) {
 	for part := range strings.SplitSeq(rruleString, ";") {
 		tag, value, found := strings.Cut(part, "=")
 		if !found {
-			return nil, ErrInvalidRRuleString
+			return nil, errInvalidRRuleString
 		}
 		switch tag {
 		case "FREQ":
@@ -173,13 +173,13 @@ func ParseRRule(rruleString string) (*RRule, error) {
 
 func validateRRule(rrule *RRule) error {
 	if rrule.Frequency == "" {
-		return ErrFrequencyRequired
+		return errFrequencyRequired
 	}
 	if rrule.Count != nil && rrule.Until != nil {
-		return ErrCountAndUntilBothSet
+		return errCountAndUntilBothSet
 	}
 	if rrule.Interval <= 0 {
-		return ErrInvalidInterval
+		return errInvalidInterval
 	}
 	return nil
 }
@@ -191,7 +191,7 @@ func validateRRule(rrule *RRule) error {
 // Returns (interval, weekday, error) where interval is an integer and weekday is a string.
 func parseByDay(byDayString string) (int, Weekday, error) {
 	if byDayString == "" {
-		return 0, "", ErrInvalidByDayString
+		return 0, "", errInvalidByDayString
 	}
 
 	// Check if string starts with a digit or minus sign
@@ -216,13 +216,13 @@ func parseByDay(byDayString string) (int, Weekday, error) {
 
 		// Validate weekday
 		if !isValidWeekday(weekday) {
-			return 0, "", ErrInvalidByDayString
+			return 0, "", errInvalidByDayString
 		}
 
 		// Parse interval (can be negative)
 		interval, err := strconv.Atoi(intervalStr)
 		if err != nil {
-			return 0, "", ErrInvalidByDayString
+			return 0, "", errInvalidByDayString
 		}
 
 		return interval, weekday, nil
@@ -230,7 +230,7 @@ func parseByDay(byDayString string) (int, Weekday, error) {
 
 	// No interval prefix, check if it's a valid weekday
 	if !isValidWeekday(Weekday(byDayString)) {
-		return 0, "", ErrInvalidByDayString
+		return 0, "", errInvalidByDayString
 	}
 
 	return 1, Weekday(byDayString), nil
