@@ -8,6 +8,7 @@ import (
 	"time"
 
 	"github.com/michael-gallo/simpleical/model"
+	"github.com/michael-gallo/simpleical/rrule"
 )
 
 const eventLocation = "Event"
@@ -80,6 +81,12 @@ func parseEventProperty(propertyName string, value string, params map[string]str
 			return errInvalidGeoPropertyLongitude
 		}
 		event.Geo = append(event.Geo, latitude, longitude)
+	case model.EventTokenRRule:
+		rule, err := rrule.ParseRRule(value)
+		if err != nil {
+			return err
+		}
+		return setOnceProperty(&event.RRule, rule, propertyName, eventLocation)
 	default:
 		return fmt.Errorf("%w: %s", errInvalidEventProperty, propertyName)
 	}

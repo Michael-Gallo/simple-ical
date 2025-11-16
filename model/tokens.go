@@ -42,6 +42,7 @@ const (
 	EventTokenCategories   EventToken = "CATEGORIES"
 	EventTokenDuration     EventToken = "DURATION"
 	EventTokenGeo          EventToken = "GEO"
+	EventTokenRRule        EventToken = "RRULE"
 )
 
 // TodoToken represents the names of the properties in a VTODO
