@@ -21,10 +21,6 @@ var (
 	// General parsing errors.
 	errInvalidPropertyLine = errors.New("invalid property line in iCal data")
 	errDuplicateProperty   = errors.New("duplicate property")
-
-	// URI parsing errors.
-	// ErrInvalidProtocol is one of the errors that could be returned when parsing a URI with the standard library.
-	ErrInvalidProtocol = errors.New("parse \"://invalid\": missing protocol scheme")
 )
 
 // Event-specific errors.
