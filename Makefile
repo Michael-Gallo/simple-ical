@@ -18,6 +18,9 @@ vet:
 bench:
 	cd benchmarks && go test -bench=BenchmarkAllScenarios -benchmem 
 
+bench-profile:
+	cd benchmarks && go test -bench=BenchmarkAllScenarios -benchmem -cpuprofile=cpu.prof -memprofile=mem.prof
+
 bench-long:
 	cd benchmarks && go test -bench=BenchmarkAllScenarios -benchmem  -count 10 > results.txt
 
