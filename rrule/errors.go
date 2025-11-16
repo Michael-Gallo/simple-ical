@@ -22,4 +22,6 @@ var (
 
 	// ErrInvalidByDayString is returned when the BYDAY string format is invalid.
 	ErrInvalidByDayString = errors.New("invalid BYDAY string")
+
+	errInvalidFrequency = errors.New("invalid frequency")
 )

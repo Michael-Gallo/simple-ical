@@ -1,6 +1,7 @@
 package rrule
 
 import (
+	"fmt"
 	"testing"
 	"time"
 
@@ -30,6 +31,12 @@ func TestParseRRule(t *testing.T) {
 				Until:     nil,
 			},
 			expectError: nil,
+		},
+		{
+			name:        "Invalid frequency",
+			input:       "FREQ=DALLY;INTERVAL=2;COUNT=10",
+			want:        nil,
+			expectError: fmt.Errorf("%w: %s", errInvalidFrequency, "DALLY"),
 		},
 		{
 			name:  "Valid daily rule with interval not set",
@@ -595,7 +602,9 @@ func TestParseRRule(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			rule, err := ParseRRule(test.input)
 			if test.expectError != nil {
-				assert.ErrorIs(t, err, test.expectError)
+				assert.Error(t, err)
+				assert.ErrorContains(t, err, test.expectError.Error())
+				assert.Nil(t, rule)
 				return
 			}
 			assert.NoError(t, err)

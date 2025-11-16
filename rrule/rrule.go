@@ -5,6 +5,7 @@
 package rrule
 
 import (
+	"fmt"
 	"strconv"
 	"strings"
 	"time"
@@ -96,7 +97,13 @@ func ParseRRule(rruleString string) (*RRule, error) {
 		}
 		switch tag {
 		case "FREQ":
-			rrule.Frequency = Frequency(value)
+			// Validate the frequency is valid
+			switch Frequency(value) {
+			case FrequencySecondly, FrequencyMinutely, FrequencyHourly, FrequencyDaily, FrequencyWeekly, FrequencyMonthly, FrequencyYearly:
+				rrule.Frequency = Frequency(value)
+			default:
+				return nil, fmt.Errorf("%w: %s", errInvalidFrequency, value)
+			}
 		case "INTERVAL":
 			interval, err := strconv.Atoi(value)
 			if err != nil {
@@ -233,6 +240,15 @@ func parseByDay(byDayString string) (int, Weekday, error) {
 func isValidWeekday(weekday Weekday) bool {
 	switch weekday {
 	case WeekdayMonday, WeekdayTuesday, WeekdayWednesday, WeekdayThursday, WeekdayFriday, WeekdaySaturday, WeekdaySunday:
+		return true
+	default:
+		return false
+	}
+}
+
+func isValidFrequency(frequency Frequency) bool {
+	switch frequency {
+	case FrequencySecondly, FrequencyMinutely, FrequencyHourly, FrequencyDaily, FrequencyWeekly, FrequencyMonthly, FrequencyYearly:
 		return true
 	default:
 		return false

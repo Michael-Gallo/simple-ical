@@ -32,6 +32,8 @@ var (
 	testIcalBothDurationAndEndInput string
 	//go:embed test_data/events/test_event_both_duration_and_end_duration_first.ical
 	testIcalBothDurationAndEndDurationFirstInput string
+	//go:embed test_data/events/invalid_test_event_with_bad_rrule.ical
+	testIcalInvalidRRuleInput string
 	//go:embed test_data/events/test_event_missing_colon.ical
 	testIcalMissingColonInput string
 	//go:embed test_data/events/test_event_missing_uid.ical
@@ -155,8 +157,9 @@ func TestValidEvent(t *testing.T) {
 						Start:   time.Date(2025, time.September, 28, 18, 30, 0, 0, time.UTC),
 						End:     time.Date(2025, time.September, 28, 20, 30, 0, 0, time.UTC),
 						RRule: &rrule.RRule{
-							Frequency: rrule.FrequencyYearly,
+							Frequency: rrule.FrequencyDaily,
 							Interval:  1,
+							Count:     getPointer(10),
 						},
 						Summary:     "Event with reccurrence rule",
 						Description: "Event Description",
@@ -235,6 +238,10 @@ func TestInvalidEvent(t *testing.T) {
 			name:  "VALARM EMAIL missing ATTENDEE",
 			input: testEventAlarmMissingAttendeeEmailInput,
 		},
+		{
+			name:  "Invalid RRULE",
+			input: testIcalInvalidRRuleInput,
+		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -243,4 +250,9 @@ func TestInvalidEvent(t *testing.T) {
 			assert.Nil(t, calendar)
 		})
 	}
+}
+
+// TODO: replace with calls to New once go 1.26 is released
+func getPointer[T any](v T) *T {
+	return &v
 }
