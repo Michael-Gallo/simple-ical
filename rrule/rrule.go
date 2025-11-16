@@ -14,6 +14,7 @@ import (
 	"github.com/michael-gallo/simpleical/icaldur"
 )
 
+// Frequency represents the RRULE FREQ property.
 type Frequency string
 
 const (
@@ -26,6 +27,7 @@ const (
 	FrequencyYearly   Frequency = "YEARLY"
 )
 
+// Weekday is a two-letter weekday abbreviation used by RRULE BYDAY property.
 type Weekday string
 
 const (
@@ -38,6 +40,7 @@ const (
 	WeekdaySunday    Weekday = "SU"
 )
 
+// ByDay represents a BYDAY property with an optional interval prefix.
 type ByDay struct {
 	// The day of the week that the event occurs on
 	Weekday Weekday
@@ -46,6 +49,8 @@ type ByDay struct {
 	Interval int
 }
 
+// RRule represents an ical reccurence rule.
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10
 type RRule struct {
 	// The frequency of the event
 	// This MUST be specified
