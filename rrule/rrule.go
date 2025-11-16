@@ -84,11 +84,6 @@ type RRule struct {
 // ParseRRule takes an iCal reccurence rule string and parses it into a RRule struct.
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10.
 // https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.5.3.
-// Example for an event that happens daily for 10 days:
-// Input:
-// RRULE:FREQ=DAILY;INTERVAL=1;COUNT=10
-// Output:
-// RRule{Frequency: FrequencyDaily, Interval: 1, Count: 10, Until: time.Time{}}
 func ParseRRule(rruleString string) (*RRule, error) {
 	rrule := &RRule{
 		// Default to 1 if not present
