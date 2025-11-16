@@ -40,50 +40,50 @@ const (
 
 // ByDay represents a BYDAY property with an optional interval prefix.
 type ByDay struct {
-	// The day of the week that the event occurs on
+	// The day of the week that the event occurs on.
 	Weekday Weekday
-	// The interval between occurrences of the event
-	// eg: If Weekday is Tuesday, and Interval is 2, then the event will happen every other Tuesday
+	// The interval between occurrences of the event.
+	// eg: If Weekday is Tuesday, and Interval is 2, then the event will happen every other Tuesday.
 	Interval int
 }
 
 // RRule represents an ical reccurence rule.
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10.
 type RRule struct {
-	// The frequency of the event
-	// This MUST be specified
+	// The frequency of the event.
+	// This MUST be specified.
 	Frequency Frequency
-	// The interval between occurrences of the event
-	// eg: an interval of 2 for a daily rule means the event will happen every other day
-	// Not mandatory, but treated as 1 if not present
+	// The interval between occurrences of the event.
+	// eg: an interval of 2 for a daily rule means the event will happen every other day.
+	// Not mandatory, but treated as 1 if not present.
 	Interval int
-	// The number of occurrences of the event
-	// Can not occur with the Until property
-	// DTStart always counts as the first occurrence
+	// The number of occurrences of the event.
+	// Can not occur with the Until property.
+	// DTStart always counts as the first occurrence.
 	Count *int
-	// The date and time until the rule ends, inclusive
-	// Can not occur with the Count property
+	// The date and time until the rule ends, inclusive.
+	// Can not occur with the Count property.
 	Until *time.Time
-	// The day of the week that the event occurs on
-	// This is optional and repeatable
+	// The day of the week that the event occurs on.
+	// This is optional and repeatable.
 	Weekday []ByDay
 
-	// The Month(s) of the year that the event occurs on
+	// The Month(s) of the year that the event occurs on.
 	Month []int
 
-	// The day of the month that the event occurs on
-	// eg: 10th of the month, negative numbers are allowed to indicate the last day of the month
-	// for example, -3 is the third-to-last-day of the month
+	// The day of the month that the event occurs on.
+	// eg: 10th of the month, negative numbers are allowed to indicate the last day of the month.
+	// for example, -3 is the third-to-last-day of the month.
 	Monthday []int
 
-	// The day of the year that the event occurs on
-	// eg: 100th day of the year, negative numbers are allowed to indicate the last day of the year
+	// The day of the year that the event occurs on.
+	// eg: 100th day of the year, negative numbers are allowed to indicate the last day of the year.
 	YearDay []int
 }
 
-// ParseRRule takes an iCal reccurence rule string and parses it into a RRule struct
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10
-// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.5.3
+// ParseRRule takes an iCal reccurence rule string and parses it into a RRule struct.
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.3.10.
+// https://datatracker.ietf.org/doc/html/rfc5545#section-3.8.5.3.
 // Example for an event that happens daily for 10 days:
 // Input:
 // RRULE:FREQ=DAILY;INTERVAL=1;COUNT=10

@@ -22,7 +22,7 @@ var (
 )
 
 // ParseICalDuration parses an iCal duration string according to RFC 5545 section 3.3.6 into a time.Duration.
-// The string can be prefixed with a + or - sign to indicate a positive or negative duration
+// The string can be prefixed with a + or - sign to indicate a positive or negative duration.
 // The string can contain the following units:
 // - D: days
 // - H: hours
