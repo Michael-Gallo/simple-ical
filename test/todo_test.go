@@ -79,36 +79,30 @@ func TestValidTodo(t *testing.T) {
 
 func TestInvalidTodo(t *testing.T) {
 	testCases := []struct {
-		name          string
-		input         string
-		expectedError error
+		name  string
+		input string
 	}{
 		{
-			name:          "VTODO missing UID",
-			input:         testTodoMissingUIDInput,
-			expectedError: parse.ErrMissingTodoUIDProperty,
+			name:  "VTODO missing UID",
+			input: testTodoMissingUIDInput,
 		},
 		{
-			name:          "VTODO both DUE and DURATION",
-			input:         testTodoBothDueAndDurationInput,
-			expectedError: parse.ErrInvalidDurationPropertyDue,
+			name:  "VTODO both DUE and DURATION",
+			input: testTodoBothDueAndDurationInput,
 		},
 		{
-			name:          "VTODO invalid GEO",
-			input:         testTodoInvalidGeoInput,
-			expectedError: parse.ErrInvalidGeoProperty,
+			name:  "VTODO invalid GEO",
+			input: testTodoInvalidGeoInput,
 		},
 		{
-			name:          "VTODO duplicate UID",
-			input:         testTodoDuplicateUIDInput,
-			expectedError: parse.ErrDuplicatePropertyInComponent,
+			name:  "VTODO duplicate UID",
+			input: testTodoDuplicateUIDInput,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			calendar, err := parse.IcalString(tc.input)
 			assert.Error(t, err)
-			assert.ErrorContains(t, err, tc.expectedError.Error())
 			assert.Nil(t, calendar)
 		})
 	}

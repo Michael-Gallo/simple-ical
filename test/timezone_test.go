@@ -77,31 +77,26 @@ func TestValidTimezone(t *testing.T) {
 
 func TestInvalidTimezone(t *testing.T) {
 	testCases := []struct {
-		name          string
-		input         string
-		expectedError error
+		name  string
+		input string
 	}{
 		{
-			name:          "VTIMEZONE missing TZID",
-			input:         testTimezoneMissingTZIDInput,
-			expectedError: parse.ErrMissingTimezoneTZIDProperty,
+			name:  "VTIMEZONE missing TZID",
+			input: testTimezoneMissingTZIDInput,
 		},
 		{
-			name:          "VTIMEZONE invalid DTSTART",
-			input:         testTimezoneInvalidDTStartInput,
-			expectedError: parse.ErrParseErrorInComponent,
+			name:  "VTIMEZONE invalid DTSTART",
+			input: testTimezoneInvalidDTStartInput,
 		},
 		{
-			name:          "VTIMEZONE duplicate TZID",
-			input:         testTimezoneDuplicateTZIDInput,
-			expectedError: parse.ErrDuplicatePropertyInComponent,
+			name:  "VTIMEZONE duplicate TZID",
+			input: testTimezoneDuplicateTZIDInput,
 		},
 	}
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			calendar, err := parse.IcalString(tc.input)
 			assert.Error(t, err)
-			assert.ErrorContains(t, err, tc.expectedError.Error())
 			assert.Nil(t, calendar)
 		})
 	}

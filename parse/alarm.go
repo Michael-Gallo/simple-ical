@@ -35,7 +35,7 @@ func parseAlarmProperty(propertyName string, value string, params map[string]str
 		}
 		alarm.Attendees = append(alarm.Attendees, *parsedURL)
 	default:
-		return fmt.Errorf("%w: %s", ErrInvalidAlarmProperty, propertyName)
+		return fmt.Errorf("%w: %s", errInvalidAlarmProperty, propertyName)
 	}
 	return nil
 }
@@ -43,27 +43,27 @@ func parseAlarmProperty(propertyName string, value string, params map[string]str
 // validateAlarm ensures that all required values are present for an alarm.
 func validateAlarm(alarm *model.Alarm) error {
 	if alarm.Action == "" {
-		return ErrMissingAlarmActionProperty
+		return errMissingAlarmActionProperty
 	}
 	if alarm.Trigger == "" {
-		return ErrMissingAlarmTriggerProperty
+		return errMissingAlarmTriggerProperty
 	}
 
 	// Validate action-specific requirements
 	switch alarm.Action {
 	case model.AlarmActionDisplay:
 		if len(alarm.Description) == 0 {
-			return ErrMissingAlarmDescriptionForDisplay
+			return errMissingAlarmDescriptionForDisplay
 		}
 	case model.AlarmActionEmail:
 		if len(alarm.Description) == 0 {
-			return ErrMissingAlarmDescriptionForEmail
+			return errMissingAlarmDescriptionForEmail
 		}
 		if alarm.Summary == "" {
-			return ErrMissingAlarmSummaryForEmail
+			return errMissingAlarmSummaryForEmail
 		}
 		if len(alarm.Attendees) == 0 {
-			return ErrMissingAlarmAttendeesForEmail
+			return errMissingAlarmAttendeesForEmail
 		}
 	}
 

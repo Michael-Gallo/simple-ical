@@ -11,7 +11,7 @@ func parseIcalLineWithReusableMap(line string, reusableParams map[string]string)
 	// Find the first colon that is not inside quotes
 	colonIndex := findUnquotedColonIndex(line)
 	if colonIndex == -1 {
-		err = fmt.Errorf("%w: %s", ErrInvalidPropertyLine, line)
+		err = fmt.Errorf("%w: %s", errInvalidPropertyLine, line)
 		return "", nil, "", err
 	}
 

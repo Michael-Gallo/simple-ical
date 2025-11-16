@@ -34,31 +34,31 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 	// Due and Duration are mutually exclusive
 	case model.TodoTokenDue:
 		if todo.Duration != 0 {
-			return ErrInvalidDurationPropertyDue
+			return errInvalidDurationPropertyDue
 		}
 		return setOnceTimeProperty(&todo.Due, value, propertyName, todoLocation)
 	case model.TodoTokenDuration:
 		if todo.Due != (time.Time{}) {
-			return ErrInvalidDurationPropertyDue
+			return errInvalidDurationPropertyDue
 		}
 		return setOnceDurationProperty(&todo.Duration, value, propertyName, todoLocation)
 
 	case model.TodoTokenGeo:
 		if todo.Geo != nil {
-			return fmt.Errorf("%w: %s", ErrDuplicateProperty, propertyName)
+			return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
 		}
 		// Geo must be two floats separated by a semicolon
 		latitudeString, longitudeString, found := strings.Cut(value, ";")
 		if !found {
-			return ErrInvalidGeoProperty
+			return errInvalidGeoProperty
 		}
 		latitude, err := strconv.ParseFloat(latitudeString, 64)
 		if err != nil {
-			return ErrInvalidGeoPropertyLatitude
+			return errInvalidGeoPropertyLatitude
 		}
 		longitude, err := strconv.ParseFloat(longitudeString, 64)
 		if err != nil {
-			return ErrInvalidGeoPropertyLongitude
+			return errInvalidGeoPropertyLongitude
 		}
 		todo.Geo = append(todo.Geo, latitude, longitude)
 	case model.TodoTokenLastModified:
@@ -115,7 +115,7 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 	case model.TodoTokenRdate:
 		return appendTimeProperty(&todo.Rdate, value, propertyName, todoLocation)
 	default:
-		return fmt.Errorf("%w: %s", ErrInvalidTodoProperty, propertyName)
+		return fmt.Errorf("%w: %s", errInvalidTodoProperty, propertyName)
 	}
 	return nil
 }
@@ -123,10 +123,10 @@ func parseTodoProperty(propertyName string, value string, params map[string]stri
 // validateTodo ensures that all required values are present for a todo.
 func validateTodo(todo *model.Todo) error {
 	if todo.UID == "" {
-		return ErrMissingTodoUIDProperty
+		return errMissingTodoUIDProperty
 	}
 	if time.Time.IsZero(todo.DTStart) {
-		return ErrMissingTodoDTStartProperty
+		return errMissingTodoDTStartProperty
 	}
 	return nil
 }

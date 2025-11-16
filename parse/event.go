@@ -23,12 +23,12 @@ func parseEventProperty(propertyName string, value string, params map[string]str
 	// End and Duration are mutually exclusive
 	case model.EventTokenDtend:
 		if event.Duration != 0 {
-			return ErrInvalidDurationPropertyDtend
+			return errInvalidDurationPropertyDtend
 		}
 		return setOnceTimeProperty(&event.End, value, propertyName, eventLocation)
 	case model.EventTokenDuration:
 		if event.End != (time.Time{}) {
-			return ErrInvalidDurationPropertyDtend
+			return errInvalidDurationPropertyDtend
 		}
 		return setOnceDurationProperty(&event.Duration, value, propertyName, eventLocation)
 	case model.EventTokenLastModified:
@@ -64,24 +64,24 @@ func parseEventProperty(propertyName string, value string, params map[string]str
 		event.Categories = append(event.Categories, strings.Split(value, ",")...)
 	case model.EventTokenGeo:
 		if event.Geo != nil {
-			return fmt.Errorf("%w: %s", ErrDuplicateProperty, propertyName)
+			return fmt.Errorf("%w: %s", errDuplicateProperty, propertyName)
 		}
 		// Geo must be two floats separted by a colon
 		latitudeString, longitudeString, found := strings.Cut(value, ";")
 		if !found {
-			return ErrInvalidGeoProperty
+			return errInvalidGeoProperty
 		}
 		latitude, err := strconv.ParseFloat(latitudeString, 64)
 		if err != nil {
-			return ErrInvalidGeoPropertyLatitude
+			return errInvalidGeoPropertyLatitude
 		}
 		longitude, err := strconv.ParseFloat(longitudeString, 64)
 		if err != nil {
-			return ErrInvalidGeoPropertyLongitude
+			return errInvalidGeoPropertyLongitude
 		}
 		event.Geo = append(event.Geo, latitude, longitude)
 	default:
-		return fmt.Errorf("%w: %s", ErrInvalidEventProperty, propertyName)
+		return fmt.Errorf("%w: %s", errInvalidEventProperty, propertyName)
 	}
 	return nil
 }
@@ -127,10 +127,10 @@ func parseOrganizer(value string, params map[string]string) (*model.Organizer, e
 // validateEvent ensures that all required values are present for an event
 func validateEvent(event model.Event) error {
 	if event.UID == "" {
-		return ErrMissingEventUIDProperty
+		return errMissingEventUIDProperty
 	}
 	if event.Start.IsZero() {
-		return ErrMissingEventDTStartProperty
+		return errMissingEventDTStartProperty
 	}
 	return nil
 }

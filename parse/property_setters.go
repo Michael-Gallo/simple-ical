@@ -12,7 +12,7 @@ import (
 func setOnceProperty[T comparable](field *T, value T, propertyName string, componentType string) error {
 	var zero T
 	if *field != zero {
-		return fmt.Errorf(ErrDuplicatePropertyInComponentFormat, ErrDuplicatePropertyInComponent, propertyName, componentType)
+		return fmt.Errorf(errDuplicatePropertyInComponentFormat, errDuplicatePropertyInComponent, propertyName, componentType)
 	}
 	*field = value
 	return nil
@@ -23,7 +23,7 @@ func setOnceProperty[T comparable](field *T, value T, propertyName string, compo
 func setOnceIntProperty(field *int, value, propertyName string, componentType string) error {
 	intValue, err := strconv.Atoi(value)
 	if err != nil {
-		return fmt.Errorf("%w: %s property %s in iCal", ErrParseErrorInComponent, componentType, propertyName)
+		return fmt.Errorf("%w: %s property %s in iCal", errParseErrorInComponent, componentType, propertyName)
 	}
 	return setOnceProperty(field, intValue, propertyName, componentType)
 }
@@ -33,7 +33,7 @@ func setOnceIntProperty(field *int, value, propertyName string, componentType st
 func setOnceTimeProperty(field *time.Time, value, propertyName string, componentType string) error {
 	time, err := icaldur.ParseIcalTime(value)
 	if err != nil {
-		return fmt.Errorf("%w: %s property %s in iCal", ErrParseErrorInComponent, componentType, propertyName)
+		return fmt.Errorf("%w: %s property %s in iCal", errParseErrorInComponent, componentType, propertyName)
 	}
 	return setOnceProperty(field, time, propertyName, componentType)
 }
@@ -43,7 +43,7 @@ func setOnceTimeProperty(field *time.Time, value, propertyName string, component
 func setOnceDurationProperty(field *time.Duration, value, propertyName string, componentType string) error {
 	duration, err := icaldur.ParseICalDuration(value)
 	if err != nil {
-		return fmt.Errorf("%w: %s property %s in iCal", ErrParseErrorInComponent, componentType, propertyName)
+		return fmt.Errorf("%w: %s property %s in iCal", errParseErrorInComponent, componentType, propertyName)
 	}
 	return setOnceProperty(field, duration, propertyName, componentType)
 }
@@ -51,7 +51,7 @@ func setOnceDurationProperty(field *time.Duration, value, propertyName string, c
 func appendTimeProperty(field *[]time.Time, value, propertyName string, componentType string) error {
 	time, err := icaldur.ParseIcalTime(value)
 	if err != nil {
-		return fmt.Errorf("%w: %s property %s in iCal", ErrParseErrorInComponent, componentType, propertyName)
+		return fmt.Errorf("%w: %s property %s in iCal", errParseErrorInComponent, componentType, propertyName)
 	}
 	*field = append(*field, time)
 	return nil
